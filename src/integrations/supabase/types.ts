@@ -14,7 +14,261 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      badges: {
+        Row: {
+          badge_type: string
+          created_at: string
+          criteria: Json | null
+          description: string
+          icon_url: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          badge_type: string
+          created_at?: string
+          criteria?: Json | null
+          description: string
+          icon_url?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          badge_type?: string
+          created_at?: string
+          criteria?: Json | null
+          description?: string
+          icon_url?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      missions: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          difficulty: string
+          id: string
+          is_active: boolean | null
+          title: string
+          updated_at: string
+          xp_reward: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          difficulty: string
+          id?: string
+          is_active?: boolean | null
+          title: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          difficulty?: string
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      places: {
+        Row: {
+          category: string
+          city: string
+          country: string
+          created_at: string
+          cultural_tips: Json | null
+          description: string | null
+          id: string
+          is_hidden_gem: boolean | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          city: string
+          country: string
+          created_at?: string
+          cultural_tips?: Json | null
+          description?: string | null
+          id?: string
+          is_hidden_gem?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          city?: string
+          country?: string
+          created_at?: string
+          cultural_tips?: Json | null
+          description?: string | null
+          id?: string
+          is_hidden_gem?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          level: number | null
+          total_xp: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          level?: number | null
+          total_xp?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          level?: number | null
+          total_xp?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_missions: {
+        Row: {
+          completed_at: string | null
+          id: string
+          is_completed: boolean | null
+          mission_id: string
+          progress: number | null
+          started_at: string
+          total_required: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          mission_id: string
+          progress?: number | null
+          started_at?: string
+          total_required: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          mission_id?: string
+          progress?: number | null
+          started_at?: string
+          total_required?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_missions_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_place_visits: {
+        Row: {
+          id: string
+          notes: string | null
+          photos: Json | null
+          place_id: string
+          rating: number | null
+          user_id: string
+          visited_at: string
+        }
+        Insert: {
+          id?: string
+          notes?: string | null
+          photos?: Json | null
+          place_id: string
+          rating?: number | null
+          user_id: string
+          visited_at?: string
+        }
+        Update: {
+          id?: string
+          notes?: string | null
+          photos?: Json | null
+          place_id?: string
+          rating?: number | null
+          user_id?: string
+          visited_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_place_visits_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
