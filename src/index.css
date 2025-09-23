@@ -2,41 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Quest Voyage Design System - Adventure Travel & Gamification */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base Colors - Adventure Theme */
+    --background: 43 47% 98%;
+    --foreground: 159 30% 12%;
 
+    /* Card System */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 159 30% 12%;
 
+    /* Popover */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 159 30% 12%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Deep Emerald Adventure */
+    --primary: 159 61% 36%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 159 61% 56%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Warm Amber Energy */
+    --secondary: 35 94% 62%;
+    --secondary-foreground: 159 30% 12%;
+    --secondary-muted: 35 94% 82%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted Earth Tones */
+    --muted: 43 47% 95%;
+    --muted-foreground: 159 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Adventure Purple */
+    --accent: 262 52% 65%;
+    --accent-foreground: 0 0% 98%;
+    --accent-light: 262 52% 85%;
 
+    /* Status Colors */
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --warning: 35 94% 62%;
+    --warning-foreground: 159 30% 12%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Interactive Elements */
+    --border: 159 30% 88%;
+    --input: 159 30% 92%;
+    --ring: 159 61% 36%;
 
-    --radius: 0.5rem;
+    /* Gamification Colors */
+    --xp-bar: 142 76% 36%;
+    --badge-gold: 45 100% 55%;
+    --badge-silver: 0 0% 70%;
+    --badge-bronze: 25 100% 50%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(159 61% 36%), hsl(35 94% 62%));
+    --gradient-sunset: linear-gradient(180deg, hsl(35 94% 62%), hsl(159 61% 36%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(43 47% 98%));
+    --gradient-adventure: linear-gradient(120deg, hsl(159 61% 36%), hsl(262 52% 65%));
+
+    /* Shadows */
+    --shadow-card: 0 4px 6px -1px hsl(159 30% 12% / 0.1), 0 2px 4px -1px hsl(159 30% 12% / 0.06);
+    --shadow-hero: 0 20px 25px -5px hsl(159 30% 12% / 0.1), 0 10px 10px -5px hsl(159 30% 12% / 0.04);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
+
+    /* Spacing & Layout */
+    --radius: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,41 +94,58 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark Mode - Adventure Night Theme */
+    --background: 159 30% 8%;
+    --foreground: 43 47% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 159 25% 12%;
+    --card-foreground: 43 47% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 159 25% 12%;
+    --popover-foreground: 43 47% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 159 61% 56%;
+    --primary-foreground: 159 30% 8%;
+    --primary-glow: 159 61% 76%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 35 94% 72%;
+    --secondary-foreground: 159 30% 8%;
+    --secondary-muted: 35 94% 52%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 159 25% 15%;
+    --muted-foreground: 159 15% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 262 52% 75%;
+    --accent-foreground: 159 30% 8%;
+    --accent-light: 262 52% 85%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 70.2%;
+    --destructive-foreground: 159 30% 8%;
+    --success: 142 76% 46%;
+    --success-foreground: 159 30% 8%;
+    --warning: 35 94% 72%;
+    --warning-foreground: 159 30% 8%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 159 30% 18%;
+    --input: 159 30% 15%;
+    --ring: 159 61% 56%;
+
+    /* Dark mode gamification */
+    --xp-bar: 142 76% 46%;
+    --badge-gold: 45 100% 65%;
+    --badge-silver: 0 0% 80%;
+    --badge-bronze: 25 100% 60%;
+
+    /* Dark gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(159 61% 36%), hsl(35 94% 52%));
+    --gradient-sunset: linear-gradient(180deg, hsl(35 94% 52%), hsl(159 61% 36%));
+    --gradient-card: linear-gradient(145deg, hsl(159 25% 12%), hsl(159 25% 15%));
+    --gradient-adventure: linear-gradient(120deg, hsl(159 61% 36%), hsl(262 52% 65%));
+
+    /* Dark shadows */
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -1px hsl(0 0% 0% / 0.2);
+    --shadow-hero: 0 20px 25px -5px hsl(0 0% 0% / 0.3), 0 10px 10px -5px hsl(0 0% 0% / 0.2);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.4);
   }
 }
 
@@ -100,6 +155,117 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer components {
+  /* Quest Voyage Component Classes */
+  
+  /* Hero Gradient Background */
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  /* Card with Adventure Styling */
+  .adventure-card {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-card);
+    border-radius: var(--radius-lg);
+    transition: var(--transition-smooth);
+  }
+  
+  .adventure-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hero);
+  }
+  
+  /* XP Progress Bar */
+  .xp-bar {
+    background: linear-gradient(90deg, 
+      hsl(var(--xp-bar)), 
+      hsl(var(--xp-bar) / 0.8)
+    );
+    box-shadow: 0 0 20px hsl(var(--xp-bar) / 0.3);
+  }
+  
+  /* Badge Styles */
+  .badge-gold {
+    background: linear-gradient(135deg, 
+      hsl(var(--badge-gold)), 
+      hsl(45 100% 45%)
+    );
+    color: hsl(159 30% 12%);
+  }
+  
+  .badge-silver {
+    background: linear-gradient(135deg, 
+      hsl(var(--badge-silver)), 
+      hsl(0 0% 60%)
+    );
+    color: hsl(159 30% 12%);
+  }
+  
+  .badge-bronze {
+    background: linear-gradient(135deg, 
+      hsl(var(--badge-bronze)), 
+      hsl(25 100% 40%)
+    );
+    color: hsl(0 0% 98%);
+  }
+  
+  /* Mission Card Hover Effect */
+  .mission-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-lg);
+    transition: var(--transition-bounce);
+    cursor: pointer;
+  }
+  
+  .mission-card:hover {
+    border-color: hsl(var(--primary));
+    box-shadow: var(--shadow-glow);
+    transform: scale(1.02);
+  }
+  
+  /* Interactive Button Animations */
+  .btn-adventure {
+    background: var(--gradient-adventure);
+    color: hsl(var(--primary-foreground));
+    border: none;
+    border-radius: var(--radius);
+    transition: var(--transition-bounce);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-adventure:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .btn-adventure:active {
+    transform: translateY(0);
+  }
+  
+  /* Glowing Achievement Effect */
+  .achievement-glow {
+    position: relative;
+  }
+  
+  .achievement-glow::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: var(--gradient-adventure);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .achievement-glow:hover::after {
+    opacity: 1;
   }
 }
