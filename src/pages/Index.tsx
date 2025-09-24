@@ -72,8 +72,8 @@ const Index = () => {
               <a href="#features" className="text-muted-foreground hover:text-primary transition-colors">Features</a>
               <a href="#how-it-works" className="text-muted-foreground hover:text-primary transition-colors">How It Works</a>
               <a href="#testimonials" className="text-muted-foreground hover:text-primary transition-colors">Stories</a>
-              <Button variant="outline" onClick={() => navigate("/auth")}>
-                Sign In
+              <Button variant="outline" onClick={() => navigate("/dashboard")}>
+                Enter Dashboard
               </Button>
             </div>
           </div>
@@ -123,7 +123,7 @@ const Index = () => {
               <Button 
                 size="lg" 
                 className="btn-adventure text-lg px-10 py-6 group text-white shadow-2xl"
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate("/dashboard")}
               >
                 <Plane className="mr-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
                 Start Your Quest

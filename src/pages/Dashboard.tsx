@@ -11,123 +11,80 @@ import {
   Star, 
   Users, 
   Award,
-  LogOut,
   Settings,
   Compass,
   Flame,
   Crown,
   Mountain
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useProfile } from "@/hooks/useProfile";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import compassIcon from "@/assets/compass-icon.png";
 import treasureBadges from "@/assets/treasure-badges.png";
 
 const Dashboard = () => {
-  const { user, signOut } = useAuth();
-  const { profile, loading: profileLoading } = useProfile();
   const { toast } = useToast();
   const [missions, setMissions] = useState<any[]>([]);
   const [userMissions, setUserMissions] = useState<any[]>([]);
   const [userBadges, setUserBadges] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Mock user data
+  const mockProfile = {
+    full_name: "Adventure Explorer",
+    total_xp: 2450,
+    level: 7,
+    avatar_url: null
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-
-      try {
-        // Fetch missions
-        const { data: missionsData } = await supabase
-          .from('missions')
-          .select('*')
-          .eq('is_active', true)
-          .order('created_at', { ascending: false });
-
-        // Fetch user missions
-        const { data: userMissionsData } = await supabase
-          .from('user_missions')
-          .select(`
-            *,
-            missions (*)
-          `)
-          .eq('user_id', user.id)
-          .order('started_at', { ascending: false });
-
-        // Fetch user badges
-        const { data: userBadgesData } = await supabase
-          .from('user_badges')
-          .select(`
-            *,
-            badges (*)
-          `)
-          .eq('user_id', user.id)
-          .order('earned_at', { ascending: false });
-
-        setMissions(missionsData || []);
-        setUserMissions(userMissionsData || []);
-        setUserBadges(userBadgesData || []);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load dashboard data",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, [user, toast]);
+  }, []);
 
-  const startMission = async (missionId: string) => {
-    if (!user) return;
-
+  const fetchData = async () => {
     try {
-      const mission = missions.find(m => m.id === missionId);
-      if (!mission) return;
+      // Fetch missions
+      const { data: missionsData } = await supabase
+        .from('missions')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
 
-      const { error } = await supabase
-        .from('user_missions')
-        .insert({
-          user_id: user.id,
-          mission_id: missionId,
-          total_required: 1, // Default requirement
-          progress: 0,
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Mission Started!",
-        description: `You've started the mission: ${mission.title}`,
-      });
-
-      // Refresh user missions
-      const { data: userMissionsData } = await supabase
-        .from('user_missions')
-        .select(`
-          *,
-          missions (*)
-        `)
-        .eq('user_id', user.id)
-        .order('started_at', { ascending: false });
-
-      setUserMissions(userMissionsData || []);
-    } catch (error: any) {
+      setMissions(missionsData || []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to start mission",
+        description: "Failed to load dashboard data",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading || profileLoading) {
+  const startMission = async (missionId: string) => {
+    // Mock mission start
+    toast({
+      title: "Mission Started!",
+      description: "Good luck on your new adventure!",
+    });
+    
+    // Add to user missions locally
+    const mission = missions.find(m => m.id === missionId);
+    if (mission) {
+      setUserMissions(prev => [...prev, {
+        id: Date.now().toString(),
+        mission_id: missionId,
+        progress: 0,
+        total_required: 1,
+        is_completed: false,
+        missions: mission
+      }]);
+    }
+  };
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center hero-gradient">
         <div className="text-center text-white">
@@ -139,8 +96,8 @@ const Dashboard = () => {
     );
   }
 
-  const level = profile?.level || 1;
-  const currentXP = profile?.total_xp || 0;
+  const level = mockProfile.level;
+  const currentXP = mockProfile.total_xp;
   const xpForNextLevel = level * 1000; // 1000 XP per level
   const xpProgress = (currentXP % 1000) / 10; // Progress to next level as percentage
 
@@ -164,14 +121,11 @@ const Dashboard = () => {
             <div className="flex items-center space-x-4">
               <div className="hidden md:flex items-center space-x-3 text-sm text-muted-foreground">
                 <div className="text-foreground font-medium">
-                  Welcome back, {profile?.full_name || user?.email || "Adventurer"}!
+                  Welcome back, {mockProfile.full_name}!
                 </div>
               </div>
               <Button variant="ghost" size="sm" className="hover:bg-primary/10">
                 <Settings className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={signOut} className="hover:bg-destructive/10">
-                <LogOut className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -362,6 +316,37 @@ const Dashboard = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Profile Card */}
+            <Card className="travel-card p-6">
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-travel-primary to-travel-secondary flex items-center justify-center text-white text-xl font-bold">
+                    {mockProfile.full_name[0]}
+                  </div>
+                  <div className="absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                    {mockProfile.level}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-travel-dark">{mockProfile.full_name}</h3>
+                  <p className="text-travel-muted">Level {mockProfile.level} Adventurer</p>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-travel-muted">Progress to Level {mockProfile.level + 1}</span>
+                  <span className="text-travel-dark font-medium">{mockProfile.total_xp} XP</span>
+                </div>
+                <div className="xp-bar w-full bg-travel-light rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-travel-primary to-travel-secondary h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min((mockProfile.total_xp % 1000) / 10, 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+            </Card>
+
             {/* Recent Achievements */}
             <Card className="travel-card p-6">
               <div className="flex items-center space-x-2 mb-4">
@@ -407,7 +392,47 @@ const Dashboard = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Current Level</span>
-                  <span className="font-medium">Level {level}</span>
+                  <span className="font-medium text-primary">Level {level}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Global Rank</span>
+                  <span className="font-medium text-secondary">#1,247</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Leaderboard Preview */}
+            <Card className="travel-card p-6">
+              <h3 className="heading-display text-lg mb-4">Global Leaderboard</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center text-xs font-bold text-yellow-900">1</div>
+                    <span className="text-sm font-medium">Explorer Ace</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">15,240 XP</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center text-xs font-bold text-gray-900">2</div>
+                    <span className="text-sm font-medium">Quest Master</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">12,890 XP</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 rounded-full bg-amber-600 flex items-center justify-center text-xs font-bold text-white">3</div>
+                    <span className="text-sm font-medium">Journey Walker</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">10,340 XP</span>
+                </div>
+                <hr className="my-2" />
+                <div className="flex items-center justify-between bg-primary/5 p-2 rounded">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">1247</div>
+                    <span className="text-sm font-medium">{mockProfile.full_name}</span>
+                  </div>
+                  <span className="text-sm text-primary font-medium">{currentXP} XP</span>
                 </div>
               </div>
             </Card>
