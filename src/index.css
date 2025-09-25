@@ -158,13 +158,93 @@
   }
 }
 
+/* Travel Theme - Vibrant and Adventure-focused */
+.travel {
+  /* Core Colors - Vibrant Travel Palette */
+  --background: 20 100% 98%;
+  --foreground: 215 27% 12%;
+  --card: 25 95% 95%;
+  --card-foreground: 215 27% 12%;
+  --popover: 25 95% 95%;
+  --popover-foreground: 215 27% 12%;
+  
+  /* Primary - Sunset Orange */
+  --primary: 25 95% 53%;
+  --primary-foreground: 0 0% 98%;
+  --primary-glow: 25 100% 65%;
+  
+  /* Secondary - Ocean Blue */
+  --secondary: 200 95% 50%;
+  --secondary-foreground: 0 0% 98%;
+  --secondary-muted: 200 80% 95%;
+  
+  /* Accent - Adventure Green */
+  --accent: 142 70% 45%;
+  --accent-foreground: 0 0% 98%;
+  --accent-light: 142 60% 85%;
+  
+  /* Interactive Elements */
+  --muted: 45 40% 92%;
+  --muted-foreground: 215 27% 35%;
+  --border: 45 30% 85%;
+  --input: 45 30% 88%;
+  --ring: 25 95% 53%;
+  
+  /* Status Colors */
+  --destructive: 0 85% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --success: 142 70% 45%;
+  --success-foreground: 0 0% 98%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 98%;
+  
+  /* Gamification Elements */
+  --xp-bar: 142 70% 45%;
+  --badge-gold: 43 96% 56%;
+  --badge-silver: 0 0% 75%;
+  --badge-bronze: 25 75% 47%;
+  
+  /* Travel Theme Specific Gradients */
+  --gradient-hero: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(200 95% 50%) 50%, hsl(142 70% 45%) 100%);
+  --gradient-sunset: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(38 92% 50%) 100%);
+  --gradient-card: linear-gradient(135deg, hsl(25 95% 95%) 0%, hsl(200 95% 95%) 100%);
+  --gradient-adventure: linear-gradient(135deg, hsl(142 70% 45%) 0%, hsl(200 95% 50%) 100%);
+  --gradient-cultural: linear-gradient(135deg, hsl(270 50% 30%) 0%, hsl(315 100% 45%) 100%);
+  --gradient-wanderlust: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(200 95% 50%) 100%);
+  
+  /* Shadows */
+  --shadow-card: 0 4px 20px hsl(25 95% 53% / 0.15);
+  --shadow-hero: 0 25px 50px -12px hsl(25 95% 53% / 0.25);
+  --shadow-glow: 0 0 30px hsl(25 95% 53% / 0.3);
+  --shadow-luxury: 0 8px 32px hsl(25 95% 53% / 0.12);
+  
+  /* Spacing and Layout */
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  /* Animation Timing */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Typography Scale */
+  --text-scale-xs: 0.75rem;
+  --text-scale-sm: 0.875rem;
+  --text-scale-base: 1rem;
+  --text-scale-lg: 1.125rem;
+  --text-scale-xl: 1.25rem;
+  --text-scale-2xl: 1.5rem;
+  --text-scale-3xl: 1.875rem;
+  --text-scale-4xl: 2.25rem;
+}
+
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans transition-colors duration-300;
   }
 }
 
