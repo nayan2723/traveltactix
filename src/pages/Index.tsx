@@ -12,7 +12,8 @@ import {
   Globe,
   Mountain,
   Plane,
-  Heart
+  Heart,
+  Target
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -134,9 +135,10 @@ const Index = () => {
                 variant="outline" 
                 size="lg"
                 className="text-lg px-10 py-6 bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+                onClick={() => navigate("/missions")}
               >
-                <Camera className="mr-2 h-5 w-5" />
-                Watch Adventure
+                <Target className="mr-2 h-5 w-5" />
+                Browse Missions
               </Button>
             </div>
 

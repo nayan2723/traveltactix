@@ -47,33 +47,48 @@ export type Database = {
       missions: {
         Row: {
           category: string
+          city: string | null
+          country: string | null
           created_at: string
+          deadline: string | null
           description: string
           difficulty: string
           id: string
           is_active: boolean | null
+          latitude: number | null
+          longitude: number | null
           title: string
           updated_at: string
           xp_reward: number
         }
         Insert: {
           category: string
+          city?: string | null
+          country?: string | null
           created_at?: string
+          deadline?: string | null
           description: string
           difficulty: string
           id?: string
           is_active?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
           title: string
           updated_at?: string
           xp_reward?: number
         }
         Update: {
           category?: string
+          city?: string | null
+          country?: string | null
           created_at?: string
+          deadline?: string | null
           description?: string
           difficulty?: string
           id?: string
           is_active?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
           title?: string
           updated_at?: string
           xp_reward?: number
