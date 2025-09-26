@@ -12,11 +12,24 @@ export function LocationSelector({ onLocationSelect, selectedLocation }: Locatio
   const [isOpen, setIsOpen] = useState(false);
 
   const destinations = [
-    { city: 'Mumbai', country: 'India', description: 'City of Dreams & Street Food' },
+    { city: 'Delhi', country: 'India', description: 'Capital of Culture & Heritage' },
+    { city: 'Mumbai', country: 'India', description: 'City of Dreams & Bollywood' },
     { city: 'Jaipur', country: 'India', description: 'Pink City of Palaces' },
+    { city: 'Agra', country: 'India', description: 'Home of the Taj Mahal' },
+    { city: 'Panaji', country: 'India', description: 'Beaches & Portuguese Heritage' },
+    { city: 'Kochi', country: 'India', description: 'Queen of Arabian Sea' },
+    { city: 'Alleppey', country: 'India', description: 'Venice of the East' },
+    { city: 'Udaipur', country: 'India', description: 'City of Lakes & Palaces' },
+    { city: 'Jodhpur', country: 'India', description: 'Blue City of Rajasthan' },
+    { city: 'Bangalore', country: 'India', description: 'Garden City & IT Hub' },
+    { city: 'Chennai', country: 'India', description: 'Gateway to South India' },
+    { city: 'Kolkata', country: 'India', description: 'Cultural Capital of India' },
+    { city: 'Shimla', country: 'India', description: 'Queen of Hill Stations' },
+    { city: 'Manali', country: 'India', description: 'Adventure Sports Paradise' },
+    { city: 'Rishikesh', country: 'India', description: 'Yoga Capital of the World' },
+    { city: 'Ahmedabad', country: 'India', description: 'Heritage City of Gujarat' },
     { city: 'Paris', country: 'France', description: 'City of Light & Art' },
     { city: 'Tokyo', country: 'Japan', description: 'Modern Meets Traditional' },
-    { city: 'Delhi', country: 'India', description: 'Capital of Culture' },
   ];
 
   const handleLocationSelect = (city: string, country: string) => {
