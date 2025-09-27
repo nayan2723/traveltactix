@@ -7,7 +7,7 @@ export function BeamsBackground() {
   if (theme !== "dark") return null;
 
   return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden">
+    <div className="fixed inset-0 z-[-10] overflow-hidden pointer-events-none">
       <BeamsComponent
         beamWidth={2}
         beamHeight={15}

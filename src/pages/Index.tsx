@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import heroImage from "@/assets/hero-adventure.jpg";
 import travelCollage from "@/assets/travel-collage.jpg";
 import compassIcon from "@/assets/compass-icon.png";
@@ -181,7 +182,15 @@ const Index = () => {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8 mb-16">
-            <Card className="travel-card p-8 text-center group">
+            <Card className="travel-card p-8 text-center group relative">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+                borderWidth={2}
+              />
               <div className="relative mb-8">
                 <img src={treasureBadges} alt="Gamified Missions" className="w-20 h-20 mx-auto rounded-xl" />
                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
@@ -196,7 +205,15 @@ const Index = () => {
               <Badge className="badge-gold">🏆 500+ Unique Missions</Badge>
             </Card>
 
-            <Card className="travel-card p-8 text-center group">
+            <Card className="travel-card p-8 text-center group relative">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+                borderWidth={2}
+              />
               <div className="w-20 h-20 mx-auto mb-8 bg-secondary/10 rounded-xl flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
                 <Star className="h-10 w-10 text-secondary" />
               </div>
@@ -208,7 +225,15 @@ const Index = () => {
               <Badge className="badge-silver">✨ 50+ Cultures</Badge>
             </Card>
 
-            <Card className="travel-card p-8 text-center group">
+            <Card className="travel-card p-8 text-center group relative">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+                borderWidth={2}
+              />
               <div className="w-20 h-20 mx-auto mb-8 bg-accent/10 rounded-xl flex items-center justify-center group-hover:bg-accent/20 transition-colors">
                 <Globe className="h-10 w-10 text-accent" />
               </div>
@@ -282,7 +307,15 @@ const Index = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="travel-card p-8">
+              <Card key={index} className="travel-card p-8 relative">
+                <GlowingEffect
+                  spread={30}
+                  glow={true}
+                  disabled={false}
+                  proximity={48}
+                  inactiveZone={0.01}
+                  borderWidth={2}
+                />
                 <div className="flex items-center mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-secondary fill-current" />

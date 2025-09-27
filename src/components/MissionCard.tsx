@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { GlowingEffect } from '@/components/ui/glowing-effect';
 import { Clock, MapPin, Star, Target, Calendar } from 'lucide-react';
 
 interface Mission {
@@ -70,6 +71,14 @@ export function MissionCard({ mission, onStart, formatDeadline }: MissionCardPro
 
   return (
     <Card className="mission-card relative overflow-hidden hover:shadow-glow transition-all duration-300 group">
+      <GlowingEffect
+        spread={30}
+        glow={true}
+        disabled={false}
+        proximity={48}
+        inactiveZone={0.01}
+        borderWidth={2}
+      />
       <div className="absolute inset-0 bg-card-gradient opacity-50"></div>
       <div className="relative z-10">
         <CardHeader className="pb-3">

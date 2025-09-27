@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { 
   Trophy, 
   Target, 
@@ -139,6 +140,14 @@ const Dashboard = () => {
             {/* Stats Overview */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="stats-card p-6 text-center relative overflow-hidden">
+                <GlowingEffect
+                  spread={25}
+                  glow={true}
+                  disabled={false}
+                  proximity={40}
+                  inactiveZone={0.01}
+                  borderWidth={1.5}
+                />
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10"></div>
                 <div className="relative">
                   <Trophy className="h-8 w-8 text-primary mx-auto mb-3" />
@@ -148,6 +157,14 @@ const Dashboard = () => {
               </Card>
               
               <Card className="stats-card p-6 text-center relative overflow-hidden">
+                <GlowingEffect
+                  spread={25}
+                  glow={true}
+                  disabled={false}
+                  proximity={40}
+                  inactiveZone={0.01}
+                  borderWidth={1.5}
+                />
                 <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-secondary/10"></div>
                 <div className="relative">
                   <Target className="h-8 w-8 text-secondary mx-auto mb-3" />
@@ -157,6 +174,14 @@ const Dashboard = () => {
               </Card>
               
               <Card className="stats-card p-6 text-center relative overflow-hidden">
+                <GlowingEffect
+                  spread={25}
+                  glow={true}
+                  disabled={false}
+                  proximity={40}
+                  inactiveZone={0.01}
+                  borderWidth={1.5}
+                />
                 <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-accent/10"></div>
                 <div className="relative">
                   <Award className="h-8 w-8 text-accent mx-auto mb-3" />
@@ -166,6 +191,14 @@ const Dashboard = () => {
               </Card>
               
               <Card className="stats-card p-6 text-center relative overflow-hidden">
+                <GlowingEffect
+                  spread={25}
+                  glow={true}
+                  disabled={false}
+                  proximity={40}
+                  inactiveZone={0.01}
+                  borderWidth={1.5}
+                />
                 <div className="absolute inset-0 bg-gradient-to-br from-success/5 to-success/10"></div>
                 <div className="relative">
                   <MapPin className="h-8 w-8 text-success mx-auto mb-3" />
@@ -176,7 +209,15 @@ const Dashboard = () => {
             </div>
 
             {/* Level Progress */}
-            <Card className="travel-card p-8">
+            <Card className="travel-card p-8 relative">
+              <GlowingEffect
+                spread={35}
+                glow={true}
+                disabled={false}
+                proximity={56}
+                inactiveZone={0.01}
+                borderWidth={2}
+              />
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="heading-display text-2xl mb-2">Adventure Progression</h3>
@@ -205,7 +246,15 @@ const Dashboard = () => {
             </Card>
 
             {/* Active Missions */}
-            <Card className="travel-card p-8">
+            <Card className="travel-card p-8 relative">
+              <GlowingEffect
+                spread={35}
+                glow={true}
+                disabled={false}
+                proximity={56}
+                inactiveZone={0.01}
+                borderWidth={2}
+              />
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h3 className="heading-display text-2xl mb-2">Your Active Quests</h3>
@@ -272,7 +321,15 @@ const Dashboard = () => {
             </Card>
 
             {/* Available Missions */}
-            <Card className="travel-card p-8">
+            <Card className="travel-card p-8 relative">
+              <GlowingEffect
+                spread={35}
+                glow={true}
+                disabled={false}
+                proximity={56}
+                inactiveZone={0.01}
+                borderWidth={2}
+              />
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h3 className="heading-display text-2xl mb-2">Discover New Quests</h3>
