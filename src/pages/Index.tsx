@@ -70,9 +70,9 @@ const Index = () => {
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-muted-foreground hover:text-primary transition-colors">Features</a>
-              <a href="#how-it-works" className="text-muted-foreground hover:text-primary transition-colors">How It Works</a>
-              <a href="#testimonials" className="text-muted-foreground hover:text-primary transition-colors">Stories</a>
+              <a href="#features" className="text-foreground/70 hover:text-primary transition-colors">Features</a>
+              <a href="#how-it-works" className="text-foreground/70 hover:text-primary transition-colors">How It Works</a>
+              <a href="#testimonials" className="text-foreground/70 hover:text-primary transition-colors">Stories</a>
               <Button variant="outline" onClick={() => navigate("/dashboard")}>
                 Enter Dashboard
               </Button>
@@ -294,10 +294,10 @@ const Index = () => {
                 </p>
                 
                 <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold">{testimonial.name}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.location}</div>
-                  </div>
+                 <div>
+                   <div className="font-semibold text-foreground">{testimonial.name}</div>
+                   <div className="text-sm text-muted-foreground">{testimonial.location}</div>
+                 </div>
                   <Badge className="badge-gold text-xs">
                     {testimonial.achievement}
                   </Badge>
