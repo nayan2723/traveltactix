@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { BeamsBackground } from "@/components/BeamsBackground";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Missions from "./pages/Missions";
@@ -14,6 +15,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <BeamsBackground />
       <div className="fixed top-4 left-4 z-50">
         <ThemeToggle />
       </div>
