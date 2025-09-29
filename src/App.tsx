@@ -15,7 +15,8 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <BeamsBackground />
+      {/* Beams background temporarily disabled while we fix R3F crash */}
+      {/* <BeamsBackground /> */}
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>
