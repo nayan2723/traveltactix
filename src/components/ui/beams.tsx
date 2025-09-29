@@ -258,7 +258,11 @@ const NoisePlanes = forwardRef<THREE.Mesh, NoisePlanesProps>(
       }
     });
 
-    return <mesh ref={meshRef} geometry={geometry} material={material} />;
+    return (
+      <mesh ref={meshRef} geometry={geometry}>
+        <primitive attach="material" object={material} />
+      </mesh>
+    );
   },
 );
 NoisePlanes.displayName = 'NoisePlanes';
@@ -333,7 +337,7 @@ const component = ({
 
   return (
     <CanvasWrapper>
-      <group rotation={[0, 0, MathUtils.degToRad(rotation)]}>
+      <group rotation={[0, 0, (rotation * Math.PI) / 180]}>
         <NoisePlanes
           material={beamMaterial}
           count={validBeamNumber}
