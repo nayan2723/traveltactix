@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      ar_hotspots: {
+        Row: {
+          city: string
+          country: string
+          created_at: string
+          cultural_facts: Json
+          id: string
+          image_url: string | null
+          is_active: boolean
+          landmark_name: string
+          latitude: number | null
+          longitude: number | null
+        }
+        Insert: {
+          city: string
+          country: string
+          created_at?: string
+          cultural_facts?: Json
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          landmark_name: string
+          latitude?: number | null
+          longitude?: number | null
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string
+          cultural_facts?: Json
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          landmark_name?: string
+          latitude?: number | null
+          longitude?: number | null
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           badge_type: string
@@ -41,6 +80,108 @@ export type Database = {
           icon_url?: string | null
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      cultural_content: {
+        Row: {
+          audio_url: string | null
+          city: string
+          content: string
+          content_type: string
+          country: string
+          created_at: string
+          cultural_xp: number
+          difficulty_level: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          language: string | null
+          metadata: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audio_url?: string | null
+          city: string
+          content: string
+          content_type: string
+          country: string
+          created_at?: string
+          cultural_xp?: number
+          difficulty_level?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          language?: string | null
+          metadata?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audio_url?: string | null
+          city?: string
+          content?: string
+          content_type?: string
+          country?: string
+          created_at?: string
+          cultural_xp?: number
+          difficulty_level?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          language?: string | null
+          metadata?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cultural_lessons: {
+        Row: {
+          city: string
+          country: string
+          created_at: string
+          cultural_xp: number
+          description: string | null
+          difficulty_level: string
+          duration_minutes: number | null
+          id: string
+          is_active: boolean
+          language: string | null
+          lesson_data: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          city: string
+          country: string
+          created_at?: string
+          cultural_xp?: number
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean
+          language?: string | null
+          lesson_data: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string
+          cultural_xp?: number
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean
+          language?: string | null
+          lesson_data?: Json
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -201,6 +342,54 @@ export type Database = {
             columns: ["badge_id"]
             isOneToOne: false
             referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_cultural_progress: {
+        Row: {
+          completed_at: string
+          completion_data: Json | null
+          content_id: string | null
+          cultural_xp_earned: number
+          id: string
+          lesson_id: string | null
+          progress_type: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          completion_data?: Json | null
+          content_id?: string | null
+          cultural_xp_earned?: number
+          id?: string
+          lesson_id?: string | null
+          progress_type: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          completion_data?: Json | null
+          content_id?: string | null
+          cultural_xp_earned?: number
+          id?: string
+          lesson_id?: string | null
+          progress_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_cultural_progress_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "cultural_content"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_cultural_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "cultural_lessons"
             referencedColumns: ["id"]
           },
         ]

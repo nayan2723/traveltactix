@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { CulturalProgress } from "@/components/CulturalProgress";
 import { 
   Trophy, 
   Target, 
@@ -16,7 +17,10 @@ import {
   Compass,
   Flame,
   Crown,
-  Mountain
+  Mountain,
+  Globe,
+  Languages,
+  Camera
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -434,6 +438,9 @@ const Dashboard = () => {
                 )}
               </div>
             </Card>
+
+            {/* Cultural Progress */}
+            <CulturalProgress />
 
             {/* Quick Stats */}
             <Card className="travel-card p-6">

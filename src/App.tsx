@@ -8,6 +8,9 @@ import { BeamsBackground } from "@/components/BeamsBackground";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Missions from "./pages/Missions";
+import CulturalFeed from "./pages/CulturalFeed";
+import CulturalLessons from "./pages/CulturalLessons";
+import ARScan from "./pages/ARScan";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +30,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/missions" element={<Missions />} />
+          <Route path="/cultural-feed" element={<CulturalFeed />} />
+          <Route path="/cultural-lessons" element={<CulturalLessons />} />
+          <Route path="/ar-scan" element={<ARScan />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
