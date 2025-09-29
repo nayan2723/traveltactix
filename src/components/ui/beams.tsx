@@ -11,7 +11,8 @@ import React, {
 import * as THREE from 'three';
 import { Canvas, useFrame, ThreeElements } from '@react-three/fiber';
 import { PerspectiveCamera } from '@react-three/drei';
-import { degToRad } from 'three/src/math/MathUtils.js';
+// Use MathUtils from THREE to avoid deep src imports that can break bundlers
+const { MathUtils } = THREE;
 
 type MaterialConfig = {
   header?: string;
@@ -215,13 +216,17 @@ const DirLight = (
 ) => {
   const dirRef = useRef<THREE.DirectionalLight>(null!);
   useEffect(() => {
-    const cam = dirRef.current.shadow.camera;
-    cam.top = 24;
-    cam.bottom = -24;
-    cam.left = -24;
-    cam.right = 24;
-    cam.far = 64;
-    dirRef.current.shadow.bias = -0.004;
+    if (!dirRef.current) return;
+    const shadow = dirRef.current.shadow;
+    if (shadow && shadow.camera) {
+      const cam = shadow.camera as THREE.OrthographicCamera;
+      cam.top = 24;
+      cam.bottom = -24;
+      cam.left = -24;
+      cam.right = 24;
+      cam.far = 64;
+      dirRef.current.shadow.bias = -0.004;
+    }
   }, []);
   return <directionalLight ref={dirRef} intensity={1} {...props} />;
 };
@@ -328,7 +333,7 @@ const component = ({
 
   return (
     <CanvasWrapper>
-      <group rotation={[0, 0, degToRad(rotation)]}>
+      <group rotation={[0, 0, MathUtils.degToRad(rotation)]}>
         <NoisePlanes
           material={beamMaterial}
           count={validBeamNumber}
