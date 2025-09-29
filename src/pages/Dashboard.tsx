@@ -125,7 +125,7 @@ const Dashboard = () => {
                   Welcome back, {mockProfile.full_name}!
                 </div>
               </div>
-              <Button variant="ghost" size="sm" className="hover:bg-primary/10">
+              <Button variant="ghost" size="sm" className="hover:bg-primary/10 mr-16">
                 <Settings className="h-4 w-4" />
               </Button>
             </div>
