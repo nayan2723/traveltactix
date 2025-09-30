@@ -11,6 +11,9 @@ import Missions from "./pages/Missions";
 import CulturalFeed from "./pages/CulturalFeed";
 import CulturalLessons from "./pages/CulturalLessons";
 import ARScan from "./pages/ARScan";
+import Discovery from "./pages/Discovery";
+import PlaceDetail from "./pages/PlaceDetail";
+import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,9 +33,12 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/missions" element={<Missions />} />
-          <Route path="/cultural-feed" element={<CulturalFeed />} />
-          <Route path="/cultural-lessons" element={<CulturalLessons />} />
-          <Route path="/ar-scan" element={<ARScan />} />
+        <Route path="/cultural-feed" element={<CulturalFeed />} />
+        <Route path="/cultural-lessons" element={<CulturalLessons />} />
+        <Route path="/ar-scan" element={<ARScan />} />
+        <Route path="/discovery" element={<Discovery />} />
+        <Route path="/places/:id" element={<PlaceDetail />} />
+        <Route path="/favorites" element={<Favorites />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

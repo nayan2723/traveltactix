@@ -244,10 +244,13 @@ export type Database = {
           created_at: string
           cultural_tips: Json | null
           description: string | null
+          estimated_visit_time: number | null
           id: string
+          image_urls: string[] | null
           is_hidden_gem: boolean | null
           latitude: number | null
           longitude: number | null
+          mood_tags: string[] | null
           name: string
           updated_at: string
         }
@@ -258,10 +261,13 @@ export type Database = {
           created_at?: string
           cultural_tips?: Json | null
           description?: string | null
+          estimated_visit_time?: number | null
           id?: string
+          image_urls?: string[] | null
           is_hidden_gem?: boolean | null
           latitude?: number | null
           longitude?: number | null
+          mood_tags?: string[] | null
           name: string
           updated_at?: string
         }
@@ -272,10 +278,13 @@ export type Database = {
           created_at?: string
           cultural_tips?: Json | null
           description?: string | null
+          estimated_visit_time?: number | null
           id?: string
+          image_urls?: string[] | null
           is_hidden_gem?: boolean | null
           latitude?: number | null
           longitude?: number | null
+          mood_tags?: string[] | null
           name?: string
           updated_at?: string
         }
@@ -390,6 +399,35 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "cultural_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          place_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          place_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          place_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
             referencedColumns: ["id"]
           },
         ]

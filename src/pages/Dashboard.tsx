@@ -20,7 +20,9 @@ import {
   Mountain,
   Globe,
   Languages,
-  Camera
+  Camera,
+  Search,
+  BookOpen
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -441,6 +443,21 @@ const Dashboard = () => {
 
             {/* Cultural Progress */}
             <CulturalProgress />
+
+            {/* Quick Actions */}
+            <Card className="travel-card p-6">
+              <h3 className="heading-display text-lg mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <Button onClick={() => window.location.href = "/cultural-feed"} className="w-full">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  View Cultural Feed
+                </Button>
+                <Button onClick={() => window.location.href = "/discovery"} className="w-full" variant="outline">
+                  <Search className="mr-2 h-4 w-4" />
+                  Discover Places
+                </Button>
+              </div>
+            </Card>
 
             {/* Quick Stats */}
             <Card className="travel-card p-6">

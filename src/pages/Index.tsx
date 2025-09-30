@@ -74,8 +74,8 @@ const Index = () => {
               <a href="#features" className="text-foreground/70 hover:text-primary transition-colors">Features</a>
               <a href="#how-it-works" className="text-foreground/70 hover:text-primary transition-colors">How It Works</a>
               <a href="#testimonials" className="text-foreground/70 hover:text-primary transition-colors">Stories</a>
-              <Button variant="outline" onClick={() => navigate("/dashboard")}>
-                Enter Dashboard
+              <Button variant="outline" onClick={() => navigate("/discovery")}>
+                Discover Places
               </Button>
             </div>
           </div>
