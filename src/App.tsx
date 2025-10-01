@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BeamsBackground } from "@/components/BeamsBackground";
-import { AuthProvider } from "@/contexts/AuthContext";
+
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Missions from "./pages/Missions";
@@ -21,7 +21,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
+    
       <TooltipProvider>
         {/* Beams background temporarily disabled while we fix R3F crash */}
         {/* <BeamsBackground /> */}
@@ -46,7 +46,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </AuthProvider>
+    
   </QueryClientProvider>
 );
 
