@@ -15,11 +15,14 @@ import {
   Camera,
   Leaf,
   Coffee,
-  Mountain
+  Mountain,
+  Calendar
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { AIRecommendations } from "@/components/AIRecommendations";
+import { ItineraryBuilder } from "@/components/ItineraryBuilder";
 
 interface Place {
   id: string;
@@ -56,6 +59,7 @@ const Discovery = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [showHiddenGems, setShowHiddenGems] = useState(true);
+  const [selectedForItinerary, setSelectedForItinerary] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchPlaces();
@@ -141,6 +145,18 @@ const Discovery = () => {
     );
   };
 
+  const toggleItinerarySelection = (placeId: string) => {
+    setSelectedForItinerary(prev => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(placeId)) {
+        newSelection.delete(placeId);
+      } else {
+        newSelection.add(placeId);
+      }
+      return newSelection;
+    });
+  };
+
   const toggleFavorite = async (placeId: string) => {
     if (!user) {
       toast({
@@ -224,7 +240,7 @@ const Discovery = () => {
           >
             <Badge className="mb-4 bg-white/20 text-white border-white/30">
               <Gem className="w-4 h-4 mr-2" />
-              Discover Hidden Gems
+              Discover Hidden Gems • AI-Powered
             </Badge>
             <h1 className="heading-display text-4xl md:text-6xl mb-6">
               Offbeat Destination
@@ -295,6 +311,18 @@ const Discovery = () => {
           </p>
         </div>
 
+        {/* AI Recommendations */}
+        <div className="mb-8">
+          <AIRecommendations preferences={{ moods: selectedMoods }} />
+        </div>
+
+        {/* Itinerary Builder */}
+        {selectedForItinerary.size > 0 && (
+          <div className="mb-8">
+            <ItineraryBuilder selectedPlaceIds={Array.from(selectedForItinerary)} />
+          </div>
+        )}
+
         {/* Places Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPlaces.map((place, index) => (
@@ -325,21 +353,37 @@ const Discovery = () => {
                     )}
 
                     {/* Favorite Button */}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-3 right-3 bg-white/20 hover:bg-white/40 text-white"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(place.id);
-                      }}
-                    >
-                      <Heart
-                        className={`w-4 h-4 ${
-                          favorites.has(place.id) ? 'fill-red-500 text-red-500' : ''
+                    <div className="absolute top-3 right-3 flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className={`bg-white/20 hover:bg-white/40 ${
+                          selectedForItinerary.has(place.id) ? 'bg-primary text-white' : 'text-white'
                         }`}
-                      />
-                    </Button>
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleItinerarySelection(place.id);
+                        }}
+                        title="Add to itinerary"
+                      >
+                        <Calendar className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="bg-white/20 hover:bg-white/40 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(place.id);
+                        }}
+                      >
+                        <Heart
+                          className={`w-4 h-4 ${
+                            favorites.has(place.id) ? 'fill-red-500 text-red-500' : ''
+                          }`}
+                        />
+                      </Button>
+                    </div>
 
                     {/* Location Info */}
                     <div className="absolute bottom-3 left-3 text-white">

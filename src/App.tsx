@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { BeamsBackground } from "@/components/BeamsBackground";
 
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Missions from "./pages/Missions";
 import CulturalFeed from "./pages/CulturalFeed";
@@ -31,19 +32,20 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/missions" element={<Missions />} />
-          <Route path="/cultural-feed" element={<CulturalFeed />} />
-          <Route path="/cultural-lessons" element={<CulturalLessons />} />
-          <Route path="/ar-scan" element={<ARScan />} />
-          <Route path="/discovery" element={<Discovery />} />
-          <Route path="/places/:id" element={<PlaceDetail />} />
-          <Route path="/favorites" element={<Favorites />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/missions" element={<Missions />} />
+        <Route path="/cultural-feed" element={<CulturalFeed />} />
+        <Route path="/cultural-lessons" element={<CulturalLessons />} />
+        <Route path="/ar-scan" element={<ARScan />} />
+        <Route path="/discovery" element={<Discovery />} />
+        <Route path="/places/:id" element={<PlaceDetail />} />
+        <Route path="/favorites" element={<Favorites />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
         </BrowserRouter>
       </TooltipProvider>
     

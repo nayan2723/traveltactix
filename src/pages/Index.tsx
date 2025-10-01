@@ -77,6 +77,9 @@ const Index = () => {
               <Button variant="outline" onClick={() => navigate("/discovery")}>
                 Discover Places
               </Button>
+              <Button onClick={() => navigate("/auth")}>
+                Sign In
+              </Button>
             </div>
           </div>
         </div>

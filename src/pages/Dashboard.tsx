@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { CulturalProgress } from "@/components/CulturalProgress";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 import { 
   Trophy, 
   Target, 
@@ -22,7 +25,8 @@ import {
   Languages,
   Camera,
   Search,
-  BookOpen
+  BookOpen,
+  LogOut
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,18 +34,26 @@ import compassIcon from "@/assets/compass-icon.png";
 import treasureBadges from "@/assets/treasure-badges.png";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const { profile } = useProfile();
   const { toast } = useToast();
   const [missions, setMissions] = useState<any[]>([]);
   const [userMissions, setUserMissions] = useState<any[]>([]);
   const [userBadges, setUserBadges] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Mock user data
-  const mockProfile = {
-    full_name: "Adventure Explorer",
-    total_xp: 2450,
-    level: 7,
+  // Use profile data or fallback to mock
+  const displayProfile = profile || {
+    full_name: user?.email?.split('@')[0] || "Adventure Explorer",
+    total_xp: 0,
+    level: 1,
     avatar_url: null
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
   };
 
   useEffect(() => {
@@ -103,8 +115,8 @@ const Dashboard = () => {
     );
   }
 
-  const level = mockProfile.level;
-  const currentXP = mockProfile.total_xp;
+  const level = displayProfile.level;
+  const currentXP = displayProfile.total_xp;
   const xpForNextLevel = level * 1000; // 1000 XP per level
   const xpProgress = (currentXP % 1000) / 10; // Progress to next level as percentage
 
@@ -128,11 +140,17 @@ const Dashboard = () => {
             <div className="flex items-center space-x-4">
               <div className="hidden md:flex items-center space-x-3 text-sm text-muted-foreground">
                 <div className="text-foreground font-medium">
-                  Welcome back, {mockProfile.full_name}!
+                  Welcome back, {displayProfile.full_name}!
                 </div>
               </div>
-              <Button variant="ghost" size="sm" className="hover:bg-primary/10 mr-16">
-                <Settings className="h-4 w-4" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="hover:bg-destructive/10 text-destructive"
+                onClick={handleSignOut}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
               </Button>
             </div>
           </div>
@@ -384,27 +402,27 @@ const Dashboard = () => {
               <div className="flex items-center space-x-4">
                 <div className="relative">
                   <div className="w-16 h-16 rounded-full bg-gradient-to-r from-travel-primary to-travel-secondary flex items-center justify-center text-white text-xl font-bold">
-                    {mockProfile.full_name[0]}
+                    {displayProfile.full_name[0]}
                   </div>
                   <div className="absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
-                    {mockProfile.level}
+                    {displayProfile.level}
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-travel-dark">{mockProfile.full_name}</h3>
-                  <p className="text-travel-muted">Level {mockProfile.level} Adventurer</p>
+                  <h3 className="font-semibold text-travel-dark">{displayProfile.full_name}</h3>
+                  <p className="text-travel-muted">Level {displayProfile.level} Adventurer</p>
                 </div>
               </div>
 
               <div className="mt-4 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-travel-muted">Progress to Level {mockProfile.level + 1}</span>
-                  <span className="text-travel-dark font-medium">{mockProfile.total_xp} XP</span>
+                  <span className="text-travel-muted">Progress to Level {displayProfile.level + 1}</span>
+                  <span className="text-travel-dark font-medium">{displayProfile.total_xp} XP</span>
                 </div>
                 <div className="xp-bar w-full bg-travel-light rounded-full h-3">
                   <div 
                     className="bg-gradient-to-r from-travel-primary to-travel-secondary h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((mockProfile.total_xp % 1000) / 10, 100)}%` }}
+                    style={{ width: `${Math.min((displayProfile.total_xp % 1000) / 10, 100)}%` }}
                   ></div>
                 </div>
               </div>
@@ -511,7 +529,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between bg-primary/5 p-2 rounded">
                   <div className="flex items-center space-x-3">
                     <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">1247</div>
-                    <span className="text-sm font-medium">{mockProfile.full_name}</span>
+                    <span className="text-sm font-medium">{displayProfile.full_name}</span>
                   </div>
                   <span className="text-sm text-primary font-medium">{currentXP} XP</span>
                 </div>

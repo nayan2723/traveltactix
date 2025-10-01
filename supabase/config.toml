@@ -1,1 +1,7 @@
 project_id = "buoablhkbfctwmjzeisk"
+
+[functions.ai-recommendations]
+verify_jwt = false
+
+[functions.ai-itinerary]
+verify_jwt = false
