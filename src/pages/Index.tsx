@@ -270,10 +270,17 @@ const Index = () => {
                 <div>
                   <div className="text-6xl font-bold text-white/10 mb-4">01</div>
                   <h3 className="text-4xl font-bold mb-6">Sign up & discover</h3>
-                  <p className="text-white/60 text-lg leading-relaxed">
+                  <p className="text-white/60 text-lg leading-relaxed mb-6">
                     Create your account and immediately start discovering hidden gems across India 
                     with our AI-powered recommendation engine tailored to your travel style.
                   </p>
+                  <Button 
+                    size="lg"
+                    className="bg-white text-black hover:bg-white/90"
+                    onClick={() => navigate("/discovery")}
+                  >
+                    Explore Destinations
+                  </Button>
                 </div>
                 <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-3xl p-12 h-64 flex items-center justify-center">
                   <Compass className="h-24 w-24 text-orange-400" />
@@ -289,10 +296,17 @@ const Index = () => {
                 <div className="order-1 md:order-2">
                   <div className="text-6xl font-bold text-white/10 mb-4">02</div>
                   <h3 className="text-4xl font-bold mb-6">Complete missions</h3>
-                  <p className="text-white/60 text-lg leading-relaxed">
+                  <p className="text-white/60 text-lg leading-relaxed mb-6">
                     Take on cultural challenges, learn local customs, and earn XP points as you explore. 
                     Every destination becomes an interactive adventure.
                   </p>
+                  <Button 
+                    size="lg"
+                    className="bg-white text-black hover:bg-white/90"
+                    onClick={() => navigate("/missions")}
+                  >
+                    View Missions
+                  </Button>
                 </div>
               </div>
             </AnimatedSection>
@@ -301,14 +315,21 @@ const Index = () => {
               <div className="grid md:grid-cols-2 gap-16 items-center">
                 <div>
                   <div className="text-6xl font-bold text-white/10 mb-4">03</div>
-                  <h3 className="text-4xl font-bold mb-6">Build smart itineraries</h3>
-                  <p className="text-white/60 text-lg leading-relaxed">
-                    Let AI craft the perfect trip plans combining offbeat locations with must-see attractions. 
-                    Your personalized journey, perfectly balanced.
+                  <h3 className="text-4xl font-bold mb-6">Learn culture</h3>
+                  <p className="text-white/60 text-lg leading-relaxed mb-6">
+                    Master local customs, traditions, and language through interactive cultural lessons
+                    from all 29 states of India.
                   </p>
+                  <Button 
+                    size="lg"
+                    className="bg-white text-black hover:bg-white/90"
+                    onClick={() => navigate("/cultural-lessons")}
+                  >
+                    Start Learning
+                  </Button>
                 </div>
                 <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-3xl p-12 h-64 flex items-center justify-center">
-                  <Map className="h-24 w-24 text-cyan-400" />
+                  <BookOpen className="h-24 w-24 text-cyan-400" />
                 </div>
               </div>
             </AnimatedSection>
@@ -316,15 +337,22 @@ const Index = () => {
             <AnimatedSection>
               <div className="grid md:grid-cols-2 gap-16 items-center">
                 <div className="order-2 md:order-1 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-3xl p-12 h-64 flex items-center justify-center">
-                  <Award className="h-24 w-24 text-green-400" />
+                  <Camera className="h-24 w-24 text-green-400" />
                 </div>
                 <div className="order-1 md:order-2">
                   <div className="text-6xl font-bold text-white/10 mb-4">04</div>
-                  <h3 className="text-4xl font-bold mb-6">Level up & achieve</h3>
-                  <p className="text-white/60 text-lg leading-relaxed">
-                    Climb levels, unlock exclusive badges, and become a master cultural explorer. 
-                    Every journey makes you legendary.
+                  <h3 className="text-4xl font-bold mb-6">Scan landmarks</h3>
+                  <p className="text-white/60 text-lg leading-relaxed mb-6">
+                    Use AR to discover fascinating stories at India's most iconic monuments and
+                    unlock cultural insights at famous landmarks.
                   </p>
+                  <Button 
+                    size="lg"
+                    className="bg-white text-black hover:bg-white/90"
+                    onClick={() => navigate("/ar-scan")}
+                  >
+                    Try AR Scanner
+                  </Button>
                 </div>
               </div>
             </AnimatedSection>

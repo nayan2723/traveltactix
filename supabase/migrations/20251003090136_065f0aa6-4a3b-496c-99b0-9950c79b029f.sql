@@ -1,0 +1,48 @@
+-- Add cultural lessons for major Indian states
+INSERT INTO cultural_lessons (title, description, city, country, language, lesson_data, duration_minutes, cultural_xp, difficulty_level) VALUES
+-- North India
+('Hindi Greetings & Etiquette', 'Master essential Hindi phrases and social customs', 'Delhi', 'India', 'Hindi', '{"questions": [{"type": "multiple_choice", "question": "How do you greet someone respectfully in Hindi?", "options": ["Namaste", "Hello", "Hi", "Hey"], "correct": 0}, {"type": "pronunciation", "text": "नमस्ते", "romanji": "Namaste", "meaning": "Respectful greeting", "audio": null}, {"type": "scenario", "situation": "You are visiting an elder''s home", "response": "Touch their feet for blessing and say Namaste"}]}', 15, 25, 'beginner'),
+('Punjabi Culture & Bhangra', 'Learn Punjabi language basics and cultural dance', 'Amritsar', 'India', 'Punjabi', '{"questions": [{"type": "multiple_choice", "question": "What is the traditional Punjabi greeting?", "options": ["Sat Sri Akal", "Namaste", "Salaam", "Hello"], "correct": 0}, {"type": "pronunciation", "text": "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ", "romanji": "Sat Sri Akal", "meaning": "God is Truth", "audio": null}]}', 20, 30, 'beginner'),
+
+-- South India
+('Tamil Temple Traditions', 'Understanding Tamil temple customs and prayers', 'Madurai', 'India', 'Tamil', '{"questions": [{"type": "multiple_choice", "question": "What should you remove before entering a temple?", "options": ["Shoes and leather items", "Hat only", "Nothing", "Watch"], "correct": 0}, {"type": "scenario", "situation": "You receive prasadam from temple", "response": "Accept with right hand and consume it as blessing"}]}', 15, 25, 'beginner'),
+('Keralan Ayurveda Basics', 'Introduction to Kerala''s traditional medicine', 'Kochi', 'India', 'Malayalam', '{"questions": [{"type": "multiple_choice", "question": "What are the three doshas in Ayurveda?", "options": ["Vata, Pitta, Kapha", "Wind, Fire, Water", "Body, Mind, Spirit", "Hot, Cold, Neutral"], "correct": 0}, {"type": "scenario", "situation": "Morning Ayurvedic routine", "response": "Wake before sunrise, drink warm water, practice yoga"}]}', 20, 30, 'intermediate'),
+
+-- East India
+('Bengali Cultural Etiquette', 'Learn Bengali customs and Durga Puja traditions', 'Kolkata', 'India', 'Bengali', '{"questions": [{"type": "multiple_choice", "question": "How do you say thank you in Bengali?", "options": ["Dhonnobad", "Thank you", "Shukriya", "Nandri"], "correct": 0}, {"type": "pronunciation", "text": "ধন্যবাদ", "romanji": "Dhonnobad", "meaning": "Thank you", "audio": null}]}', 15, 25, 'beginner'),
+('Assamese Bihu Festival', 'Understanding Assam''s harvest festival traditions', 'Guwahati', 'India', 'Assamese', '{"questions": [{"type": "multiple_choice", "question": "How many Bihu festivals are celebrated annually?", "options": ["Three", "One", "Two", "Four"], "correct": 0}, {"type": "scenario", "situation": "During Bihu celebration", "response": "Dance, exchange gamochas, prepare pitha"}]}', 20, 30, 'intermediate'),
+
+-- West India
+('Gujarati Food & Festivals', 'Explore Gujarati vegetarian cuisine and Navratri', 'Ahmedabad', 'India', 'Gujarati', '{"questions": [{"type": "multiple_choice", "question": "What is Gujarat''s signature dish?", "options": ["Dhokla", "Dosa", "Biryani", "Tandoori"], "correct": 0}, {"type": "scenario", "situation": "Invited to Gujarati home for dinner", "response": "Eat with right hand, try all dishes, finish your plate"}]}', 20, 30, 'beginner'),
+('Marathi Traditions', 'Learn Marathi language and Ganesh Chaturthi customs', 'Mumbai', 'India', 'Marathi', '{"questions": [{"type": "multiple_choice", "question": "Duration of Ganesh Chaturthi festival?", "options": ["10 days", "5 days", "1 day", "15 days"], "correct": 0}, {"type": "pronunciation", "text": "Ganpati Bappa Morya", "romanji": "Ganpati Bappa Morya", "meaning": "Hail Lord Ganesha", "audio": null}]}', 15, 25, 'beginner'),
+
+-- Northeast India
+('Naga Tribal Culture', 'Understanding Nagaland''s diverse tribal heritage', 'Kohima', 'India', 'English', '{"questions": [{"type": "multiple_choice", "question": "What is Nagaland''s most famous festival?", "options": ["Hornbill Festival", "Bihu", "Pongal", "Onam"], "correct": 0}, {"type": "scenario", "situation": "Visiting a Naga village", "response": "Respect tribal customs, ask before photography, try local rice beer"}]}', 20, 30, 'intermediate'),
+('Manipuri Dance & Culture', 'Learn Manipuri classical dance and customs', 'Imphal', 'India', 'Manipuri', '{"questions": [{"type": "multiple_choice", "question": "Manipuri dance is associated with which deity?", "options": ["Lord Krishna", "Lord Shiva", "Goddess Durga", "Lord Ganesha"], "correct": 0}, {"type": "scenario", "situation": "Watching Manipuri dance performance", "response": "Observe graceful movements, appreciate traditional costume"}]}', 20, 30, 'intermediate'),
+
+-- Rajasthan
+('Rajasthani Hospitality', 'Experience desert state''s royal traditions', 'Jaipur', 'India', 'Hindi/Rajasthani', '{"questions": [{"type": "multiple_choice", "question": "Traditional Rajasthani greeting?", "options": ["Khamma Ghani", "Namaste", "Salaam", "Jai Hind"], "correct": 0}, {"type": "scenario", "situation": "Invited to Rajasthani home", "response": "Accept food graciously, sit on floor if offered, remove shoes"}]}', 15, 25, 'beginner');
+
+-- Add cultural content (daily feed) for various states
+INSERT INTO cultural_content (title, content, content_type, difficulty_level, city, country, language, cultural_xp, metadata) VALUES
+-- Greetings from different states
+('Namaste - Hindi Greeting', 'Namaste is derived from Sanskrit meaning "I bow to you". Join palms at heart level and bow slightly.', 'greeting', 'beginner', 'Delhi', 'India', 'Hindi', 10, '{"pronunciation": "Nah-mas-tay", "when_to_use": "Any time of day, formal and informal"}'),
+('Vanakkam - Tamil Greeting', 'Traditional Tamil greeting showing respect. Join palms and bow your head slightly.', 'greeting', 'beginner', 'Chennai', 'India', 'Tamil', 10, '{"pronunciation": "Vah-nah-kum", "when_to_use": "Formal situations, showing respect"}'),
+('Nomoshkar - Bengali Greeting', 'Bengali way of greeting with joined palms, showing respect and warmth.', 'greeting', 'beginner', 'Kolkata', 'India', 'Bengali', 10, '{"pronunciation": "Noh-mosh-kar", "when_to_use": "Respectful greeting for elders"}'),
+('Sat Sri Akal - Punjabi Greeting', 'Sikh greeting meaning "God is the ultimate truth". Used throughout the day.', 'greeting', 'beginner', 'Amritsar', 'India', 'Punjabi', 10, '{"pronunciation": "Sat Shree Ah-kaal", "when_to_use": "Common Punjabi/Sikh greeting"}'),
+('Kemcho - Gujarati Greeting', 'Informal Gujarati greeting meaning "How are you?". Friendly and warm.', 'greeting', 'beginner', 'Ahmedabad', 'India', 'Gujarati', 10, '{"pronunciation": "Kem-cho", "when_to_use": "Informal, among friends"}'),
+
+-- Cultural tips
+('Temple Etiquette in India', 'Remove shoes before entering. Dress modestly. No leather items inside. Wash hands and feet at entrance. Photography may be restricted.', 'tip', 'beginner', 'Varanasi', 'India', 'Hindi', 15, '{"dos": ["Remove shoes", "Dress modestly", "Respect silence"], "donts": ["No leather", "No photography without permission"]}'),
+('Indian Dining Customs', 'Eat with right hand only. Wash hands before meals. Try all dishes offered. Leaving food on plate may be considered wasteful. Compliment the cook.', 'tip', 'beginner', 'Mumbai', 'India', 'Hindi', 15, '{"table_manners": ["Right hand only", "No wastage"], "hospitality": "Always offer food to guests"}'),
+('Respect for Elders', 'Touch feet of elders for blessings. Use respectful pronouns. Let elders speak first. Offer seat to elders. Seek their advice and blessings.', 'tip', 'beginner', 'Jaipur', 'India', 'Hindi', 15, '{"gestures": ["Touch feet", "Respectful address"], "values": "Elders are highly respected"}'),
+
+-- Trivia
+('India has 22 Official Languages', 'Besides Hindi and English, India recognizes 22 scheduled languages including Tamil, Telugu, Bengali, Marathi, Gujarati, and many more.', 'trivia', 'beginner', 'Delhi', 'India', 'English', 10, '{"fact_type": "Language diversity", "states_affected": "All states"}'),
+('Indian Railways Network', 'Indian Railways is one of the world''s largest railway networks with over 67,000 km of tracks and carries 23 million passengers daily.', 'trivia', 'intermediate', 'Mumbai', 'India', 'English', 10, '{"fact_type": "Transportation", "significance": "Connects entire nation"}'),
+('Yoga Originated in India', 'Yoga is an ancient Indian practice dating back over 5,000 years. June 21 is celebrated as International Yoga Day worldwide.', 'trivia', 'beginner', 'Rishikesh', 'India', 'English', 10, '{"fact_type": "Ancient practice", "global_recognition": "UN declared International Yoga Day"}'),
+
+-- AR facts for famous monuments
+('Taj Mahal Changes Color', 'The Taj Mahal appears to change color throughout the day - pinkish in morning, milky white in evening, and golden under moonlight.', 'ar_fact', 'beginner', 'Agra', 'India', 'English', 15, '{"monument": "Taj Mahal", "category": "architecture"}'),
+('Hampi''s Vijayanagara Empire', 'Hampi was the capital of the Vijayanagara Empire, one of the greatest Hindu empires. At its peak, it was richer than Rome.', 'ar_fact', 'intermediate', 'Hampi', 'India', 'English', 15, '{"monument": "Hampi ruins", "category": "history"}'),
+('Golden Temple''s Gold', 'The Golden Temple''s dome is covered with 750 kg of pure gold. The temple kitchen serves free meals to over 100,000 people daily.', 'ar_fact', 'beginner', 'Amritsar', 'India', 'English', 15, '{"monument": "Golden Temple", "category": "tradition"}')
