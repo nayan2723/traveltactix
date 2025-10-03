@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
+import { MainNav } from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GlowingEffect } from "@/components/ui/glowing-effect";

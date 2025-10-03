@@ -1,54 +1,66 @@
 import { useState } from 'react';
 import { MissionsList } from '@/components/MissionsList';
+import { MainNav } from '@/components/MainNav';
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Compass, Target, Star } from 'lucide-react';
 
 export default function Missions() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black text-white">
+      <MainNav />
+      
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-adventure-gradient">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent"></div>
-        <div className="relative z-10 container mx-auto px-4 py-16">
-          <div className="text-center space-y-6">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Compass className="h-8 w-8 text-primary animate-pulse-glow" />
-              <h1 className="text-4xl md:text-6xl font-serif font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Quest Missions
-              </h1>
-            </div>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Embark on location-based adventures tailored to your destination. 
-              Discover hidden gems, complete challenges, and earn XP while exploring the world!
-            </p>
-            
-            {/* Quick Stats */}
-            <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
-              <div className="flex items-center gap-2 text-sm">
-                <Target className="h-4 w-4 text-accent" />
-                <span>50+ Missions Available</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-secondary" />
-                <span>Multiple Cities</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Star className="h-4 w-4 text-travel-gold" />
-                <span>Earn XP & Badges</span>
-              </div>
-            </div>
-          </div>
+      <section className="relative min-h-[60vh] flex items-center justify-center px-6 pt-20">
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div 
+            className="absolute top-1/3 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </div>
-      </div>
+
+        <div className="container mx-auto max-w-4xl relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="text-center"
+          >
+            <motion.h1 
+              className="text-5xl md:text-7xl font-bold mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.2 }}
+            >
+              Quest{" "}
+              <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent">
+                Missions
+              </span>
+            </motion.h1>
+
+            <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+              Complete cultural challenges and earn rewards while exploring destinations
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-12 relative z-10">
         <MissionsList />
       </div>
 
       {/* Features Section */}
-      <div className="bg-muted/20 py-16">
+      <div className="bg-white/5 py-16 relative z-10">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold text-center mb-8">How It Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -1,0 +1,209 @@
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  Compass,
+  Search,
+  Trophy,
+  BookOpen,
+  Globe,
+  Camera,
+  Heart,
+  LayoutDashboard,
+  Menu,
+  X,
+  LogOut,
+  User
+} from "lucide-react";
+
+export const MainNav = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, signOut } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const navItems = [
+    { name: "Discovery", path: "/discovery", icon: Search },
+    { name: "Missions", path: "/missions", icon: Trophy },
+    { name: "Cultural Lessons", path: "/cultural-lessons", icon: BookOpen },
+    { name: "Cultural Feed", path: "/cultural-feed", icon: Globe },
+    { name: "AR Scan", path: "/ar-scan", icon: Camera },
+    { name: "Favorites", path: "/favorites", icon: Heart },
+  ];
+
+  const isActive = (path: string) => location.pathname === path;
+
+  return (
+    <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
+      <div className="container mx-auto px-6 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center space-x-3 cursor-pointer group"
+            onClick={() => navigate("/")}
+          >
+            <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Compass className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-xl font-bold text-white">Quest Voyage</span>
+          </motion.div>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-6">
+            {navItems.map((item) => (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                className={`text-sm transition-colors flex items-center space-x-2 ${
+                  isActive(item.path)
+                    ? "text-white"
+                    : "text-white/60 hover:text-white"
+                }`}
+              >
+                <item.icon className="h-4 w-4" />
+                <span>{item.name}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* User Actions */}
+          <div className="hidden lg:flex items-center space-x-4">
+            {user ? (
+              <>
+                <Button 
+                  variant="ghost" 
+                  className="text-white/80 hover:text-white hover:bg-white/5"
+                  onClick={() => navigate("/dashboard")}
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="text-white/80 hover:text-white hover:bg-white/5"
+                  onClick={signOut}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="ghost" 
+                  className="text-white/80 hover:text-white hover:bg-white/5"
+                  onClick={() => navigate("/auth")}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Log in
+                </Button>
+                <Button 
+                  className="bg-white text-black hover:bg-white/90"
+                  onClick={() => navigate("/auth")}
+                >
+                  Get Started
+                </Button>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button 
+            className="lg:hidden text-white"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden bg-black/95 border-t border-white/5"
+          >
+            <div className="container mx-auto px-6 py-6 space-y-4">
+              {navItems.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => {
+                    navigate(item.path);
+                    setMenuOpen(false);
+                  }}
+                  className={`flex items-center space-x-3 w-full py-3 px-4 rounded-lg transition-colors ${
+                    isActive(item.path)
+                      ? "bg-white/10 text-white"
+                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span>{item.name}</span>
+                </button>
+              ))}
+
+              <div className="border-t border-white/10 pt-4 space-y-3">
+                {user ? (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-white/20 text-white hover:bg-white/5"
+                      onClick={() => {
+                        navigate("/dashboard");
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-white/20 text-white hover:bg-white/5"
+                      onClick={() => {
+                        signOut();
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-white/20 text-white hover:bg-white/5"
+                      onClick={() => {
+                        navigate("/auth");
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Log in
+                    </Button>
+                    <Button 
+                      className="w-full bg-white text-black hover:bg-white/90"
+                      onClick={() => {
+                        navigate("/auth");
+                        setMenuOpen(false);
+                      }}
+                    >
+                      Get Started
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+};

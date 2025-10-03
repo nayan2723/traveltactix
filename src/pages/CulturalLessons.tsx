@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { MainNav } from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -349,22 +350,53 @@ const CulturalLessons = () => {
 
   // Lessons List View
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
-      {/* Header */}
-      <header className="nav-wanderlust border-b sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center">
-            <h1 className="heading-display text-4xl mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Cultural Lessons
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Interactive lessons to master local customs and language
-            </p>
-          </div>
+    <div className="min-h-screen bg-black text-white">
+      <MainNav />
+      
+      {/* Hero Section */}
+      <section className="relative min-h-[60vh] flex items-center justify-center px-6 pt-20">
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div 
+            className="absolute top-1/4 left-1/3 w-96 h-96 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.2, 0.3, 0.2],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </div>
-      </header>
 
-      <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto max-w-4xl relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="text-center"
+          >
+            <motion.h1 
+              className="text-5xl md:text-7xl font-bold mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.2 }}
+            >
+              Cultural{" "}
+              <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+                Lessons
+              </span>
+            </motion.h1>
+
+            <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+              Master local customs, traditions, and language through interactive lessons
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {lessons.map((lesson, index) => {
             const completed = isLessonCompleted(lesson.id);

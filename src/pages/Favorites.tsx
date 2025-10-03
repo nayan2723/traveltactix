@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { MainNav } from "@/components/MainNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -147,28 +148,52 @@ const Favorites = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black text-white">
+      <MainNav />
+      
       {/* Header */}
-      <section className="bg-gradient-to-r from-primary to-secondary text-white py-16">
-        <div className="container mx-auto px-4 text-center">
+      <section className="relative min-h-[50vh] flex items-center justify-center px-6 pt-20">
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div 
+            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-red-500/20 to-pink-500/20 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.2, 0.3, 0.2],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </div>
+
+        <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 1 }}
           >
-            <Heart className="w-16 h-16 mx-auto mb-4" />
-            <h1 className="heading-display text-4xl md:text-6xl mb-6">
-              Your Favorite
-              <span className="text-accent-handwriting block">Destinations</span>
-            </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            <motion.h1 
+              className="text-5xl md:text-7xl font-bold mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.2 }}
+            >
+              Your{" "}
+              <span className="bg-gradient-to-r from-red-500 via-pink-500 to-rose-500 bg-clip-text text-transparent">
+                Favorites
+              </span>
+            </motion.h1>
+
+            <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
               Your personal collection of amazing places you want to explore
             </p>
           </motion.div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-12 relative z-10">
         {favorites.length === 0 ? (
           <div className="text-center py-12">
             <Heart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />

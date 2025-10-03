@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MainNav } from "@/components/MainNav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -121,43 +122,9 @@ const Dashboard = () => {
   const xpProgress = (currentXP % 1000) / 10; // Progress to next level as percentage
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
-      {/* Header */}
-      <header className="nav-wanderlust border-b sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <img src={compassIcon} alt="Quest Voyage" className="w-10 h-10" />
-              <h1 className="heading-display text-2xl text-primary">Quest Voyage</h1>
-              <div className="flex items-center space-x-2">
-                <Badge className="bg-primary/10 text-primary border-primary/20">
-                  <Crown className="h-3 w-3 mr-1" />
-                  Level {level}
-                </Badge>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="hidden md:flex items-center space-x-3 text-sm text-muted-foreground">
-                <div className="text-foreground font-medium">
-                  Welcome back, {displayProfile.full_name}!
-                </div>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="hover:bg-destructive/10 text-destructive"
-                onClick={handleSignOut}
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-black text-white">
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pt-24">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">

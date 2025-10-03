@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { MainNav } from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
@@ -154,22 +155,53 @@ const CulturalFeed = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
-      {/* Header */}
-      <header className="nav-wanderlust border-b sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center">
-            <h1 className="heading-display text-4xl mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Cultural Immersion Feed
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Discover greetings, customs, and cultural insights from around the world
-            </p>
-          </div>
+    <div className="min-h-screen bg-black text-white">
+      <MainNav />
+      
+      {/* Hero Section */}
+      <section className="relative min-h-[60vh] flex items-center justify-center px-6 pt-20">
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div 
+            className="absolute top-1/2 left-1/4 w-96 h-96 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </div>
-      </header>
 
-      <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto max-w-4xl relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="text-center"
+          >
+            <motion.h1 
+              className="text-5xl md:text-7xl font-bold mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.2 }}
+            >
+              Cultural{" "}
+              <span className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 bg-clip-text text-transparent">
+                Feed
+              </span>
+            </motion.h1>
+
+            <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+              Daily insights, greetings, and customs from cultures around the world
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-12 relative z-10">
         {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-8">
           <div className="flex items-center space-x-2">

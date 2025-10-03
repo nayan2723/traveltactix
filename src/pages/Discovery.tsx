@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { MainNav } from "@/components/MainNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -229,31 +230,55 @@ const Discovery = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black text-white">
+      <MainNav />
+      
       {/* Hero Section */}
-      <section className="hero-gradient text-white py-16">
-        <div className="container mx-auto px-4 text-center">
+      <section className="relative min-h-[60vh] flex items-center justify-center px-6 pt-20">
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div 
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </div>
+        
+        <div className="container mx-auto max-w-4xl relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 1 }}
+            className="text-center"
           >
-            <Badge className="mb-4 bg-white/20 text-white border-white/30">
-              <Gem className="w-4 h-4 mr-2" />
-              Discover Hidden Gems • AI-Powered
-            </Badge>
-            <h1 className="heading-display text-4xl md:text-6xl mb-6">
-              Offbeat Destination
-              <span className="text-accent-handwriting text-secondary block">Discovery</span>
-            </h1>
-            <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
-              Uncover secret spots, hidden treasures, and unique experiences off the beaten path
+            <motion.h1 
+              className="text-5xl md:text-7xl font-bold mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.2 }}
+            >
+              Discover{" "}
+              <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">
+                Hidden
+              </span>
+              <br />
+              Gems
+            </motion.h1>
+
+            <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+              AI-powered recommendations for offbeat destinations and unique experiences
             </p>
           </motion.div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-12 relative z-10">
         {/* Search and Filters */}
         <div className="mb-8 space-y-6">
           {/* Search Bar */}

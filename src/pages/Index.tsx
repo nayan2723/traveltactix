@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { MainNav } from "@/components/MainNav";
 import { 
   Compass,
   Sparkles,
@@ -39,7 +40,6 @@ const AnimatedSection = ({ children, className = "" }: { children: React.ReactNo
 
 const Index = () => {
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   
@@ -84,6 +84,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
+      <MainNav />
+      
       {/* Animated Background Blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div 
@@ -128,50 +130,7 @@ const Index = () => {
         />
       </div>
 
-      {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center space-x-3 cursor-pointer group"
-              onClick={() => navigate("/")}
-            >
-              <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Compass className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold">Quest Voyage</span>
-            </motion.div>
-            
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-white/60 hover:text-white transition-colors text-sm">Features</a>
-              <a href="#how-it-works" className="text-white/60 hover:text-white transition-colors text-sm">How It Works</a>
-              <a href="#explore" className="text-white/60 hover:text-white transition-colors text-sm">Explore</a>
-              <Button 
-                variant="ghost" 
-                className="text-white/80 hover:text-white hover:bg-white/5"
-                onClick={() => navigate("/auth")}
-              >
-                Log in
-              </Button>
-              <Button 
-                className="bg-white text-black hover:bg-white/90"
-                onClick={() => navigate("/auth")}
-              >
-                Get Started
-              </Button>
-            </div>
-
-            <button 
-              className="md:hidden"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              {menuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
-        </div>
-      </nav>
+      {/* Navbar - Using MainNav Component */}
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-6">
