@@ -16,7 +16,8 @@ import {
   Award,
   ArrowRight,
   Menu,
-  X
+  X,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -353,6 +354,29 @@ const Index = () => {
                   >
                     Try AR Scanner
                   </Button>
+                </div>
+              </div>
+            </AnimatedSection>
+
+            <AnimatedSection>
+              <div className="grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                  <div className="text-6xl font-bold text-white/10 mb-4">05</div>
+                  <h3 className="text-4xl font-bold mb-6">Monitor crowds</h3>
+                  <p className="text-white/60 text-lg leading-relaxed mb-6">
+                    Real-time crowd monitoring with live updates, best visiting times, and smart 
+                    alternative suggestions when places get too crowded.
+                  </p>
+                  <Button 
+                    size="lg"
+                    className="bg-white text-black hover:bg-white/90"
+                    onClick={() => navigate("/crowd-monitor")}
+                  >
+                    Check Crowd Levels
+                  </Button>
+                </div>
+                <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-3xl p-12 h-64 flex items-center justify-center">
+                  <Users className="h-24 w-24 text-blue-400" />
                 </div>
               </div>
             </AnimatedSection>

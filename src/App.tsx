@@ -16,6 +16,7 @@ import ARScan from "./pages/ARScan";
 import Discovery from "./pages/Discovery";
 import PlaceDetail from "./pages/PlaceDetail";
 import Favorites from "./pages/Favorites";
+import CrowdMonitor from "./pages/CrowdMonitor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
         <Route path="/discovery" element={<Discovery />} />
         <Route path="/places/:id" element={<PlaceDetail />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="/crowd-monitor" element={<CrowdMonitor />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

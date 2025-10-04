@@ -11,6 +11,7 @@ import {
   Globe,
   Camera,
   Heart,
+  Users,
   LayoutDashboard,
   Menu,
   X,
@@ -26,6 +27,7 @@ export const MainNav = () => {
 
   const navItems = [
     { name: "Discovery", path: "/discovery", icon: Search },
+    { name: "Crowd Monitor", path: "/crowd-monitor", icon: Users },
     { name: "Missions", path: "/missions", icon: Trophy },
     { name: "Cultural Lessons", path: "/cultural-lessons", icon: BookOpen },
     { name: "Cultural Feed", path: "/cultural-feed", icon: Globe },
