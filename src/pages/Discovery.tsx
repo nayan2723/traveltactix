@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MainNav } from "@/components/MainNav";
+import { CrowdMap } from "@/components/CrowdMap";
+import { CrowdDashboard } from "@/components/CrowdDashboard";
+import { AlternativeSuggestions } from "@/components/AlternativeSuggestions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,6 +64,8 @@ const Discovery = () => {
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [showHiddenGems, setShowHiddenGems] = useState(true);
   const [selectedForItinerary, setSelectedForItinerary] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<'grid' | 'crowd'>('grid');
+  const [selectedCity, setSelectedCity] = useState<string>('');
 
   useEffect(() => {
     fetchPlaces();
@@ -324,6 +329,22 @@ const Discovery = () => {
               {showHiddenGems ? "Hidden Gems Only" : "Show All"}
             </Button>
           </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex gap-2 justify-center">
+            <Button
+              onClick={() => setViewMode('grid')}
+              variant={viewMode === 'grid' ? 'default' : 'outline'}
+            >
+              Grid View
+            </Button>
+            <Button
+              onClick={() => setViewMode('crowd')}
+              variant={viewMode === 'crowd' ? 'default' : 'outline'}
+            >
+              Crowd Monitor
+            </Button>
+          </div>
         </div>
 
         {/* Results Count */}
@@ -348,8 +369,30 @@ const Discovery = () => {
           </div>
         )}
 
-        {/* Places Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Crowd Monitoring Views */}
+        {viewMode === 'crowd' ? (
+          <div className="space-y-8">
+            <CrowdDashboard />
+            <CrowdMap 
+              places={filteredPlaces.map(p => ({
+                id: p.id,
+                name: p.name,
+                city: p.city,
+                latitude: Number(p.latitude) || 0,
+                longitude: Number(p.longitude) || 0,
+                crowd_status: 'medium',
+                crowd_percentage: 50
+              }))}
+              onPlaceClick={(place) => setSelectedCity(place.city)}
+            />
+            {selectedCity && (
+              <AlternativeSuggestions currentCity={selectedCity} />
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Places Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPlaces.map((place, index) => (
             <motion.div
               key={place.id}
@@ -464,7 +507,9 @@ const Discovery = () => {
               </Card>
             </motion.div>
           ))}
-        </div>
+            </div>
+          </>
+        )}
 
         {/* No Results */}
         {filteredPlaces.length === 0 && (

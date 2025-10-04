@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.ai-itinerary]
 verify_jwt = false
+
+[functions.fetch-crowd-data]
+verify_jwt = false
