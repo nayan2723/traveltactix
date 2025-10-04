@@ -238,16 +238,20 @@ export type Database = {
       }
       places: {
         Row: {
+          best_visit_times: Json | null
           category: string
           city: string
           country: string
           created_at: string
+          crowd_percentage: number | null
+          crowd_status: string | null
           cultural_tips: Json | null
           description: string | null
           estimated_visit_time: number | null
           id: string
           image_urls: string[] | null
           is_hidden_gem: boolean | null
+          last_crowd_update: string | null
           latitude: number | null
           longitude: number | null
           mood_tags: string[] | null
@@ -255,16 +259,20 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          best_visit_times?: Json | null
           category: string
           city: string
           country: string
           created_at?: string
+          crowd_percentage?: number | null
+          crowd_status?: string | null
           cultural_tips?: Json | null
           description?: string | null
           estimated_visit_time?: number | null
           id?: string
           image_urls?: string[] | null
           is_hidden_gem?: boolean | null
+          last_crowd_update?: string | null
           latitude?: number | null
           longitude?: number | null
           mood_tags?: string[] | null
@@ -272,16 +280,20 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          best_visit_times?: Json | null
           category?: string
           city?: string
           country?: string
           created_at?: string
+          crowd_percentage?: number | null
+          crowd_status?: string | null
           cultural_tips?: Json | null
           description?: string | null
           estimated_visit_time?: number | null
           id?: string
           image_urls?: string[] | null
           is_hidden_gem?: boolean | null
+          last_crowd_update?: string | null
           latitude?: number | null
           longitude?: number | null
           mood_tags?: string[] | null
@@ -504,6 +516,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "user_place_visits_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_search_history: {
+        Row: {
+          id: string
+          location_lat: number | null
+          location_lng: number | null
+          place_id: string | null
+          search_query: string | null
+          searched_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          place_id?: string | null
+          search_query?: string | null
+          searched_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          place_id?: string | null
+          search_query?: string | null
+          searched_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_search_history_place_id_fkey"
             columns: ["place_id"]
             isOneToOne: false
             referencedRelation: "places"
