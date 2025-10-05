@@ -33,6 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import compassIcon from "@/assets/compass-icon.png";
 import treasureBadges from "@/assets/treasure-badges.png";
+import { motion } from "framer-motion";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -106,9 +107,9 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center hero-gradient">
-        <div className="text-center text-white">
-          <Compass className="h-16 w-16 mx-auto mb-4 animate-spin" />
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <Compass className="h-16 w-16 mx-auto mb-4 animate-spin text-primary" />
           <div className="heading-display text-3xl mb-2">Loading Your Epic Journey...</div>
           <div className="text-white/80">Preparing your adventure dashboard</div>
         </div>
@@ -123,8 +124,24 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      <MainNav />
+      
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </div>
 
-      <div className="container mx-auto px-4 py-8 pt-24">
+      <div className="container mx-auto px-4 py-8 pt-24 relative z-10">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">

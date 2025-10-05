@@ -195,7 +195,7 @@ const ARScan = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Camera View */}
       <div className="absolute inset-0">
         {cameraPermission === 'granted' ? (

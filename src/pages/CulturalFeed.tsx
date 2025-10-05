@@ -144,11 +144,11 @@ const CulturalFeed = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <Globe className="h-16 w-16 mx-auto mb-4 animate-spin text-primary" />
           <div className="heading-display text-2xl mb-2">Loading Cultural Insights...</div>
-          <div className="text-muted-foreground">Discovering amazing cultural content</div>
+          <div className="text-white/80">Discovering amazing cultural content</div>
         </div>
       </div>
     );

@@ -174,13 +174,13 @@ const PlaceDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="min-h-screen bg-black text-white p-6">
         <div className="container mx-auto max-w-4xl">
           <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-muted rounded w-32"></div>
-            <div className="h-64 bg-muted rounded-xl"></div>
-            <div className="h-8 bg-muted rounded w-3/4"></div>
-            <div className="h-32 bg-muted rounded"></div>
+            <div className="h-8 bg-white/5 rounded w-32"></div>
+            <div className="h-64 bg-white/5 rounded-xl"></div>
+            <div className="h-8 bg-white/5 rounded w-3/4"></div>
+            <div className="h-32 bg-white/5 rounded"></div>
           </div>
         </div>
       </div>
@@ -189,7 +189,7 @@ const PlaceDetail = () => {
 
   if (!place) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Destination not found</h2>
           <Button onClick={() => navigate('/discovery')}>
@@ -203,7 +203,7 @@ const PlaceDetail = () => {
   const culturalTips = place.cultural_tips?.tips || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
         {/* Navigation */}
         <motion.div

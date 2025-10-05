@@ -116,11 +116,11 @@ const Favorites = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
-          <Heart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+          <Heart className="w-16 h-16 mx-auto text-white/60 mb-4" />
           <h2 className="text-2xl font-bold mb-4">Sign in to view favorites</h2>
-          <p className="text-muted-foreground mb-6">
+          <p className="text-white/60 mb-6">
             Create an account to save your favorite destinations
           </p>
           <Button onClick={() => navigate('/auth')}>
@@ -133,12 +133,12 @@ const Favorites = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="min-h-screen bg-black text-white p-6">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-muted rounded-xl h-64"></div>
+                <div className="bg-white/5 rounded-xl h-64"></div>
               </div>
             ))}
           </div>

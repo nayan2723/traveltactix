@@ -220,12 +220,12 @@ const Discovery = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="min-h-screen bg-black text-white p-6">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-muted rounded-xl h-64"></div>
+                <div className="bg-white/5 rounded-xl h-64"></div>
               </div>
             ))}
           </div>

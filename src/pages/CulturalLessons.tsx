@@ -181,11 +181,11 @@ const CulturalLessons = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <BookOpen className="h-16 w-16 mx-auto mb-4 animate-pulse text-primary" />
           <div className="heading-display text-2xl mb-2">Loading Cultural Lessons...</div>
-          <div className="text-muted-foreground">Preparing your learning experience</div>
+          <div className="text-white/80">Preparing your learning experience</div>
         </div>
       </div>
     );
@@ -197,7 +197,7 @@ const CulturalLessons = () => {
     const progress = ((currentQuestion + 1) / selectedLesson.lesson_data.questions.length) * 100;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+      <div className="min-h-screen bg-black text-white">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto">
             {/* Progress Header */}
@@ -318,7 +318,7 @@ const CulturalLessons = () => {
   // Lesson Complete View
   if (lessonComplete && selectedLesson) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-500/10 via-background to-emerald-500/10">
+      <div className="min-h-screen bg-black text-white">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto text-center">
             <motion.div
