@@ -2,240 +2,163 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Quest Voyage Design System - Adventure Travel & Gamification */
+/* TravelTacTix Design System - Inspired by Osmo's Minimal Aesthetic */
 
 @layer base {
   :root {
-    /* Base Colors - Luxurious Travel Theme */
-    --background: 43 47% 98%;
-    --foreground: 159 30% 12%;
+    /* Osmo-Inspired Muted Neutrals - Light Mode */
+    --background: 40 20% 97%;
+    --foreground: 0 0% 10%;
 
-    /* Card System - Premium Travel Aesthetic */
-    --card: 0 0% 100%;
-    --card-foreground: 159 30% 12%;
+    /* Card System - Glassmorphism */
+    --card: 0 0% 99%;
+    --card-foreground: 0 0% 10%;
 
-    /* Popover */
-    --popover: 0 0% 100%;
-    --popover-foreground: 159 30% 12%;
+    --popover: 0 0% 99%;
+    --popover-foreground: 0 0% 10%;
 
-    /* Primary - Deep Emerald Wanderlust */
-    --primary: 159 61% 36%;
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 159 61% 56%;
+    /* Primary - Charcoal & Off-White */
+    --primary: 0 0% 15%;
+    --primary-foreground: 40 20% 97%;
+    --primary-glow: 40 30% 85%;
 
-    /* Secondary - Golden Sunset */
-    --secondary: 35 94% 62%;
-    --secondary-foreground: 159 30% 12%;
-    --secondary-muted: 35 94% 82%;
+    /* Secondary - Warm Beige */
+    --secondary: 35 25% 88%;
+    --secondary-foreground: 0 0% 15%;
+    --secondary-muted: 35 20% 92%;
 
     /* Muted Earth Tones */
-    --muted: 43 47% 95%;
-    --muted-foreground: 159 15% 45%;
+    --muted: 40 15% 93%;
+    --muted-foreground: 0 0% 45%;
 
-    /* Accent - Adventure Purple */
-    --accent: 262 52% 65%;
-    --accent-foreground: 0 0% 98%;
-    --accent-light: 262 52% 85%;
+    /* Accent - Subtle Sage */
+    --accent: 140 20% 75%;
+    --accent-foreground: 0 0% 15%;
+    --accent-light: 140 25% 85%;
 
-    /* Status Colors */
-    --destructive: 0 84.2% 60.2%;
+    /* Status Colors - Muted */
+    --destructive: 0 60% 55%;
     --destructive-foreground: 0 0% 98%;
-    --success: 142 76% 36%;
+    --success: 142 40% 50%;
     --success-foreground: 0 0% 98%;
-    --warning: 35 94% 62%;
-    --warning-foreground: 159 30% 12%;
+    --warning: 35 70% 60%;
+    --warning-foreground: 0 0% 15%;
 
     /* Interactive Elements */
-    --border: 159 30% 88%;
-    --input: 159 30% 92%;
-    --ring: 159 61% 36%;
+    --border: 0 0% 88%;
+    --input: 0 0% 92%;
+    --ring: 0 0% 15%;
 
-    /* Travel Gamification Colors */
-    --xp-bar: 142 76% 36%;
-    --badge-gold: 45 100% 55%;
+    /* Travel Gamification - Muted Tones */
+    --xp-bar: 142 35% 55%;
+    --badge-gold: 45 55% 65%;
     --badge-silver: 0 0% 70%;
-    --badge-bronze: 25 100% 50%;
+    --badge-bronze: 25 45% 60%;
 
-    /* Luxurious Travel Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(159 61% 36%), hsl(35 94% 62%), hsl(262 52% 65%));
-    --gradient-sunset: linear-gradient(180deg, hsl(35 94% 72%), hsl(35 94% 62%), hsl(159 61% 36%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(43 47% 98%), hsl(43 47% 96%));
-    --gradient-adventure: linear-gradient(120deg, hsl(159 61% 36%), hsl(262 52% 65%), hsl(35 94% 62%));
-    --gradient-cultural: linear-gradient(45deg, hsl(262 52% 65%), hsl(159 61% 56%));
-    --gradient-wanderlust: linear-gradient(90deg, hsl(35 94% 72%), hsl(159 61% 56%), hsl(262 52% 75%));
+    /* Osmo-Style Subtle Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 8%) 0%, hsl(0 0% 15%) 50%, hsl(0 0% 12%) 100%);
+    --gradient-sunset: linear-gradient(90deg, hsl(35 25% 85%), hsl(40 30% 88%), hsl(45 35% 90%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 99%) 0%, hsl(40 15% 97%) 100%);
+    --gradient-adventure: linear-gradient(120deg, hsl(40 20% 92%), hsl(140 20% 88%), hsl(35 25% 90%));
+    --gradient-cultural: linear-gradient(45deg, hsl(140 20% 80%), hsl(35 25% 85%));
+    --gradient-wanderlust: linear-gradient(90deg, hsl(35 25% 88%), hsl(140 20% 85%), hsl(40 20% 90%));
 
-    /* Premium Shadows */
-    --shadow-card: 0 4px 6px -1px hsl(159 30% 12% / 0.1), 0 2px 4px -1px hsl(159 30% 12% / 0.06);
-    --shadow-hero: 0 25px 50px -12px hsl(159 30% 12% / 0.15), 0 12px 30px -8px hsl(159 30% 12% / 0.08);
-    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
-    --shadow-luxury: 0 20px 60px -20px hsl(159 61% 36% / 0.25);
+    /* Soft Minimal Shadows */
+    --shadow-card: 0 2px 12px hsl(0 0% 0% / 0.04);
+    --shadow-hero: 0 10px 40px hsl(0 0% 0% / 0.08);
+    --shadow-glow: 0 0 25px hsl(0 0% 0% / 0.06);
+    --shadow-luxury: 0 8px 30px hsl(0 0% 0% / 0.05);
 
-    /* Spacing & Layout */
-    --radius: 0.75rem;
-    --radius-lg: 1rem;
-    --radius-xl: 1.5rem;
+    /* Spacing & Layout - Larger Radius */
+    --radius: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
 
-    /* Premium Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Smooth Animations */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --transition-luxury: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 
-    /* Typography Scaling */
-    --font-display: 'Playfair Display', serif;
+    /* Typography - Elegant Sans-Serif */
+    --font-display: 'Inter', 'Satoshi', sans-serif;
     --font-body: 'Inter', sans-serif;
-    --font-accent: 'Caveat', cursive;
+    --font-accent: 'Inter', sans-serif;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    /* Sidebar */
+    --sidebar-background: 0 0% 99%;
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-primary: 0 0% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 40 15% 95%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 0 0% 15%;
   }
 
   .dark {
-    /* Dark Mode - Adventure Night Theme */
-    --background: 159 30% 8%;
-    --foreground: 43 47% 95%;
+    /* Pure Black Osmo Style - Dark Mode */
+    --background: 0 0% 3%;
+    --foreground: 0 0% 95%;
 
-    --card: 159 25% 12%;
-    --card-foreground: 43 47% 95%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 159 25% 12%;
-    --popover-foreground: 43 47% 95%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 159 61% 56%;
-    --primary-foreground: 159 30% 8%;
-    --primary-glow: 159 61% 76%;
+    --primary: 40 25% 88%;
+    --primary-foreground: 0 0% 5%;
+    --primary-glow: 40 30% 75%;
 
-    --secondary: 35 94% 72%;
-    --secondary-foreground: 159 30% 8%;
-    --secondary-muted: 35 94% 52%;
+    --secondary: 35 15% 18%;
+    --secondary-foreground: 0 0% 95%;
+    --secondary-muted: 35 10% 22%;
 
-    --muted: 159 25% 15%;
-    --muted-foreground: 159 15% 65%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 262 52% 75%;
-    --accent-foreground: 159 30% 8%;
-    --accent-light: 262 52% 85%;
+    --accent: 140 15% 30%;
+    --accent-foreground: 0 0% 95%;
+    --accent-light: 140 20% 40%;
 
-    --destructive: 0 84.2% 70.2%;
-    --destructive-foreground: 159 30% 8%;
-    --success: 142 76% 46%;
-    --success-foreground: 159 30% 8%;
-    --warning: 35 94% 72%;
-    --warning-foreground: 159 30% 8%;
+    --destructive: 0 60% 60%;
+    --destructive-foreground: 0 0% 5%;
+    --success: 142 40% 55%;
+    --success-foreground: 0 0% 5%;
+    --warning: 35 70% 65%;
+    --warning-foreground: 0 0% 5%;
 
-    --border: 159 30% 18%;
-    --input: 159 30% 15%;
-    --ring: 159 61% 56%;
+    --border: 0 0% 15%;
+    --input: 0 0% 12%;
+    --ring: 40 25% 88%;
 
     /* Dark mode gamification */
-    --xp-bar: 142 76% 46%;
-    --badge-gold: 45 100% 65%;
-    --badge-silver: 0 0% 80%;
-    --badge-bronze: 25 100% 60%;
+    --xp-bar: 142 35% 60%;
+    --badge-gold: 45 55% 70%;
+    --badge-silver: 0 0% 75%;
+    --badge-bronze: 25 45% 65%;
 
     /* Dark gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(159 61% 36%), hsl(35 94% 52%));
-    --gradient-sunset: linear-gradient(180deg, hsl(35 94% 52%), hsl(159 61% 36%));
-    --gradient-card: linear-gradient(145deg, hsl(159 25% 12%), hsl(159 25% 15%));
-    --gradient-adventure: linear-gradient(120deg, hsl(159 61% 36%), hsl(262 52% 65%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 2%) 0%, hsl(0 0% 6%) 50%, hsl(0 0% 4%) 100%);
+    --gradient-sunset: linear-gradient(90deg, hsl(35 15% 15%), hsl(40 20% 18%), hsl(45 25% 20%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 6%) 0%, hsl(0 0% 8%) 100%);
+    --gradient-adventure: linear-gradient(120deg, hsl(0 0% 8%), hsl(140 15% 12%), hsl(35 15% 10%));
 
     /* Dark shadows */
-    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -1px hsl(0 0% 0% / 0.2);
-    --shadow-hero: 0 20px 25px -5px hsl(0 0% 0% / 0.3), 0 10px 10px -5px hsl(0 0% 0% / 0.2);
-    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.4);
-  }
-}
+    --shadow-card: 0 2px 15px hsl(0 0% 0% / 0.5);
+    --shadow-hero: 0 10px 50px hsl(0 0% 0% / 0.7);
+    --shadow-glow: 0 0 30px hsl(0 0% 100% / 0.04);
 
-/* Travel Theme - Vibrant and Adventure-focused */
-.travel {
-  /* Core Colors - Vibrant Travel Palette */
-  --background: 20 100% 98%;
-  --foreground: 215 27% 12%;
-  --card: 25 95% 95%;
-  --card-foreground: 215 27% 12%;
-  --popover: 25 95% 95%;
-  --popover-foreground: 215 27% 12%;
-  
-  /* Primary - Sunset Orange */
-  --primary: 25 95% 53%;
-  --primary-foreground: 0 0% 98%;
-  --primary-glow: 25 100% 65%;
-  
-  /* Secondary - Ocean Blue */
-  --secondary: 200 95% 50%;
-  --secondary-foreground: 0 0% 98%;
-  --secondary-muted: 200 80% 95%;
-  
-  /* Accent - Adventure Green */
-  --accent: 142 70% 45%;
-  --accent-foreground: 0 0% 98%;
-  --accent-light: 142 60% 85%;
-  
-  /* Interactive Elements */
-  --muted: 45 40% 92%;
-  --muted-foreground: 215 27% 35%;
-  --border: 45 30% 85%;
-  --input: 45 30% 88%;
-  --ring: 25 95% 53%;
-  
-  /* Status Colors */
-  --destructive: 0 85% 60%;
-  --destructive-foreground: 0 0% 98%;
-  --success: 142 70% 45%;
-  --success-foreground: 0 0% 98%;
-  --warning: 38 92% 50%;
-  --warning-foreground: 0 0% 98%;
-  
-  /* Gamification Elements */
-  --xp-bar: 142 70% 45%;
-  --badge-gold: 43 96% 56%;
-  --badge-silver: 0 0% 75%;
-  --badge-bronze: 25 75% 47%;
-  
-  /* Travel Theme Specific Gradients */
-  --gradient-hero: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(200 95% 50%) 50%, hsl(142 70% 45%) 100%);
-  --gradient-sunset: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(38 92% 50%) 100%);
-  --gradient-card: linear-gradient(135deg, hsl(25 95% 95%) 0%, hsl(200 95% 95%) 100%);
-  --gradient-adventure: linear-gradient(135deg, hsl(142 70% 45%) 0%, hsl(200 95% 50%) 100%);
-  --gradient-cultural: linear-gradient(135deg, hsl(270 50% 30%) 0%, hsl(315 100% 45%) 100%);
-  --gradient-wanderlust: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(200 95% 50%) 100%);
-  
-  /* Shadows */
-  --shadow-card: 0 4px 20px hsl(25 95% 53% / 0.15);
-  --shadow-hero: 0 25px 50px -12px hsl(25 95% 53% / 0.25);
-  --shadow-glow: 0 0 30px hsl(25 95% 53% / 0.3);
-  --shadow-luxury: 0 8px 32px hsl(25 95% 53% / 0.12);
-  
-  /* Spacing and Layout */
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  
-  /* Animation Timing */
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  
-  /* Typography Scale */
-  --text-scale-xs: 0.75rem;
-  --text-scale-sm: 0.875rem;
-  --text-scale-base: 1rem;
-  --text-scale-lg: 1.125rem;
-  --text-scale-xl: 1.25rem;
-  --text-scale-2xl: 1.5rem;
-  --text-scale-3xl: 1.875rem;
-  --text-scale-4xl: 2.25rem;
+    /* Sidebar dark */
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 0 0% 95%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 40 25% 88%;
+  }
 }
 
 @layer base {
@@ -244,124 +167,109 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans transition-colors duration-300;
+    @apply bg-background text-foreground font-sans transition-colors duration-500;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 @layer components {
-  /* Quest Voyage Premium Travel Components */
+  /* TravelTacTix Osmo-Inspired Components */
   
-  /* Luxury Typography */
+  /* Huge Bold Typography */
   .heading-display {
     font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    font-size: clamp(3rem, 8vw, 8rem);
+  }
+
+  .heading-large {
+    font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     line-height: 1.1;
+    font-size: clamp(2rem, 5vw, 5rem);
   }
   
-  .text-accent-handwriting {
+  .text-accent-minimal {
     font-family: var(--font-accent);
-    font-weight: 600;
+    font-weight: 500;
+    letter-spacing: 0.02em;
   }
   
-  /* Premium Hero Gradient Background */
+  /* Cinematic Hero with Ambient Background */
   .hero-gradient {
     background: var(--gradient-hero);
     position: relative;
+    overflow: hidden;
   }
   
   .hero-gradient::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 30% 20%, hsl(35 94% 62% / 0.3), transparent 50%),
-                radial-gradient(circle at 70% 80%, hsl(262 52% 65% / 0.2), transparent 50%);
-    animation: pulse-glow 4s ease-in-out infinite;
+    background: radial-gradient(circle at 20% 30%, hsl(40 30% 80% / 0.08), transparent 50%),
+                radial-gradient(circle at 80% 70%, hsl(140 20% 75% / 0.06), transparent 50%);
+    animation: ambient-float 10s ease-in-out infinite;
   }
   
-  /* Luxury Travel Cards */
+  /* Glassmorphism Cards */
   .travel-card {
-    background: var(--gradient-card);
-    backdrop-filter: blur(10px);
-    border: 1px solid hsl(var(--border) / 0.5);
-    box-shadow: var(--shadow-luxury);
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--border) / 0.3);
+    box-shadow: var(--shadow-card);
     border-radius: var(--radius-xl);
     transition: var(--transition-luxury);
     position: relative;
     overflow: hidden;
   }
   
-  .travel-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--gradient-wanderlust);
-    opacity: 0.6;
-  }
-  
   .travel-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-hero), var(--shadow-glow);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-luxury);
+    border-color: hsl(var(--border) / 0.5);
   }
   
-  /* Cultural Mission Cards */
+  /* Minimal Mission Cards */
   .mission-card {
-    background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted) / 0.3));
-    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border) / 0.4);
     border-radius: var(--radius-lg);
-    transition: var(--transition-bounce);
+    transition: var(--transition-smooth);
     cursor: pointer;
     position: relative;
-    overflow: hidden;
-  }
-  
-  .mission-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--gradient-cultural);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
   }
   
   .mission-card:hover {
-    border-color: hsl(var(--primary));
-    box-shadow: var(--shadow-glow);
-    transform: translateY(-4px) scale(1.01);
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: var(--shadow-card);
+    transform: scale(1.01);
   }
   
-  .mission-card:hover::after {
-    transform: scaleX(1);
-  }
-  
-  /* Wanderlust XP Progress Bar */
+  /* Soft XP Progress Bar */
   .xp-bar {
     background: linear-gradient(90deg, 
       hsl(var(--xp-bar)), 
-      hsl(var(--secondary)),
-      hsl(var(--xp-bar))
+      hsl(var(--accent))
     );
-    box-shadow: 0 0 30px hsl(var(--xp-bar) / 0.4), inset 0 1px 0 hsl(0 0% 100% / 0.3);
+    box-shadow: 0 0 20px hsl(var(--xp-bar) / 0.2);
     border-radius: var(--radius);
-    animation: pulse-glow 3s ease-in-out infinite;
+    animation: soft-pulse 3s ease-in-out infinite;
   }
   
-  /* Premium Badge Styles */
+  /* Muted Badge Styles */
   .badge-gold {
     background: linear-gradient(135deg, 
       hsl(var(--badge-gold)), 
-      hsl(45 100% 45%)
+      hsl(45 50% 55%)
     );
-    color: hsl(159 30% 12%);
-    box-shadow: 0 4px 15px hsl(var(--badge-gold) / 0.4);
-    animation: achievement 0.6s ease-in-out;
+    color: hsl(0 0% 10%);
+    box-shadow: 0 2px 10px hsl(var(--badge-gold) / 0.3);
   }
   
   .badge-silver {
@@ -369,161 +277,140 @@
       hsl(var(--badge-silver)), 
       hsl(0 0% 60%)
     );
-    color: hsl(159 30% 12%);
-    box-shadow: 0 4px 15px hsl(var(--badge-silver) / 0.3);
+    color: hsl(0 0% 10%);
+    box-shadow: 0 2px 10px hsl(var(--badge-silver) / 0.2);
   }
   
   .badge-bronze {
     background: linear-gradient(135deg, 
       hsl(var(--badge-bronze)), 
-      hsl(25 100% 40%)
+      hsl(25 40% 50%)
     );
     color: hsl(0 0% 98%);
-    box-shadow: 0 4px 15px hsl(var(--badge-bronze) / 0.4);
+    box-shadow: 0 2px 10px hsl(var(--badge-bronze) / 0.3);
   }
   
-  /* Adventure Action Buttons */
+  /* Rounded Ghost Buttons */
   .btn-adventure {
-    background: var(--gradient-adventure);
-    color: hsl(var(--primary-foreground));
-    border: none;
-    border-radius: var(--radius-lg);
-    transition: var(--transition-bounce);
-    position: relative;
-    overflow: hidden;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  
-  .btn-adventure::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.2), transparent);
-    transition: left 0.5s;
+    background: transparent;
+    color: hsl(var(--foreground));
+    border: 1.5px solid hsl(var(--border));
+    border-radius: 2rem;
+    padding: 0.875rem 2rem;
+    transition: var(--transition-smooth);
+    font-weight: 500;
+    letter-spacing: 0.01em;
   }
   
   .btn-adventure:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-glow), 0 10px 25px hsl(var(--primary) / 0.3);
+    background: hsl(var(--foreground));
+    color: hsl(var(--background));
+    border-color: hsl(var(--foreground));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+  }
+
+  .btn-primary {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border: none;
+    border-radius: 2rem;
+    padding: 0.875rem 2rem;
+    transition: var(--transition-smooth);
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    background: hsl(var(--primary) / 0.9);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
   }
   
-  .btn-adventure:hover::before {
-    left: 100%;
-  }
-  
-  .btn-adventure:active {
-    transform: translateY(-1px);
-  }
-  
-  /* Floating Achievement Glow */
-  .achievement-glow {
-    position: relative;
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  .achievement-glow::after {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    background: var(--gradient-adventure);
-    border-radius: inherit;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    filter: blur(8px);
-  }
-  
-  .achievement-glow:hover::after {
-    opacity: 0.6;
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-  
-  /* Travel Stats Cards */
+  /* Stats Cards with Asymmetric Layout */
   .stats-card {
     background: var(--gradient-card);
     border-radius: var(--radius-xl);
     transition: var(--transition-luxury);
     position: relative;
     overflow: hidden;
-  }
-  
-  .stats-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--gradient-wanderlust);
+    border: 1px solid hsl(var(--border) / 0.3);
   }
   
   .stats-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-luxury);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
   }
   
-  /* Wanderlust Navigation */
+  /* Transparent Sticky Nav */
   .nav-wanderlust {
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: hsl(var(--background) / 0.7);
+    border-bottom: 1px solid hsl(var(--border) / 0.3);
+    transition: var(--transition-smooth);
+  }
+
+  .nav-wanderlust.scrolled {
     background: hsl(var(--background) / 0.95);
-    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    border-bottom-color: hsl(var(--border) / 0.5);
+    box-shadow: var(--shadow-card);
   }
   
-  /* Floating Elements Animation */
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+  /* Ambient Float Animation */
+  @keyframes ambient-float {
+    0%, 100% { 
+      transform: translate(0, 0) scale(1);
+      opacity: 1;
+    }
+    33% { 
+      transform: translate(30px, -30px) scale(1.1);
+      opacity: 0.8;
+    }
+    66% { 
+      transform: translate(-30px, 30px) scale(0.9);
+      opacity: 0.9;
+    }
   }
   
-  /* Pulse Glow Animation */
-  @keyframes pulse-glow {
+  /* Soft Pulse */
+  @keyframes soft-pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+    50% { opacity: 0.8; }
   }
   
-  /* Shimmer Effect for Premium Elements */
-  .shimmer {
-    position: relative;
-    overflow: hidden;
+  /* Scroll-triggered Fade In */
+  .fade-in-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
   }
-  
-  .shimmer::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.15), transparent);
-    animation: shimmer 2s infinite;
+
+  .fade-in-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  @keyframes shimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
+
+  /* Asymmetric Grid Layouts */
+  .grid-asymmetric {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
   }
-  
-  /* Cultural Immersion Elements */
-  .cultural-tip {
-    background: var(--gradient-cultural);
-    color: hsl(var(--accent-foreground));
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
+
+  /* Wide Spacing Utility */
+  .container-wide {
+    max-width: 90rem;
+    margin: 0 auto;
+    padding: 0 2rem;
   }
-  
-  .cultural-tip::before {
-    content: '✨';
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 1.5rem;
-    animation: float 2s ease-in-out infinite;
+
+  .section-spacing {
+    padding: 6rem 0;
+  }
+
+  @media (min-width: 768px) {
+    .section-spacing {
+      padding: 10rem 0;
+    }
   }
 }

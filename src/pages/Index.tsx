@@ -133,58 +133,58 @@ const Index = () => {
 
       {/* Navbar - Using MainNav Component */}
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-6">
-        <div className="container mx-auto max-w-6xl relative z-10">
+      {/* Hero Section - Osmo Style */}
+      <section className="relative min-h-screen flex items-center justify-center px-6 py-20">
+        <div className="container-wide relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="text-center"
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-7xl"
           >
             <motion.h1 
-              className="text-6xl md:text-8xl lg:text-9xl font-bold leading-none mb-8"
-              initial={{ opacity: 0, y: 20 }}
+              className="heading-display text-white mb-12 max-w-6xl"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2 }}
+              transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             >
-              Start{" "}
-              <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">
-                exploring
-              </span>
-              {" "}destinations
+              Start exploring
               <br />
-              people{" "}
-              <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">
-                remember.
+              destinations
+              <br />
+              <span className="text-white/40">
+                people remember.
               </span>
             </motion.h1>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12"
+              transition={{ duration: 1, delay: 0.5 }}
+              className="flex flex-wrap gap-4 items-center mt-16"
             >
               <Button 
                 size="lg"
-                className="bg-white text-black hover:bg-white/90 px-8 text-base"
+                className="btn-primary rounded-full text-base"
                 onClick={() => navigate("/auth")}
               >
-                Become an explorer
+                Start Exploring
               </Button>
               <Button 
                 size="lg"
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/5 px-8 text-base"
-                onClick={() => navigate("/discovery")}
+                variant="ghost"
+                className="btn-adventure rounded-full text-base text-white border-white/30 hover:bg-white hover:text-black"
+                onClick={() => {
+                  const featuresSection = document.getElementById('features');
+                  featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
-                <div className="flex items-center">
-                  <div className="flex -space-x-2 mr-2">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-red-400" />
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-400" />
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-1">
+                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-neutral-300 to-neutral-400 border border-white/20" />
+                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-neutral-400 to-neutral-500 border border-white/20" />
                   </div>
-                  About us
+                  <span>About us</span>
                 </div>
               </Button>
             </motion.div>
@@ -192,20 +192,20 @@ const Index = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.6 }}
-              className="mt-24 max-w-2xl mx-auto text-white/60 text-lg leading-relaxed"
+              transition={{ duration: 1, delay: 0.7 }}
+              className="mt-32 max-w-2xl text-white/50 text-base leading-relaxed"
             >
-              Quest Voyage came from constantly exploring hidden gems across India, 
-              wondering, "How did I discover that place?" It is basically your 
-              personal travel companion, packed with AI recommendations, cultural missions, 
-              gamification and authentic experiences—and it will keep growing.
+              TravelTacTix came from constantly exploring hidden gems wondering, 
+              "How do I find truly authentic experiences?" It is your personal 
+              travel companion, packed with AI recommendations, cultural missions, 
+              and crowd monitoring—and it will keep growing.
             </motion.p>
           </motion.div>
         </div>
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="py-32 px-6 relative">
+      <section id="features" className="section-spacing px-6 relative">
         <div className="container mx-auto max-w-6xl">
           <AnimatedSection>
             <h2 className="text-5xl md:text-7xl font-bold mb-4 text-center">
@@ -445,7 +445,7 @@ const Index = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
                 <Compass className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold">Quest Voyage</span>
+              <span className="text-lg font-bold">TravelTacTix</span>
             </div>
 
             <div className="flex gap-8 text-sm text-white/40">

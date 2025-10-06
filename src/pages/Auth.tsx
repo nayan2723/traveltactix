@@ -112,9 +112,9 @@ const Auth = () => {
               <Compass className="w-8 h-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-3xl">Quest Voyage</CardTitle>
+          <CardTitle className="text-3xl">TravelTacTix</CardTitle>
           <CardDescription>
-            Discover hidden gems and cultural adventures
+            Your journey begins here
           </CardDescription>
         </CardHeader>
         <CardContent>
