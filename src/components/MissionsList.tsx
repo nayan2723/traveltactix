@@ -39,14 +39,17 @@ export function MissionsList() {
   const fetchLocationData = async (city: string, country: string) => {
     setLoading(true);
     try {
-      // Fetch missions for the selected location
-      const { data: missionsData } = await supabase
-        .from('missions')
-        .select('*')
-        .eq('city', city)
-        .eq('country', country)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+      // Generate AI missions for the selected location
+      const { data: aiMissionsData, error: aiError } = await supabase.functions.invoke('generate-missions', {
+        body: { city, country }
+      });
+
+      if (aiError) {
+        console.error('Error generating AI missions:', aiError);
+        setMissions([]);
+      } else {
+        setMissions(aiMissionsData?.missions || []);
+      }
 
       // Fetch places for the selected location
       const { data: placesData } = await supabase
@@ -56,7 +59,6 @@ export function MissionsList() {
         .eq('country', country)
         .order('name');
 
-      setMissions(missionsData || []);
       setPlaces(placesData || []);
     } catch (error) {
       console.error('Error fetching location data:', error);
