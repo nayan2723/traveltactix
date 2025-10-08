@@ -60,11 +60,11 @@ export const PhotoVerifier = ({ missionId, onVerify }: PhotoVerifierProps) => {
   };
 
   return (
-    <Card className="p-6">
+    <Card className="p-4 sm:p-6">
       <div className="flex flex-col gap-4">
         <div className="text-center">
-          <h3 className="font-semibold text-lg mb-2">Photo Verification Required</h3>
-          <p className="text-sm text-muted-foreground">
+          <h3 className="font-semibold text-base sm:text-lg mb-2">Photo Verification Required</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Take or upload a photo at the mission location
           </p>
         </div>
@@ -102,6 +102,7 @@ export const PhotoVerifier = ({ missionId, onVerify }: PhotoVerifierProps) => {
             <Button
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
+              className="touch-manipulation h-11"
             >
               <Upload className="w-4 h-4 mr-2" />
               Choose Photo
@@ -113,7 +114,7 @@ export const PhotoVerifier = ({ missionId, onVerify }: PhotoVerifierProps) => {
           <Button 
             onClick={handleSubmit} 
             disabled={isUploading}
-            className="w-full"
+            className="w-full touch-manipulation h-11"
           >
             {isUploading ? (
               <>

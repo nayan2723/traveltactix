@@ -58,15 +58,15 @@ export const LocationVerifier = ({ missionId, targetLat, targetLng, onVerify }: 
   };
 
   return (
-    <Card className="p-6">
+    <Card className="p-4 sm:p-6">
       <div className="flex flex-col items-center gap-4">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
           <MapPin className="w-8 h-8 text-primary" />
         </div>
         
         <div className="text-center">
-          <h3 className="font-semibold text-lg mb-2">Location Check-In Required</h3>
-          <p className="text-sm text-muted-foreground">
+          <h3 className="font-semibold text-base sm:text-lg mb-2">Location Check-In Required</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             You need to be at the mission location to complete this task
           </p>
         </div>
@@ -74,7 +74,7 @@ export const LocationVerifier = ({ missionId, targetLat, targetLng, onVerify }: 
         <Button 
           onClick={handleCheckIn} 
           disabled={isChecking}
-          className="w-full"
+          className="w-full touch-manipulation h-11"
         >
           {isChecking ? (
             <>

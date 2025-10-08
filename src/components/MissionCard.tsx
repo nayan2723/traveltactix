@@ -76,7 +76,7 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
   const isExpired = deadlineText === 'Expired';
 
   return (
-    <Card className="mission-card relative overflow-hidden hover:shadow-glow transition-all duration-300 group">
+    <Card className="mission-card relative overflow-hidden hover:shadow-glow active:scale-[0.98] transition-all duration-300 group touch-manipulation">
       <GlowingEffect
         spread={30}
         glow={true}
@@ -87,11 +87,11 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
       />
       <div className="absolute inset-0 bg-card-gradient opacity-50"></div>
       <div className="relative z-10">
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">{getCategoryIcon(mission.category)}</span>
-              <CardTitle className="text-base leading-tight">{mission.title}</CardTitle>
+        <CardHeader className="pb-3 p-4 sm:p-6">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <span className="text-base sm:text-lg flex-shrink-0">{getCategoryIcon(mission.category)}</span>
+              <CardTitle className="text-sm sm:text-base leading-tight truncate">{mission.title}</CardTitle>
             </div>
             <Badge className={`text-xs ${getDifficultyColor(mission.difficulty)}`}>
               {mission.difficulty}
@@ -99,7 +99,7 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
           </div>
         </CardHeader>
         
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
           <p className="text-sm text-muted-foreground leading-relaxed">
             {mission.description}
           </p>
@@ -129,7 +129,7 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
                 size="sm"
                 disabled
                 variant="outline"
-                className="gap-2 text-xs px-3 py-1"
+                className="gap-2 text-xs px-3 py-2 h-9 touch-manipulation"
               >
                 <CheckCircle className="h-3 w-3" />
                 Completed
@@ -138,7 +138,7 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
               <Button
                 size="sm"
                 onClick={() => onVerify?.(userMission.id)}
-                className="gap-2 text-xs px-3 py-1"
+                className="gap-2 text-xs px-3 py-2 h-9 touch-manipulation"
               >
                 <Target className="h-3 w-3" />
                 Verify
@@ -148,7 +148,7 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
                 size="sm"
                 onClick={handleStart}
                 disabled={isStarting || isExpired}
-                className="gap-2 text-xs px-3 py-1"
+                className="gap-2 text-xs px-3 py-2 h-9 touch-manipulation"
               >
                 <Target className="h-3 w-3" />
                 {isStarting ? 'Starting...' : isExpired ? 'Expired' : 'Start Mission'}

@@ -131,11 +131,11 @@ export function LocationSelector({ onLocationSelect, selectedLocation }: Locatio
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full sm:w-auto">
       <Button
         variant="outline"
         onClick={() => setIsOpen(!isOpen)}
-        className="gap-2 min-w-[200px] justify-between rounded-2xl"
+        className="gap-2 w-full sm:min-w-[200px] justify-between rounded-2xl h-11 px-4"
       >
         <div className="flex items-center gap-2">
           <MapPin className="h-4 w-4" />
@@ -150,7 +150,7 @@ export function LocationSelector({ onLocationSelect, selectedLocation }: Locatio
       </Button>
 
       {isOpen && (
-        <Card className="absolute top-full mt-2 w-96 z-50 shadow-elegant border-primary/20">
+        <Card className="absolute top-full mt-2 w-full sm:w-96 left-0 right-0 sm:left-auto z-50 shadow-elegant border-primary/20 max-h-[80vh]">
           <CardContent className="p-0">
             <div className="p-4 border-b bg-gradient-subtle">
               <h3 className="font-semibold text-sm mb-3">Search Indian Destinations</h3>
@@ -173,7 +173,7 @@ export function LocationSelector({ onLocationSelect, selectedLocation }: Locatio
                 )}
               </div>
             </div>
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-60 sm:max-h-96 overflow-y-auto">
               {filteredDestinations.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground text-sm">
                   No destinations found. Try a different search term.
@@ -183,7 +183,7 @@ export function LocationSelector({ onLocationSelect, selectedLocation }: Locatio
                   <button
                     key={`${destination.city}-${destination.state}`}
                     onClick={() => handleLocationSelect(destination.city, destination.country)}
-                    className="w-full p-3 text-left hover:bg-muted/50 transition-all border-b last:border-b-0 group"
+                    className="w-full p-4 text-left hover:bg-muted/50 active:bg-muted transition-all border-b last:border-b-0 group touch-manipulation"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">

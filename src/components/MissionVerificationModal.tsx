@@ -82,7 +82,7 @@ export const MissionVerificationModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md mx-4 sm:mx-auto">
         <DialogHeader>
           <DialogTitle>{missionTitle}</DialogTitle>
         </DialogHeader>
