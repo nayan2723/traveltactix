@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { GlowingEffect } from '@/components/ui/glowing-effect';
-import { Clock, MapPin, Star, Target, Calendar } from 'lucide-react';
+import { Clock, MapPin, Star, Target, Calendar, CheckCircle } from 'lucide-react';
 
 interface Mission {
   id: string;
@@ -22,9 +22,15 @@ interface MissionCardProps {
   mission: Mission;
   onStart: (missionId: string) => void;
   formatDeadline: (deadline: string) => string;
+  userMission?: {
+    id: string;
+    verification_status: string;
+    is_completed: boolean;
+  } | null;
+  onVerify?: (userMissionId: string) => void;
 }
 
-export function MissionCard({ mission, onStart, formatDeadline }: MissionCardProps) {
+export function MissionCard({ mission, onStart, formatDeadline, userMission, onVerify }: MissionCardProps) {
   const [isStarting, setIsStarting] = useState(false);
 
   const handleStart = async () => {
@@ -118,15 +124,36 @@ export function MissionCard({ mission, onStart, formatDeadline }: MissionCardPro
               <span className="font-semibold text-sm">{mission.xp_reward} XP</span>
             </div>
             
-            <Button
-              size="sm"
-              onClick={handleStart}
-              disabled={isStarting || isExpired}
-              className="gap-2 text-xs px-3 py-1"
-            >
-              <Target className="h-3 w-3" />
-              {isStarting ? 'Starting...' : isExpired ? 'Expired' : 'Start Mission'}
-            </Button>
+            {userMission?.is_completed ? (
+              <Button
+                size="sm"
+                disabled
+                variant="outline"
+                className="gap-2 text-xs px-3 py-1"
+              >
+                <CheckCircle className="h-3 w-3" />
+                Completed
+              </Button>
+            ) : userMission && !userMission.is_completed ? (
+              <Button
+                size="sm"
+                onClick={() => onVerify?.(userMission.id)}
+                className="gap-2 text-xs px-3 py-1"
+              >
+                <Target className="h-3 w-3" />
+                Verify
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                onClick={handleStart}
+                disabled={isStarting || isExpired}
+                className="gap-2 text-xs px-3 py-1"
+              >
+                <Target className="h-3 w-3" />
+                {isStarting ? 'Starting...' : isExpired ? 'Expired' : 'Start Mission'}
+              </Button>
+            )}
           </div>
         </CardContent>
       </div>

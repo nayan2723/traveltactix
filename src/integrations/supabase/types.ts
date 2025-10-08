@@ -454,6 +454,11 @@ export type Database = {
           started_at: string
           total_required: number
           user_id: string
+          verification_data: Json | null
+          verification_notes: string | null
+          verification_status: string | null
+          verification_type: string | null
+          verified_at: string | null
         }
         Insert: {
           completed_at?: string | null
@@ -464,6 +469,11 @@ export type Database = {
           started_at?: string
           total_required: number
           user_id: string
+          verification_data?: Json | null
+          verification_notes?: string | null
+          verification_status?: string | null
+          verification_type?: string | null
+          verified_at?: string | null
         }
         Update: {
           completed_at?: string | null
@@ -474,6 +484,11 @@ export type Database = {
           started_at?: string
           total_required?: number
           user_id?: string
+          verification_data?: Json | null
+          verification_notes?: string | null
+          verification_status?: string | null
+          verification_type?: string | null
+          verified_at?: string | null
         }
         Relationships: [
           {

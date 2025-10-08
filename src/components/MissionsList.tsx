@@ -5,6 +5,9 @@ import { MissionCard } from '@/components/MissionCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Calendar, Target } from 'lucide-react';
+import { MissionVerificationModal } from '@/components/MissionVerificationModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface Mission {
   id: string;
@@ -17,6 +20,8 @@ interface Mission {
   country: string;
   deadline: string;
   is_active: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface Place {
@@ -35,6 +40,17 @@ export function MissionsList() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
+  const [userMissions, setUserMissions] = useState<any[]>([]);
+  const [verificationModal, setVerificationModal] = useState<{
+    isOpen: boolean;
+    userMissionId: string;
+    missionTitle: string;
+    verificationType: 'location' | 'photo' | 'checkin' | 'quiz';
+    missionLocation?: { latitude: number; longitude: number };
+    xpReward: number;
+  } | null>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const fetchLocationData = async (city: string, country: string) => {
     setLoading(true);
@@ -60,6 +76,16 @@ export function MissionsList() {
         .order('name');
 
       setPlaces(placesData || []);
+
+      // Fetch user missions if logged in
+      if (user) {
+        const { data: userMissionsData } = await supabase
+          .from('user_missions')
+          .select('*')
+          .eq('user_id', user.id);
+        
+        setUserMissions(userMissionsData || []);
+      }
     } catch (error) {
       console.error('Error fetching location data:', error);
     } finally {
@@ -70,6 +96,69 @@ export function MissionsList() {
   const handleLocationSelect = (city: string, country: string) => {
     setSelectedLocation({ city, country });
     fetchLocationData(city, country);
+  };
+
+  const handleStartMission = async (missionId: string) => {
+    if (!user) {
+      toast({
+        title: "Please log in",
+        description: "You need to be logged in to start missions",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const mission = missions.find(m => m.id === missionId);
+    if (!mission) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_missions')
+        .insert({
+          user_id: user.id,
+          mission_id: missionId,
+          progress: 0,
+          total_required: 1,
+          verification_type: 'location',
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setUserMissions([...userMissions, data]);
+      
+      toast({
+        title: "Mission Started!",
+        description: "Good luck on your adventure!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Could not start mission",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleVerifyMission = (userMissionId: string) => {
+    const userMission = userMissions.find(um => um.id === userMissionId);
+    if (!userMission) return;
+
+    const mission = missions.find(m => m.id === userMission.mission_id);
+    if (!mission) return;
+
+    setVerificationModal({
+      isOpen: true,
+      userMissionId,
+      missionTitle: mission.title,
+      verificationType: userMission.verification_type || 'location',
+      missionLocation: mission.latitude && mission.longitude ? {
+        latitude: Number(mission.latitude),
+        longitude: Number(mission.longitude),
+      } : undefined,
+      xpReward: mission.xp_reward,
+    });
   };
 
   const formatDeadline = (deadline: string) => {
@@ -160,14 +249,19 @@ export function MissionsList() {
         <div className="space-y-6">
           <h3 className="text-xl font-semibold">Available Missions</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {missions.map((mission) => (
-              <MissionCard
-                key={mission.id}
-                mission={mission}
-                onStart={() => {}}
-                formatDeadline={formatDeadline}
-              />
-            ))}
+            {missions.map((mission) => {
+              const userMission = userMissions.find(um => um.mission_id === mission.id);
+              return (
+                <MissionCard
+                  key={mission.id}
+                  mission={mission}
+                  onStart={handleStartMission}
+                  formatDeadline={formatDeadline}
+                  userMission={userMission}
+                  onVerify={handleVerifyMission}
+                />
+              );
+            })}
           </div>
         </div>
       )}
@@ -206,6 +300,24 @@ export function MissionsList() {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Verification Modal */}
+      {verificationModal && (
+        <MissionVerificationModal
+          isOpen={verificationModal.isOpen}
+          onClose={() => setVerificationModal(null)}
+          userMissionId={verificationModal.userMissionId}
+          missionTitle={verificationModal.missionTitle}
+          verificationType={verificationModal.verificationType}
+          missionLocation={verificationModal.missionLocation}
+          xpReward={verificationModal.xpReward}
+          onSuccess={() => {
+            if (selectedLocation) {
+              fetchLocationData(selectedLocation.city, selectedLocation.country);
+            }
+          }}
+        />
       )}
     </div>
   );

@@ -1,0 +1,94 @@
+import { useState } from 'react';
+import { MapPin, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+
+interface LocationVerifierProps {
+  missionId: string;
+  targetLat: number;
+  targetLng: number;
+  onVerify: (data: { latitude: number; longitude: number }) => Promise<void>;
+}
+
+export const LocationVerifier = ({ missionId, targetLat, targetLng, onVerify }: LocationVerifierProps) => {
+  const [isChecking, setIsChecking] = useState(false);
+  const { toast } = useToast();
+
+  const handleCheckIn = async () => {
+    setIsChecking(true);
+    
+    if (!navigator.geolocation) {
+      toast({
+        title: "Location not supported",
+        description: "Your browser doesn't support geolocation",
+        variant: "destructive",
+      });
+      setIsChecking(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          await onVerify({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        } catch (error) {
+          toast({
+            title: "Verification failed",
+            description: error instanceof Error ? error.message : "Could not verify location",
+            variant: "destructive",
+          });
+        } finally {
+          setIsChecking(false);
+        }
+      },
+      (error) => {
+        toast({
+          title: "Location access denied",
+          description: "Please enable location access to verify this mission",
+          variant: "destructive",
+        });
+        setIsChecking(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  return (
+    <Card className="p-6">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+          <MapPin className="w-8 h-8 text-primary" />
+        </div>
+        
+        <div className="text-center">
+          <h3 className="font-semibold text-lg mb-2">Location Check-In Required</h3>
+          <p className="text-sm text-muted-foreground">
+            You need to be at the mission location to complete this task
+          </p>
+        </div>
+
+        <Button 
+          onClick={handleCheckIn} 
+          disabled={isChecking}
+          className="w-full"
+        >
+          {isChecking ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Checking Location...
+            </>
+          ) : (
+            <>
+              <MapPin className="w-4 h-4 mr-2" />
+              Check In Now
+            </>
+          )}
+        </Button>
+      </div>
+    </Card>
+  );
+};
