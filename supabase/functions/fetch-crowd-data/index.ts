@@ -14,12 +14,12 @@ serve(async (req) => {
   try {
     const { placeId } = await req.json();
     
-    const GOOGLE_PLACES_API_KEY = Deno.env.get('GOOGLE_PLACES_API_KEY');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!GOOGLE_PLACES_API_KEY) {
-      throw new Error('GOOGLE_PLACES_API_KEY not configured');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY not configured');
     }
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
@@ -39,86 +39,93 @@ serve(async (req) => {
       );
     }
 
-    // Generate realistic crowd data based on time of day and place characteristics
+    // Use Gemini AI to analyze and predict crowd data
     const now = new Date();
     const hour = now.getHours();
-    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    const dayOfWeek = now.getDay();
+    const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
     
-    // Base crowd percentage varies by category
-    let baseCrowd = 40;
-    const category = place.category?.toLowerCase() || '';
+    console.log(`Analyzing crowd for: ${place.name} in ${place.city}`);
     
-    if (category.includes('temple') || category.includes('religious')) {
-      baseCrowd = isWeekend ? 65 : 35;
-    } else if (category.includes('museum') || category.includes('cultural')) {
-      baseCrowd = isWeekend ? 70 : 45;
-    } else if (category.includes('beach') || category.includes('park')) {
-      baseCrowd = isWeekend ? 75 : 30;
-    } else if (category.includes('restaurant') || category.includes('food')) {
-      baseCrowd = (hour >= 12 && hour <= 14) || (hour >= 19 && hour <= 21) ? 80 : 25;
-    } else if (category.includes('shopping') || category.includes('market')) {
-      baseCrowd = isWeekend ? 85 : 50;
-    }
-    
-    // Adjust for time of day
-    let timeMultiplier = 1.0;
-    if (hour >= 6 && hour < 9) {
-      timeMultiplier = 0.4; // Early morning - low crowds
-    } else if (hour >= 9 && hour < 12) {
-      timeMultiplier = 0.8; // Mid-morning - building up
-    } else if (hour >= 12 && hour < 15) {
-      timeMultiplier = 1.2; // Lunch/afternoon - peak
-    } else if (hour >= 15 && hour < 18) {
-      timeMultiplier = 1.0; // Afternoon - moderate
-    } else if (hour >= 18 && hour < 21) {
-      timeMultiplier = 0.9; // Evening - tapering off
-    } else {
-      timeMultiplier = 0.3; // Night - very low
-    }
-    
-    // Add some randomness for realism
-    const randomFactor = 0.85 + (Math.random() * 0.3); // 0.85 to 1.15
-    
-    const crowdPercentage = Math.min(95, Math.max(5, Math.round(baseCrowd * timeMultiplier * randomFactor)));
-    
-    let crowdStatus = 'low';
-    if (crowdPercentage > 65) {
-      crowdStatus = 'high';
-    } else if (crowdPercentage > 35) {
-      crowdStatus = 'medium';
+    const aiPrompt = `You are a crowd analytics expert. Analyze the following tourist attraction and provide realistic crowd predictions.
+
+Place: ${place.name}
+City: ${place.city}
+Category: ${place.category}
+Current Time: ${hour}:00 on ${dayName}
+
+Based on this information, provide:
+1. Current crowd percentage (0-100)
+2. Crowd status (low/medium/high)
+3. Best times to visit for each day of the week
+
+Consider:
+- Time of day (early morning is quieter, lunch/afternoon peaks, evening tapers off)
+- Day of week (weekends are busier)
+- Place category (temples busy on weekends, restaurants busy at meal times, etc.)
+- Seasonal tourist patterns
+
+Return ONLY valid JSON in this exact format:
+{
+  "crowd_percentage": <number between 5-95>,
+  "crowd_status": "<low|medium|high>",
+  "best_visit_times": [
+    {"day": "Monday", "hours": "9:00-11:00", "crowd_level": "low"},
+    {"day": "Tuesday", "hours": "9:00-11:00", "crowd_level": "low"},
+    {"day": "Wednesday", "hours": "10:00-12:00", "crowd_level": "low"},
+    {"day": "Thursday", "hours": "14:00-16:00", "crowd_level": "medium"},
+    {"day": "Friday", "hours": "9:00-11:00", "crowd_level": "medium"},
+    {"day": "Saturday", "hours": "7:00-9:00", "crowd_level": "medium"},
+    {"day": "Sunday", "hours": "7:00-9:00", "crowd_level": "medium"}
+  ]
+}`;
+
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: 'You are a crowd analytics expert. Always return valid JSON only, no markdown or extra text.' },
+          { role: 'user', content: aiPrompt }
+        ],
+      }),
+    });
+
+    if (!aiResponse.ok) {
+      const errorText = await aiResponse.text();
+      console.error('AI API error:', aiResponse.status, errorText);
+      throw new Error(`AI API error: ${aiResponse.status}`);
     }
 
-    // Generate smart best visit times based on crowd patterns
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const bestVisitTimes = days.map(day => {
-      const isWeekendDay = day === 'Saturday' || day === 'Sunday';
-      let hours, crowd_level;
-      
-      if (category.includes('restaurant') || category.includes('food')) {
-        hours = isWeekendDay ? '10:00-11:30' : '14:30-16:00';
-        crowd_level = 'low';
-      } else if (category.includes('museum') || category.includes('cultural')) {
-        hours = isWeekendDay ? '9:00-10:00' : '14:00-16:00';
-        crowd_level = isWeekendDay ? 'medium' : 'low';
-      } else if (category.includes('temple') || category.includes('religious')) {
-        hours = '6:00-8:00';
-        crowd_level = 'low';
-      } else {
-        hours = isWeekendDay ? '7:00-9:00' : '9:00-11:00';
-        crowd_level = isWeekendDay ? 'medium' : 'low';
-      }
-      
-      return { day, hours, crowd_level };
-    });
+    const aiData = await aiResponse.json();
+    const aiContent = aiData.choices[0].message.content;
+    
+    console.log('AI Response:', aiContent);
+    
+    // Parse AI response
+    let crowdData;
+    try {
+      // Remove markdown code blocks if present
+      const cleanContent = aiContent.replace(/```json\n?|\n?```/g, '').trim();
+      crowdData = JSON.parse(cleanContent);
+    } catch (parseError) {
+      console.error('Failed to parse AI response:', aiContent);
+      throw new Error('Invalid AI response format');
+    }
+
+    const { crowd_percentage, crowd_status, best_visit_times } = crowdData;
 
     // Update place in database
     const { error: updateError } = await supabase
       .from('places')
       .update({
-        crowd_status: crowdStatus,
-        crowd_percentage: crowdPercentage,
-        best_visit_times: bestVisitTimes,
+        crowd_status: crowd_status,
+        crowd_percentage: crowd_percentage,
+        best_visit_times: best_visit_times,
         last_crowd_update: new Date().toISOString()
       })
       .eq('id', placeId);
@@ -127,11 +134,13 @@ serve(async (req) => {
       console.error('Database update error:', updateError);
     }
 
+    console.log(`Updated ${place.name}: ${crowd_status} (${crowd_percentage}%)`);
+
     return new Response(
       JSON.stringify({
-        crowd_status: crowdStatus,
-        crowd_percentage: crowdPercentage,
-        best_visit_times: bestVisitTimes,
+        crowd_status: crowd_status,
+        crowd_percentage: crowd_percentage,
+        best_visit_times: best_visit_times,
         last_updated: new Date().toISOString()
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
