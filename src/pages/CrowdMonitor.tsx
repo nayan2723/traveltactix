@@ -23,6 +23,13 @@ const CrowdMonitor = () => {
 
   useEffect(() => {
     fetchPlaces();
+    
+    // Auto-refresh crowd data every 2 minutes
+    const interval = setInterval(() => {
+      fetchPlaces();
+    }, 120000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const fetchPlaces = async () => {

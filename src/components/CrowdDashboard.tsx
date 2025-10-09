@@ -30,6 +30,13 @@ export const CrowdDashboard = () => {
 
   useEffect(() => {
     fetchPlaces();
+    
+    // Auto-refresh every 2 minutes for real-time updates
+    const interval = setInterval(() => {
+      fetchPlaces();
+    }, 120000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const fetchPlaces = async () => {

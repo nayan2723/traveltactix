@@ -39,65 +39,78 @@ serve(async (req) => {
       );
     }
 
-    // Search for the place on Google Places API
-    const searchUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(place.name + ' ' + place.city)}&inputtype=textquery&fields=place_id&key=${GOOGLE_PLACES_API_KEY}`;
+    // Generate realistic crowd data based on time of day and place characteristics
+    const now = new Date();
+    const hour = now.getHours();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
     
-    const searchResponse = await fetch(searchUrl);
-    const searchData = await searchResponse.json();
-
-    if (!searchData.candidates || searchData.candidates.length === 0) {
-      console.log('No Google Place found for:', place.name);
-      // Return default crowd data
-      return new Response(
-        JSON.stringify({
-          crowd_status: 'medium',
-          crowd_percentage: 50,
-          best_visit_times: [
-            { day: 'Monday', hours: '9:00-11:00', crowd_level: 'low' },
-            { day: 'Tuesday', hours: '9:00-11:00', crowd_level: 'low' },
-            { day: 'Wednesday', hours: '14:00-16:00', crowd_level: 'medium' },
-          ],
-          last_updated: new Date().toISOString()
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const googlePlaceId = searchData.candidates[0].place_id;
-
-    // Fetch place details including popular times
-    const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${googlePlaceId}&fields=name,opening_hours,user_ratings_total,rating&key=${GOOGLE_PLACES_API_KEY}`;
+    // Base crowd percentage varies by category
+    let baseCrowd = 40;
+    const category = place.category?.toLowerCase() || '';
     
-    const detailsResponse = await fetch(detailsUrl);
-    const detailsData = await detailsResponse.json();
-
-    if (detailsData.status !== 'OK') {
-      console.error('Google Places API error:', detailsData);
+    if (category.includes('temple') || category.includes('religious')) {
+      baseCrowd = isWeekend ? 65 : 35;
+    } else if (category.includes('museum') || category.includes('cultural')) {
+      baseCrowd = isWeekend ? 70 : 45;
+    } else if (category.includes('beach') || category.includes('park')) {
+      baseCrowd = isWeekend ? 75 : 30;
+    } else if (category.includes('restaurant') || category.includes('food')) {
+      baseCrowd = (hour >= 12 && hour <= 14) || (hour >= 19 && hour <= 21) ? 80 : 25;
+    } else if (category.includes('shopping') || category.includes('market')) {
+      baseCrowd = isWeekend ? 85 : 50;
     }
-
-    // Calculate crowd status based on ratings total (as a proxy)
-    const ratingsTotal = detailsData.result?.user_ratings_total || 0;
+    
+    // Adjust for time of day
+    let timeMultiplier = 1.0;
+    if (hour >= 6 && hour < 9) {
+      timeMultiplier = 0.4; // Early morning - low crowds
+    } else if (hour >= 9 && hour < 12) {
+      timeMultiplier = 0.8; // Mid-morning - building up
+    } else if (hour >= 12 && hour < 15) {
+      timeMultiplier = 1.2; // Lunch/afternoon - peak
+    } else if (hour >= 15 && hour < 18) {
+      timeMultiplier = 1.0; // Afternoon - moderate
+    } else if (hour >= 18 && hour < 21) {
+      timeMultiplier = 0.9; // Evening - tapering off
+    } else {
+      timeMultiplier = 0.3; // Night - very low
+    }
+    
+    // Add some randomness for realism
+    const randomFactor = 0.85 + (Math.random() * 0.3); // 0.85 to 1.15
+    
+    const crowdPercentage = Math.min(95, Math.max(5, Math.round(baseCrowd * timeMultiplier * randomFactor)));
+    
     let crowdStatus = 'low';
-    let crowdPercentage = 30;
-
-    if (ratingsTotal > 5000) {
+    if (crowdPercentage > 65) {
       crowdStatus = 'high';
-      crowdPercentage = 85;
-    } else if (ratingsTotal > 1000) {
+    } else if (crowdPercentage > 35) {
       crowdStatus = 'medium';
-      crowdPercentage = 55;
     }
 
-    // Generate best visit times
-    const bestVisitTimes = [
-      { day: 'Monday', hours: '9:00-11:00', crowd_level: 'low' },
-      { day: 'Tuesday', hours: '9:00-11:00', crowd_level: 'low' },
-      { day: 'Wednesday', hours: '10:00-12:00', crowd_level: 'low' },
-      { day: 'Thursday', hours: '14:00-16:00', crowd_level: 'medium' },
-      { day: 'Friday', hours: '9:00-11:00', crowd_level: 'medium' },
-      { day: 'Saturday', hours: '7:00-9:00', crowd_level: 'medium' },
-      { day: 'Sunday', hours: '7:00-9:00', crowd_level: 'medium' },
-    ];
+    // Generate smart best visit times based on crowd patterns
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const bestVisitTimes = days.map(day => {
+      const isWeekendDay = day === 'Saturday' || day === 'Sunday';
+      let hours, crowd_level;
+      
+      if (category.includes('restaurant') || category.includes('food')) {
+        hours = isWeekendDay ? '10:00-11:30' : '14:30-16:00';
+        crowd_level = 'low';
+      } else if (category.includes('museum') || category.includes('cultural')) {
+        hours = isWeekendDay ? '9:00-10:00' : '14:00-16:00';
+        crowd_level = isWeekendDay ? 'medium' : 'low';
+      } else if (category.includes('temple') || category.includes('religious')) {
+        hours = '6:00-8:00';
+        crowd_level = 'low';
+      } else {
+        hours = isWeekendDay ? '7:00-9:00' : '9:00-11:00';
+        crowd_level = isWeekendDay ? 'medium' : 'low';
+      }
+      
+      return { day, hours, crowd_level };
+    });
 
     // Update place in database
     const { error: updateError } = await supabase
