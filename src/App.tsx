@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Missions from "./pages/Missions";
+import MissionTracker from "./pages/MissionTracker";
 import CulturalFeed from "./pages/CulturalFeed";
 import CulturalLessons from "./pages/CulturalLessons";
 import ARScan from "./pages/ARScan";
@@ -27,9 +28,6 @@ const App = () => (
       <TooltipProvider>
         {/* Beams background temporarily disabled while we fix R3F crash */}
         {/* <BeamsBackground /> */}
-        <div className="fixed top-4 right-4 z-50">
-          <ThemeToggle />
-        </div>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -38,6 +36,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/missions" element={<Missions />} />
+          <Route path="/missions/:id" element={<MissionTracker />} />
         <Route path="/cultural-feed" element={<CulturalFeed />} />
         <Route path="/cultural-lessons" element={<CulturalLessons />} />
         <Route path="/ar-scan" element={<ARScan />} />

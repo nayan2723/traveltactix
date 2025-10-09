@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { GlowingEffect } from '@/components/ui/glowing-effect';
-import { Clock, MapPin, Star, Target, Calendar, CheckCircle } from 'lucide-react';
+import { Clock, MapPin, Star, Target, Calendar, CheckCircle, Eye } from 'lucide-react';
 
 interface Mission {
   id: string;
@@ -32,6 +33,7 @@ interface MissionCardProps {
 
 export function MissionCard({ mission, onStart, formatDeadline, userMission, onVerify }: MissionCardProps) {
   const [isStarting, setIsStarting] = useState(false);
+  const navigate = useNavigate();
 
   const handleStart = async () => {
     setIsStarting(true);
@@ -40,6 +42,10 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
     } finally {
       setIsStarting(false);
     }
+  };
+
+  const handleViewProgress = () => {
+    navigate(`/missions/${mission.id}`);
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -127,7 +133,7 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
             {userMission?.is_completed ? (
               <Button
                 size="sm"
-                disabled
+                onClick={handleViewProgress}
                 variant="outline"
                 className="gap-2 text-xs px-3 py-2 h-9 touch-manipulation"
               >
@@ -137,11 +143,11 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
             ) : userMission && !userMission.is_completed ? (
               <Button
                 size="sm"
-                onClick={() => onVerify?.(userMission.id)}
+                onClick={handleViewProgress}
                 className="gap-2 text-xs px-3 py-2 h-9 touch-manipulation"
               >
-                <Target className="h-3 w-3" />
-                Verify
+                <Eye className="h-3 w-3" />
+                View Progress
               </Button>
             ) : (
               <Button

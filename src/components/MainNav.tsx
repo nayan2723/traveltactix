@@ -3,14 +3,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
-  Compass,
   Search,
   Trophy,
-  BookOpen,
-  Globe,
-  Camera,
-  Heart,
   Users,
   LayoutDashboard,
   Menu,
@@ -18,6 +14,7 @@ import {
   LogOut,
   User
 } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export const MainNav = () => {
   const navigate = useNavigate();
@@ -36,12 +33,8 @@ export const MainNav = () => {
 
   const navItems = [
     { name: "Discovery", path: "/discovery", icon: Search },
-    { name: "Crowd Monitor", path: "/crowd-monitor", icon: Users },
     { name: "Missions", path: "/missions", icon: Trophy },
-    { name: "Cultural Lessons", path: "/cultural-lessons", icon: BookOpen },
-    { name: "Cultural Feed", path: "/cultural-feed", icon: Globe },
-    { name: "AR Scan", path: "/ar-scan", icon: Camera },
-    { name: "Favorites", path: "/favorites", icon: Heart },
+    { name: "Crowd Monitor", path: "/crowd-monitor", icon: Users },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -61,10 +54,8 @@ export const MainNav = () => {
             className="flex items-center space-x-3 cursor-pointer group"
             onClick={() => navigate("/")}
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Compass className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-white">TravelTacTix</span>
+            <img src={logo} alt="TravelTacTix" className="w-10 h-10 group-hover:scale-110 transition-transform" />
+            <span className="text-xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent hidden sm:inline">TravelTacTix</span>
           </motion.div>
           
           {/* Desktop Navigation */}
@@ -86,12 +77,13 @@ export const MainNav = () => {
           </div>
 
           {/* User Actions */}
-          <div className="hidden lg:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-2">
+            <ThemeToggle />
             {user ? (
               <>
                 <Button 
                   variant="ghost" 
-                  className="text-white/80 hover:text-white hover:bg-white/5"
+                  size="sm"
                   onClick={() => navigate("/dashboard")}
                 >
                   <LayoutDashboard className="h-4 w-4 mr-2" />
@@ -99,7 +91,7 @@ export const MainNav = () => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="text-white/80 hover:text-white hover:bg-white/5"
+                  size="sm"
                   onClick={signOut}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
@@ -110,14 +102,14 @@ export const MainNav = () => {
               <>
                 <Button 
                   variant="ghost" 
-                  className="text-white/80 hover:text-white hover:bg-white/5"
+                  size="sm"
                   onClick={() => navigate("/auth")}
                 >
                   <User className="h-4 w-4 mr-2" />
                   Log in
                 </Button>
                 <Button 
-                  className="bg-white text-black hover:bg-white/90"
+                  size="sm"
                   onClick={() => navigate("/auth")}
                 >
                   Get Started
@@ -127,12 +119,15 @@ export const MainNav = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button 
-            className="lg:hidden text-white"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <X /> : <Menu />}
-          </button>
+          <div className="lg:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <button 
+              className="text-foreground"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
         </div>
       </div>
 
