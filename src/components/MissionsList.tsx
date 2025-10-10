@@ -4,10 +4,13 @@ import { LocationSelector } from '@/components/LocationSelector';
 import { MissionCard } from '@/components/MissionCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Calendar, Target } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { MapPin, Calendar, Target, Navigation } from 'lucide-react';
 import { MissionVerificationModal } from '@/components/MissionVerificationModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useGeolocation } from '@/hooks/useGeolocation';
+import { motion } from 'framer-motion';
 
 interface Mission {
   id: string;
@@ -51,6 +54,7 @@ export function MissionsList() {
   } | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { latitude, longitude, error: geoError, loading: geoLoading } = useGeolocation();
 
   const fetchLocationData = async (city: string, country: string) => {
     setLoading(true);
@@ -64,7 +68,24 @@ export function MissionsList() {
         console.error('Error generating AI missions:', aiError);
         setMissions([]);
       } else {
-        setMissions(aiMissionsData?.missions || []);
+        let fetchedMissions = aiMissionsData?.missions || [];
+        
+        // Filter missions by proximity if geolocation is available
+        if (latitude && longitude) {
+          fetchedMissions = fetchedMissions.filter((mission: Mission) => {
+            if (!mission.latitude || !mission.longitude) return true;
+            const distance = calculateDistance(
+              latitude,
+              longitude,
+              Number(mission.latitude),
+              Number(mission.longitude)
+            );
+            // Show missions within 50km radius
+            return distance <= 50;
+          });
+        }
+        
+        setMissions(fetchedMissions);
       }
 
       // Fetch places for the selected location
@@ -91,6 +112,19 @@ export function MissionsList() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Calculate distance between two coordinates (Haversine formula)
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
   };
 
   const handleLocationSelect = (city: string, country: string) => {
@@ -174,12 +208,35 @@ export function MissionsList() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-8">
+      {/* Geolocation Status */}
+      {geoError && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 rounded-xl bg-warning/10 border border-warning/20 text-sm"
+        >
+          <div className="flex items-start gap-3">
+            <Navigation className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-warning-foreground">Couldn't fetch your location</p>
+              <p className="text-muted-foreground mt-1">Showing all nearby missions. Enable location services for personalized results.</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Location Selector */}
-      <div className="flex flex-col gap-4 items-stretch sm:items-center sm:flex-row sm:justify-between">
-        <div className="mb-2 sm:mb-0">
-          <h2 className="text-xl sm:text-2xl font-bold">Location-Based Missions</h2>
-          <p className="text-sm sm:text-base text-muted-foreground">Discover adventures tailored to your destination</p>
+      <div className="flex flex-col gap-6 items-stretch sm:flex-row sm:justify-between sm:items-end">
+        <div>
+          <h2 className="heading-large text-3xl sm:text-4xl mb-2">Quest Missions</h2>
+          <p className="text-muted-foreground">Discover adventures tailored to your destination</p>
+          {latitude && longitude && (
+            <p className="text-sm text-accent mt-2 flex items-center gap-2">
+              <Navigation className="h-4 w-4" />
+              Showing missions near you
+            </p>
+          )}
         </div>
         <LocationSelector
           onLocationSelect={handleLocationSelect}
@@ -188,48 +245,85 @@ export function MissionsList() {
       </div>
 
       {selectedLocation && (
-        <Card className="bg-card-gradient border shadow-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-primary" />
-              Exploring {selectedLocation.city}, {selectedLocation.country}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-accent" />
-                <span className="text-sm">{missions.length} Missions Available</span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Card className="travel-card border-border/30">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="p-2 rounded-xl bg-primary/10">
+                  <MapPin className="h-5 w-5 text-primary" />
+                </div>
+                Exploring {selectedLocation.city}, {selectedLocation.country}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-accent/5">
+                  <Target className="h-5 w-5 text-accent" />
+                  <div>
+                    <p className="text-2xl font-bold">{missions.length}</p>
+                    <p className="text-xs text-muted-foreground">Missions Available</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/10">
+                  <MapPin className="h-5 w-5 text-secondary-foreground" />
+                  <div>
+                    <p className="text-2xl font-bold">{places.length}</p>
+                    <p className="text-xs text-muted-foreground">Places to Discover</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-warning/10">
+                  <Calendar className="h-5 w-5 text-warning-foreground" />
+                  <div>
+                    <p className="text-sm font-semibold">New missions</p>
+                    <p className="text-xs text-muted-foreground">Updated daily</p>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-secondary" />
-                <span className="text-sm">{places.length} Places to Discover</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-warning" />
-                <span className="text-sm">New missions daily</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       {loading && (
-        <div className="text-center py-8">
-          <div className="animate-pulse">Loading missions...</div>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="p-6 space-y-4">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-20 w-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+                <Skeleton className="h-10 w-full" />
+              </Card>
+            ))}
+          </div>
         </div>
       )}
 
       {!selectedLocation && !loading && (
-        <Card className="text-center py-8">
-          <CardContent>
-            <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Choose Your Adventure</h3>
-            <p className="text-muted-foreground">
-              Select a destination above to discover exciting missions and places to explore
-            </p>
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Card className="text-center py-16 travel-card">
+            <CardContent className="space-y-4">
+              <div className="p-4 rounded-2xl bg-primary/5 w-fit mx-auto">
+                <MapPin className="h-16 w-16 text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold">Choose Your Adventure</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Select a destination above to discover exciting missions and places to explore
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       {selectedLocation && !loading && missions.length === 0 && (
@@ -246,24 +340,40 @@ export function MissionsList() {
 
       {/* Missions Grid */}
       {selectedLocation && !loading && missions.length > 0 && (
-        <div className="space-y-4 sm:space-y-6">
-          <h3 className="text-lg sm:text-xl font-semibold">Available Missions</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {missions.map((mission) => {
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="space-y-6"
+        >
+          <div className="flex items-end justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">Available Missions</h3>
+              <p className="text-sm text-muted-foreground mt-1">Complete quests to earn XP and unlock rewards</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {missions.map((mission, index) => {
               const userMission = userMissions.find(um => um.mission_id === mission.id);
               return (
-                <MissionCard
+                <motion.div
                   key={mission.id}
-                  mission={mission}
-                  onStart={handleStartMission}
-                  formatDeadline={formatDeadline}
-                  userMission={userMission}
-                  onVerify={handleVerifyMission}
-                />
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                >
+                  <MissionCard
+                    mission={mission}
+                    onStart={handleStartMission}
+                    formatDeadline={formatDeadline}
+                    userMission={userMission}
+                    onVerify={handleVerifyMission}
+                  />
+                </motion.div>
               );
             })}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Places to Explore */}
