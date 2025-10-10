@@ -1,6 +1,27 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+// Input validation schemas
+interface LocationData {
+  latitude: number;
+  longitude: number;
+}
+
+interface VerificationRequest {
+  user_mission_id: string;
+  verification_type: 'location' | 'photo' | 'checkin' | 'quiz';
+  verification_data: any;
+}
+
+function validateUUID(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
+function validateLocation(lat: number, lng: number): boolean {
+  return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -27,7 +48,23 @@ serve(async (req) => {
       });
     }
 
-    const { user_mission_id, verification_type, verification_data } = await req.json();
+    const requestBody = await req.json();
+    const { user_mission_id, verification_type, verification_data } = requestBody as VerificationRequest;
+
+    // Validate inputs
+    if (!user_mission_id || !validateUUID(user_mission_id)) {
+      return new Response(JSON.stringify({ error: 'Invalid mission ID' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!['location', 'photo', 'checkin', 'quiz'].includes(verification_type)) {
+      return new Response(JSON.stringify({ error: 'Invalid verification type' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     console.log('Verifying mission:', { user_mission_id, verification_type });
 
@@ -64,6 +101,12 @@ serve(async (req) => {
     switch (verification_type) {
       case 'location':
         if (verification_data.latitude && verification_data.longitude) {
+          // Validate coordinates
+          if (!validateLocation(verification_data.latitude, verification_data.longitude)) {
+            verificationNotes = 'Invalid coordinates provided';
+            break;
+          }
+          
           const distance = calculateDistance(
             verification_data.latitude,
             verification_data.longitude,
@@ -177,8 +220,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Verification error:', error);
+    // Don't expose detailed error messages to client
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Mission verification failed' }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -1,16 +1,19 @@
 project_id = "buoablhkbfctwmjzeisk"
 
 [functions.ai-recommendations]
-verify_jwt = false
+verify_jwt = true
 
 [functions.ai-itinerary]
-verify_jwt = false
+verify_jwt = true
 
 [functions.fetch-crowd-data]
-verify_jwt = false
+verify_jwt = true
 
 [functions.recognize-landmark]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-missions]
-verify_jwt = false
+verify_jwt = true
+
+[functions.verify-mission]
+verify_jwt = true

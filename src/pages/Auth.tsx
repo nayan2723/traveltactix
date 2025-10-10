@@ -9,6 +9,18 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Lock, User, Compass } from "lucide-react";
 import { motion } from "framer-motion";
+import { z } from "zod";
+
+const signUpSchema = z.object({
+  email: z.string().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters").max(100, "Password must be less than 100 characters"),
+  fullName: z.string().trim().min(1, "Full name is required").max(100, "Full name must be less than 100 characters")
+});
+
+const signInSchema = z.object({
+  email: z.string().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(100, "Password must be less than 100 characters")
+});
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -30,12 +42,15 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Validate inputs
+      const validated = signUpSchema.parse({ email, password, fullName });
+      
       const { error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: validated.email,
+        password: validated.password,
         options: {
           data: {
-            full_name: fullName,
+            full_name: validated.fullName,
           },
           emailRedirectTo: `${window.location.origin}/dashboard`,
         },
@@ -48,11 +63,19 @@ const Auth = () => {
         description: "Check your email to confirm your account.",
       });
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.issues[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -63,9 +86,12 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Validate inputs
+      const validated = signInSchema.parse({ email, password });
+      
       const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: validated.email,
+        password: validated.password,
       });
 
       if (error) throw error;
@@ -77,11 +103,19 @@ const Auth = () => {
       
       navigate("/dashboard");
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.issues[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

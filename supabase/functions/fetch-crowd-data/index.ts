@@ -12,7 +12,20 @@ serve(async (req) => {
   }
 
   try {
-    const { placeId } = await req.json();
+    const requestBody = await req.json();
+    const { placeId } = requestBody;
+    
+    // Validate placeId
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!placeId || !uuidRegex.test(placeId)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid place ID' }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
@@ -148,9 +161,13 @@ Return ONLY valid JSON in this exact format:
 
   } catch (error) {
     console.error('Error in fetch-crowd-data:', error);
+    // Don't expose detailed error messages to client
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: 'Failed to fetch crowd data' }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
     );
   }
 });
