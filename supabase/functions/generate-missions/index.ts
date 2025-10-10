@@ -192,13 +192,37 @@ Return ONLY a JSON array with this exact structure:
       missions = [];
     }
 
+    // Check for existing missions for this location
+    const { data: existingMissions } = await supabase
+      .from('missions')
+      .select('id')
+      .eq('city', city)
+      .eq('country', country)
+      .gte('deadline', new Date().toISOString());
+
+    // If we have recent missions, return them
+    if (existingMissions && existingMissions.length > 0) {
+      const { data: missions } = await supabase
+        .from('missions')
+        .select('*')
+        .eq('city', city)
+        .eq('country', country)
+        .gte('deadline', new Date().toISOString())
+        .order('created_at', { ascending: false });
+
+      console.log(`Returning ${missions?.length || 0} existing missions`);
+      return new Response(
+        JSON.stringify({ missions: missions || [] }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Format missions with proper structure
     const formattedMissions = missions.map((mission: any) => {
       const deadlineDate = new Date();
       deadlineDate.setDate(deadlineDate.getDate() + (mission.deadline_days || 7));
       
       return {
-        id: crypto.randomUUID(),
         title: mission.title,
         description: mission.description,
         category: mission.category,
@@ -208,14 +232,24 @@ Return ONLY a JSON array with this exact structure:
         country,
         deadline: deadlineDate.toISOString(),
         is_active: true,
-        created_at: new Date().toISOString(),
       };
     });
 
-    console.log(`Generated ${formattedMissions.length} missions`);
+    // Save missions to database
+    const { data: savedMissions, error: saveError } = await supabase
+      .from('missions')
+      .insert(formattedMissions)
+      .select();
+
+    if (saveError) {
+      console.error('Error saving missions:', saveError);
+      throw saveError;
+    }
+
+    console.log(`Generated and saved ${savedMissions?.length || 0} missions`);
 
     return new Response(
-      JSON.stringify({ missions: formattedMissions }),
+      JSON.stringify({ missions: savedMissions || [] }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
