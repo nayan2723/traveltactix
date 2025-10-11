@@ -27,6 +27,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { AIRecommendations } from "@/components/AIRecommendations";
 import { ItineraryBuilder } from "@/components/ItineraryBuilder";
+import { SmartRecommendationQuestionnaire } from "@/components/SmartRecommendationQuestionnaire";
 
 interface Place {
   id: string;
@@ -357,9 +358,9 @@ const Discovery = () => {
           </p>
         </div>
 
-        {/* AI Recommendations */}
+        {/* Smart AI Recommendations */}
         <div className="mb-8">
-          <AIRecommendations preferences={{ moods: selectedMoods }} />
+          <SmartRecommendationQuestionnaire />
         </div>
 
         {/* Itinerary Builder */}

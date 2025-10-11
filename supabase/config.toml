@@ -3,6 +3,9 @@ project_id = "buoablhkbfctwmjzeisk"
 [functions.ai-recommendations]
 verify_jwt = true
 
+[functions.smart-recommendations]
+verify_jwt = true
+
 [functions.ai-itinerary]
 verify_jwt = true
 
