@@ -1,11 +1,11 @@
 import { MainNav } from "@/components/MainNav";
 import { CrowdDashboard } from "@/components/CrowdDashboard";
 import { CrowdMap } from "@/components/CrowdMap";
-import { AlternativeSuggestions } from "@/components/AlternativeSuggestions";
+import { CrowdRecommendations } from "@/components/CrowdRecommendations";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { Users, TrendingDown } from "lucide-react";
+import { Users, TrendingDown, Sparkles } from "lucide-react";
 
 interface Place {
   id: string;
@@ -148,11 +148,20 @@ const CrowdMonitor = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 relative z-10 space-y-12">
-        {/* Crowd Dashboard */}
+        {/* Smart Recommendations */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
+        >
+          <CrowdRecommendations />
+        </motion.div>
+
+        {/* Crowd Dashboard */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
         >
           <CrowdDashboard />
         </motion.div>
@@ -161,24 +170,13 @@ const CrowdMonitor = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
         >
           <CrowdMap 
             places={places}
             onPlaceClick={(place) => setSelectedCity(place.city)}
           />
         </motion.div>
-
-        {/* Alternative Suggestions */}
-        {selectedCity && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <AlternativeSuggestions currentCity={selectedCity} />
-          </motion.div>
-        )}
 
         {/* Info Cards */}
         <motion.div

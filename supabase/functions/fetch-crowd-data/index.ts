@@ -28,11 +28,12 @@ serve(async (req) => {
     }
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+    if (!LOVABLE_API_KEY || !PERPLEXITY_API_KEY) {
+      throw new Error('API keys not configured');
     }
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
@@ -60,14 +61,49 @@ serve(async (req) => {
     
     console.log(`Analyzing crowd for: ${place.name} in ${place.city}`);
     
-    const aiPrompt = `You are a crowd analytics expert. Analyze the following tourist attraction and provide realistic crowd predictions.
+    // First, get real-time crowd trends from Perplexity
+    const perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a real-time crowd analytics expert. Provide current crowd information and trends.'
+          },
+          {
+            role: 'user',
+            content: `What is the current crowd situation and recent trends at ${place.name} in ${place.city}? Consider time of day (${hour}:00 on ${dayName}) and any recent events or seasonal patterns.`
+          }
+        ],
+        temperature: 0.2,
+        max_tokens: 500,
+      }),
+    });
+
+    let realtimeTrends = '';
+    if (perplexityResponse.ok) {
+      const perplexityData = await perplexityResponse.json();
+      realtimeTrends = perplexityData.choices[0].message.content;
+      console.log('Perplexity trends:', realtimeTrends);
+    }
+    
+    // Now use Gemini with real-time context for precise predictions
+    const aiPrompt = `You are a crowd analytics expert with access to real-time data. Analyze the following tourist attraction and provide realistic crowd predictions.
 
 Place: ${place.name}
 City: ${place.city}
 Category: ${place.category}
 Current Time: ${hour}:00 on ${dayName}
 
-Based on this information, provide:
+Real-time Context:
+${realtimeTrends}
+
+Based on this information and real-time trends, provide:
 1. Current crowd percentage (0-100)
 2. Crowd status (low/medium/high)
 3. Best times to visit for each day of the week
@@ -76,6 +112,7 @@ Consider:
 - Time of day (early morning is quieter, lunch/afternoon peaks, evening tapers off)
 - Day of week (weekends are busier)
 - Place category (temples busy on weekends, restaurants busy at meal times, etc.)
+- Real-time trends and current events
 - Seasonal tourist patterns
 
 Return ONLY valid JSON in this exact format:

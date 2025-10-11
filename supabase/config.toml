@@ -20,3 +20,6 @@ verify_jwt = true
 
 [functions.verify-mission]
 verify_jwt = true
+
+[functions.crowd-recommendations]
+verify_jwt = true
