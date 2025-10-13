@@ -50,10 +50,37 @@ export const CrowdDashboard = () => {
     if (error) {
       console.error('Error fetching places:', error);
       toast.error('Failed to load places');
-    } else {
-      setPlaces((data as any) || []);
+      setLoading(false);
+      return;
     }
+
+    setPlaces((data as any) || []);
     setLoading(false);
+
+    // Fetch real-time crowd data for each place in background
+    if (data && data.length > 0) {
+      data.forEach(async (place: any) => {
+        try {
+          await supabase.functions.invoke('fetch-crowd-data', {
+            body: { placeId: place.id }
+          });
+        } catch (err) {
+          console.error(`Failed to update crowd data for ${place.name}:`, err);
+        }
+      });
+      
+      // Refresh places after crowd data is fetched
+      setTimeout(() => {
+        supabase
+          .from('places')
+          .select('*')
+          .order('crowd_percentage', { ascending: false })
+          .limit(10)
+          .then(({ data: updatedData }) => {
+            if (updatedData) setPlaces(updatedData as any);
+          });
+      }, 5000);
+    }
   };
 
   const refreshCrowdData = async (placeId: string) => {

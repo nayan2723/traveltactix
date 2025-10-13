@@ -15,6 +15,8 @@ interface PlaceResult {
   crowd_percentage: number;
   crowd_status: string;
   best_visit_times?: any[];
+  best_months?: { month: string; reason: string; crowd_level: string }[];
+  avoid_months?: { month: string; reason: string }[];
 }
 
 interface SearchResult {
@@ -41,11 +43,17 @@ export const CrowdRecommendations = () => {
 
       if (error) throw error;
 
+      if (!data) {
+        toast.error("No data returned. Please try again.");
+        return;
+      }
+
       setResults(data);
-      toast.success(`Found ${data.similar_places.length} similar places`);
-    } catch (error) {
+      toast.success(`Found ${data.similar_places?.length || 0} similar places`);
+    } catch (error: any) {
       console.error('Error searching place:', error);
-      toast.error("Failed to fetch crowd data. Please try again.");
+      const errorMessage = error?.message || "Failed to fetch crowd data. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -139,9 +147,10 @@ export const CrowdRecommendations = () => {
                       <span className="text-sm text-muted-foreground">crowded</span>
                     </div>
 
+                    {/* Best Times of Day */}
                     {results.target_place.best_visit_times && results.target_place.best_visit_times.length > 0 && (
                       <div className="mt-4 p-4 bg-background/50 rounded-lg border">
-                        <p className="text-sm font-semibold mb-3">📅 Best Times to Visit:</p>
+                        <p className="text-sm font-semibold mb-3">🕐 Best Times of Day:</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                           {results.target_place.best_visit_times.slice(0, 7).map((time: any, idx: number) => (
                             <div key={idx} className="flex flex-col gap-1 p-2 bg-primary/5 rounded">
@@ -150,6 +159,46 @@ export const CrowdRecommendations = () => {
                               <Badge variant="outline" className="text-xs w-fit">
                                 {time.crowd_level}
                               </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Best Months */}
+                    {results.target_place.best_months && results.target_place.best_months.length > 0 && (
+                      <div className="mt-4 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                        <p className="text-sm font-semibold mb-3 flex items-center gap-2">
+                          <span className="text-lg">🌟</span>
+                          Best Months to Visit
+                        </p>
+                        <div className="space-y-2">
+                          {results.target_place.best_months.map((month: any, idx: number) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <Badge variant="outline" className="shrink-0 bg-green-500/10">
+                                {month.month}
+                              </Badge>
+                              <p className="text-xs text-muted-foreground">{month.reason}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Months to Avoid */}
+                    {results.target_place.avoid_months && results.target_place.avoid_months.length > 0 && (
+                      <div className="mt-4 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                        <p className="text-sm font-semibold mb-3 flex items-center gap-2">
+                          <span className="text-lg">⚠️</span>
+                          Months to Avoid
+                        </p>
+                        <div className="space-y-2">
+                          {results.target_place.avoid_months.map((month: any, idx: number) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <Badge variant="outline" className="shrink-0 bg-red-500/10">
+                                {month.month}
+                              </Badge>
+                              <p className="text-xs text-muted-foreground">{month.reason}</p>
                             </div>
                           ))}
                         </div>

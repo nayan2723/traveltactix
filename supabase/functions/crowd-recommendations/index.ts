@@ -25,21 +25,24 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    // Search for the place in database
-    const { data: places } = await supabase
+    // Search for the place in database - try name first, then city
+    let { data: places } = await supabase
       .from('places')
       .select('*')
-      .ilike('name', `%${place_query}%`)
-      .limit(1);
+      .or(`name.ilike.%${place_query}%,city.ilike.%${place_query}%`)
+      .limit(5);
 
     if (!places || places.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'Place not found' }),
+        JSON.stringify({ error: `No places found for "${place_query}". Try searching for cities like Paris, Tokyo, Mumbai, or famous landmarks.` }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Use the first result as target
     const targetPlace = places[0];
+
+    console.log(`Found target place: ${targetPlace.name} in ${targetPlace.city}`);
 
     // Fetch crowd data for target place
     const { data: crowdData } = await supabase.functions.invoke('fetch-crowd-data', {
@@ -82,6 +85,48 @@ serve(async (req) => {
       .select('*')
       .eq('city', targetPlace.city)
       .neq('id', targetPlace.id);
+    // Get best months to visit using Gemini
+    const monthsPrompt = `You are a travel timing expert. For ${targetPlace.name} in ${targetPlace.city}, ${targetPlace.country}, provide:
+
+1. Best 3 months to visit with less crowd and good weather
+2. Months to avoid due to high crowds or bad weather
+3. Brief reason for each recommendation
+
+Return ONLY valid JSON:
+{
+  "best_months": [
+    {"month": "Month name", "reason": "Brief reason", "crowd_level": "low|medium"}
+  ],
+  "avoid_months": [
+    {"month": "Month name", "reason": "Brief reason"}
+  ]
+}`;
+
+    const monthsResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: 'You are a travel timing expert. Always return valid JSON only.' },
+          { role: 'user', content: monthsPrompt }
+        ],
+      }),
+    });
+
+    let bestMonths = [];
+    let avoidMonths = [];
+    if (monthsResponse.ok) {
+      const monthsData = await monthsResponse.json();
+      const cleanMonths = monthsData.choices[0].message.content.replace(/```json\n?|\n?```/g, '').trim();
+      const parsedMonths = JSON.parse(cleanMonths);
+      bestMonths = parsedMonths.best_months || [];
+      avoidMonths = parsedMonths.avoid_months || [];
+    }
+
     // Use Gemini to find similar places based on characteristics
     const similarityPrompt = `You are a location similarity expert with real-time data access.
 
@@ -184,6 +229,8 @@ Return ONLY valid JSON:
           crowd_percentage: crowdData?.crowd_percentage || targetPlace.crowd_percentage || 50,
           crowd_status: crowdData?.crowd_status || targetPlace.crowd_status || 'medium',
           best_visit_times: crowdData?.best_visit_times || targetPlace.best_visit_times || [],
+          best_months: bestMonths,
+          avoid_months: avoidMonths,
           is_target: true
         },
         similar_places: similarPlacesWithCrowd.filter(p => p !== null)
