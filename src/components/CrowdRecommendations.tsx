@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, MapPin, Users, Search } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -25,39 +23,7 @@ interface SearchResult {
 }
 
 export const CrowdRecommendations = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<SearchResult | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      toast.error("Please enter a place name to search");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('crowd-recommendations', {
-        body: { place_query: searchQuery }
-      });
-
-      if (error) throw error;
-
-      if (!data) {
-        toast.error("No data returned. Please try again.");
-        return;
-      }
-
-      setResults(data);
-      toast.success(`Found ${data.similar_places?.length || 0} similar places`);
-    } catch (error: any) {
-      console.error('Error searching place:', error);
-      const errorMessage = error?.message || "Failed to fetch crowd data. Please try again.";
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getCrowdColor = (status: string) => {
     switch (status) {
@@ -80,35 +46,9 @@ export const CrowdRecommendations = () => {
   return (
     <div className="space-y-6">
       <Card className="p-8 bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-6">
           <MapPin className="w-8 h-8 text-primary" />
           <h2 className="text-2xl font-bold">Real-Time Crowd Monitor</h2>
-        </div>
-        <p className="text-muted-foreground mb-6">
-          Search for any place to see current crowd levels and discover similar alternatives
-        </p>
-
-        <div className="flex gap-2 mb-6">
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="Enter a place name (e.g., Eiffel Tower, Kyoto Temple)"
-            className="flex-1"
-            disabled={loading}
-          />
-          <Button 
-            onClick={handleSearch}
-            disabled={loading}
-            className="gap-2"
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Search className="w-4 h-4" />
-            )}
-            Search
-          </Button>
         </div>
 
         {results && (
