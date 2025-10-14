@@ -195,17 +195,16 @@ COMPREHENSIVE INDIAN DESTINATIONS BY STATE:
       }
     }
 
-    const systemPrompt = `You are a travel mission designer for TravelTacTix, specializing in creating engaging, culturally-rich missions based on the user's exact location.
+    const systemPrompt = `You are a travel mission designer for TravelTacTix, specializing in creating engaging, culturally-rich missions.
 
-Generate 6-8 unique, LOCATION-SPECIFIC missions for ${targetCity}, ${targetCountry}${latitude && longitude ? ` (near coordinates ${latitude}, ${longitude})` : ''}. Each mission should:
-- Be HYPER-LOCAL and specific to the user's current area
-- Reference real places, landmarks, and experiences near the user's location
+Generate 6-8 unique, LOCATION-SPECIFIC missions for ${targetCity}, ${targetCountry}. Each mission should:
 - Focus on authentic cultural experiences, local cuisine, hidden gems, and community interactions
-- Use information from nearby attractions to create realistic, achievable missions
+- Reference ACTUAL places and experiences that exist in ${targetCity}
+- Be realistic and achievable for travelers visiting the area
 - Have varying difficulty levels (easy, medium, hard)
 - Offer appropriate XP rewards (easy: 50-100 XP, medium: 100-200 XP, hard: 200-300 XP)
 - Include realistic deadlines (3-14 days from now)
-- Be specific, actionable, and time-sensitive
+- Be specific, actionable, and culturally sensitive
 
 Categories to choose from: food, culture, adventure, photography, heritage, shopping, nature, spiritual
 
@@ -215,7 +214,7 @@ ${placesContext}
 
 ${localContext}
 
-CRITICAL: Make missions SPECIFIC to places within walking/short travel distance from the user's location. Use the local context and nearby attractions to create authentic, achievable missions.
+Generate missions based on the city provided. Focus on real, well-known attractions and cultural experiences in ${targetCity}.
 
 Return ONLY a JSON array with this exact structure:
 [
@@ -241,7 +240,7 @@ Return ONLY a JSON array with this exact structure:
           { role: 'system', content: systemPrompt },
           { 
             role: 'user', 
-            content: `Create exciting, location-specific missions for travelers currently in ${targetCity}, ${targetCountry}${latitude && longitude ? ` at coordinates ${latitude}, ${longitude}` : ''}. Focus on nearby experiences they can do within the next week.` 
+            content: `Create exciting, location-specific missions for travelers in ${targetCity}, ${targetCountry}. Focus on authentic local experiences they can enjoy.` 
           }
         ],
       }),
@@ -276,35 +275,26 @@ Return ONLY a JSON array with this exact structure:
       missions = [];
     }
 
-    // Check for existing missions for this location
-    const { data: existingMissions } = await supabase
+    // Check for existing recent missions for this location (within 24 hours)
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    
+    const { data: existingRecentMissions } = await supabase
       .from('missions')
-      .select('id')
+      .select('*')
       .eq('city', targetCity)
       .eq('country', targetCountry)
-      .gte('deadline', new Date().toISOString());
+      .gte('deadline', new Date().toISOString())
+      .gte('created_at', oneDayAgo.toISOString())
+      .order('created_at', { ascending: false });
 
-    // If we have recent missions (less than 24 hours old), return them
-    if (existingMissions && existingMissions.length > 0) {
-      const oneDayAgo = new Date();
-      oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-      
-      const { data: recentMissions } = await supabase
-        .from('missions')
-        .select('*')
-        .eq('city', targetCity)
-        .eq('country', targetCountry)
-        .gte('deadline', new Date().toISOString())
-        .gte('created_at', oneDayAgo.toISOString())
-        .order('created_at', { ascending: false });
-
-      if (recentMissions && recentMissions.length >= 6) {
-        console.log(`Returning ${recentMissions.length} existing missions`);
-        return new Response(
-          JSON.stringify({ missions: recentMissions }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
+    // If we have fresh missions (created within 24 hours), return them
+    if (existingRecentMissions && existingRecentMissions.length >= 6) {
+      console.log(`Returning ${existingRecentMissions.length} existing fresh missions`);
+      return new Response(
+        JSON.stringify({ missions: existingRecentMissions }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Format missions with proper structure and location data

@@ -60,11 +60,24 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [user]);
 
   const fetchData = async () => {
+    if (!user) return;
+    
     try {
-      // Fetch missions
+      // Fetch user missions
+      const { data: userMissionsData } = await supabase
+        .from('user_missions')
+        .select(`
+          *,
+          missions (*)
+        `)
+        .eq('user_id', user.id);
+
+      setUserMissions(userMissionsData || []);
+
+      // Fetch all active missions
       const { data: missionsData } = await supabase
         .from('missions')
         .select('*')
@@ -72,6 +85,17 @@ const Dashboard = () => {
         .order('created_at', { ascending: false });
 
       setMissions(missionsData || []);
+
+      // Fetch user badges
+      const { data: badgesData } = await supabase
+        .from('user_badges')
+        .select(`
+          *,
+          badges (*)
+        `)
+        .eq('user_id', user.id);
+
+      setUserBadges(badgesData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({

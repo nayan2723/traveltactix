@@ -135,7 +135,8 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
                 size="sm"
                 onClick={handleViewProgress}
                 variant="outline"
-                className="gap-2 text-xs px-3 py-2 h-9 touch-manipulation"
+                className="gap-2 text-xs px-3 py-2 h-9 touch-manipulation bg-success/10 border-success/30 text-success hover:bg-success/20"
+                disabled
               >
                 <CheckCircle className="h-3 w-3" />
                 Completed
@@ -143,11 +144,11 @@ export function MissionCard({ mission, onStart, formatDeadline, userMission, onV
             ) : userMission && !userMission.is_completed ? (
               <Button
                 size="sm"
-                onClick={handleViewProgress}
+                onClick={() => onVerify?.(userMission.id)}
                 className="gap-2 text-xs px-3 py-2 h-9 touch-manipulation"
               >
-                <Eye className="h-3 w-3" />
-                View Progress
+                <Target className="h-3 w-3" />
+                Verify Mission
               </Button>
             ) : (
               <Button
