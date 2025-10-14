@@ -56,12 +56,20 @@ export function MissionsList() {
   const { toast } = useToast();
   const { latitude, longitude, error: geoError, loading: geoLoading } = useGeolocation();
 
-  const fetchLocationData = async (city: string, country: string) => {
+  const fetchLocationData = async (city: string, country: string, useGeo: boolean = true) => {
     setLoading(true);
     try {
-      // Generate AI missions for the selected location
+      // Generate AI missions for the selected location with geolocation if available
+      const requestBody: any = { city, country };
+      
+      // Add geolocation data if available and enabled
+      if (useGeo && latitude && longitude && !geoError) {
+        requestBody.latitude = latitude;
+        requestBody.longitude = longitude;
+      }
+      
       const { data: aiMissionsData, error: aiError } = await supabase.functions.invoke('generate-missions', {
-        body: { city, country }
+        body: requestBody
       });
 
       if (aiError) {
@@ -129,8 +137,43 @@ export function MissionsList() {
 
   const handleLocationSelect = (city: string, country: string) => {
     setSelectedLocation({ city, country });
-    fetchLocationData(city, country);
+    fetchLocationData(city, country, true);
   };
+
+  // Auto-fetch missions for user's current location on mount
+  useEffect(() => {
+    if (latitude && longitude && !geoError && !selectedLocation) {
+      // Auto-detect and fetch missions for current location
+      const detectLocationAndFetch = async () => {
+        try {
+          const { data, error } = await supabase.functions.invoke('generate-missions', {
+            body: { latitude, longitude }
+          });
+
+          if (!error && data?.missions && data.missions.length > 0) {
+            const firstMission = data.missions[0];
+            if (firstMission.city && firstMission.country) {
+              setSelectedLocation({ 
+                city: firstMission.city, 
+                country: firstMission.country 
+              });
+              setMissions(data.missions);
+              setLoading(false);
+              
+              toast({
+                title: "Missions found nearby!",
+                description: `Showing ${data.missions.length} missions in ${firstMission.city}`,
+              });
+            }
+          }
+        } catch (err) {
+          console.error('Error auto-detecting location:', err);
+        }
+      };
+
+      detectLocationAndFetch();
+    }
+  }, [latitude, longitude, geoError, selectedLocation]);
 
   const handleStartMission = async (missionId: string) => {
     if (!user) {

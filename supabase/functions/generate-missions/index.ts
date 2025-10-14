@@ -13,22 +13,70 @@ serve(async (req) => {
   }
 
   try {
-    const { city, country } = await req.json();
+    const { city, country, latitude, longitude } = await req.json();
     
-    if (!city || !country) {
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+
+    let targetCity = city;
+    let targetCountry = country;
+
+    // If coordinates provided but no city/country, use Perplexity to identify location
+    if ((latitude && longitude) && (!city || !country)) {
+      console.log('Identifying location from coordinates:', latitude, longitude);
+      
+      const locationResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-small-128k-online',
+          messages: [
+            {
+              role: 'system',
+              content: 'You identify locations from coordinates. Return ONLY a JSON object with city and country fields.'
+            },
+            {
+              role: 'user',
+              content: `What city and country is at coordinates ${latitude}, ${longitude}? Return ONLY: {"city": "City Name", "country": "Country Name"}`
+            }
+          ],
+          temperature: 0.2,
+          max_tokens: 100,
+        }),
+      });
+
+      if (locationResponse.ok) {
+        const locationData = await locationResponse.json();
+        const content = locationData.choices[0].message.content;
+        console.log('Location identified:', content);
+        
+        try {
+          const locationJson = JSON.parse(content.match(/\{[^}]+\}/)?.[0] || '{}');
+          targetCity = locationJson.city || city;
+          targetCountry = locationJson.country || country;
+        } catch (e) {
+          console.error('Failed to parse location:', e);
+        }
+      }
+    }
+
+    if (!targetCity || !targetCountry) {
       return new Response(
-        JSON.stringify({ error: 'City and country are required' }),
+        JSON.stringify({ error: 'Could not determine location. Please provide city and country or enable location services.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
-
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
+
+    console.log('Generating missions for:', targetCity, targetCountry);
 
     // Initialize Supabase client
     const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!);
@@ -36,10 +84,10 @@ serve(async (req) => {
     // Fetch existing places for context
     const { data: places } = await supabase
       .from('places')
-      .select('name, category, description')
-      .eq('city', city)
-      .eq('country', country)
-      .limit(5);
+      .select('name, category, description, latitude, longitude')
+      .eq('city', targetCity)
+      .eq('country', targetCountry)
+      .limit(10);
 
     const placesContext = places && places.length > 0 
       ? `\n\nExisting places in this location: ${places.map(p => `${p.name} (${p.category})`).join(', ')}`
@@ -114,17 +162,50 @@ COMPREHENSIVE INDIAN DESTINATIONS BY STATE:
 - Lakshadweep: Kavaratti, Agatti, Bangaram Island
 `;
 
-    const systemPrompt = `You are a travel mission designer for TravelTacTix, specializing in creating engaging, culturally-rich missions for Indian destinations.
+    // Use Perplexity to get real-time local context and nearby attractions
+    let localContext = '';
+    if (latitude && longitude) {
+      const contextResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-small-128k-online',
+          messages: [
+            {
+              role: 'system',
+              content: 'You provide local travel information and nearby attractions.'
+            },
+            {
+              role: 'user',
+              content: `What are the top cultural experiences, local food spots, hidden gems, and authentic activities within 5km of coordinates ${latitude}, ${longitude} in ${targetCity}, ${targetCountry}? Focus on authentic, local experiences.`
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 500,
+        }),
+      });
 
-Generate 6-8 unique missions for ${city}, ${country}. Each mission should:
-- Be authentic to Indian culture, traditions, and experiences
-- Leverage the specific attractions, culture, and heritage of ${city}
-- Reference actual landmarks, festivals, cuisines, or traditions from the region
-- Focus on local cuisine, heritage sites, festivals, art forms, markets, or unique activities
+      if (contextResponse.ok) {
+        const contextData = await contextResponse.json();
+        localContext = `\n\nNEARBY ATTRACTIONS & LOCAL CONTEXT:\n${contextData.choices[0].message.content}`;
+        console.log('Local context gathered from Perplexity');
+      }
+    }
+
+    const systemPrompt = `You are a travel mission designer for TravelTacTix, specializing in creating engaging, culturally-rich missions based on the user's exact location.
+
+Generate 6-8 unique, LOCATION-SPECIFIC missions for ${targetCity}, ${targetCountry}${latitude && longitude ? ` (near coordinates ${latitude}, ${longitude})` : ''}. Each mission should:
+- Be HYPER-LOCAL and specific to the user's current area
+- Reference real places, landmarks, and experiences near the user's location
+- Focus on authentic cultural experiences, local cuisine, hidden gems, and community interactions
+- Use information from nearby attractions to create realistic, achievable missions
 - Have varying difficulty levels (easy, medium, hard)
 - Offer appropriate XP rewards (easy: 50-100 XP, medium: 100-200 XP, hard: 200-300 XP)
 - Include realistic deadlines (3-14 days from now)
-- Be specific and actionable
+- Be specific, actionable, and time-sensitive
 
 Categories to choose from: food, culture, adventure, photography, heritage, shopping, nature, spiritual
 
@@ -132,7 +213,9 @@ ${indianDestinations}
 
 ${placesContext}
 
-Use the comprehensive destination list above to create missions that reflect the TRUE attractions and experiences available in ${city}. Make missions location-specific and authentic.
+${localContext}
+
+CRITICAL: Make missions SPECIFIC to places within walking/short travel distance from the user's location. Use the local context and nearby attractions to create authentic, achievable missions.
 
 Return ONLY a JSON array with this exact structure:
 [
@@ -146,8 +229,6 @@ Return ONLY a JSON array with this exact structure:
   }
 ]`;
 
-    console.log('Generating missions for:', city, country);
-
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -158,7 +239,10 @@ Return ONLY a JSON array with this exact structure:
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Create exciting missions for travelers in ${city}, ${country}` }
+          { 
+            role: 'user', 
+            content: `Create exciting, location-specific missions for travelers currently in ${targetCity}, ${targetCountry}${latitude && longitude ? ` at coordinates ${latitude}, ${longitude}` : ''}. Focus on nearby experiences they can do within the next week.` 
+          }
         ],
       }),
     });
@@ -196,28 +280,34 @@ Return ONLY a JSON array with this exact structure:
     const { data: existingMissions } = await supabase
       .from('missions')
       .select('id')
-      .eq('city', city)
-      .eq('country', country)
+      .eq('city', targetCity)
+      .eq('country', targetCountry)
       .gte('deadline', new Date().toISOString());
 
-    // If we have recent missions, return them
+    // If we have recent missions (less than 24 hours old), return them
     if (existingMissions && existingMissions.length > 0) {
-      const { data: missions } = await supabase
+      const oneDayAgo = new Date();
+      oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+      
+      const { data: recentMissions } = await supabase
         .from('missions')
         .select('*')
-        .eq('city', city)
-        .eq('country', country)
+        .eq('city', targetCity)
+        .eq('country', targetCountry)
         .gte('deadline', new Date().toISOString())
+        .gte('created_at', oneDayAgo.toISOString())
         .order('created_at', { ascending: false });
 
-      console.log(`Returning ${missions?.length || 0} existing missions`);
-      return new Response(
-        JSON.stringify({ missions: missions || [] }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      if (recentMissions && recentMissions.length >= 6) {
+        console.log(`Returning ${recentMissions.length} existing missions`);
+        return new Response(
+          JSON.stringify({ missions: recentMissions }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
-    // Format missions with proper structure
+    // Format missions with proper structure and location data
     const formattedMissions = missions.map((mission: any) => {
       const deadlineDate = new Date();
       deadlineDate.setDate(deadlineDate.getDate() + (mission.deadline_days || 7));
@@ -228,8 +318,10 @@ Return ONLY a JSON array with this exact structure:
         category: mission.category,
         difficulty: mission.difficulty,
         xp_reward: mission.xp_reward,
-        city,
-        country,
+        city: targetCity,
+        country: targetCountry,
+        latitude: latitude || null,
+        longitude: longitude || null,
         deadline: deadlineDate.toISOString(),
         is_active: true,
       };
