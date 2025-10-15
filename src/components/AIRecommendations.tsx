@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ interface AIRecommendationsProps {
 }
 
 export const AIRecommendations = ({ preferences }: AIRecommendationsProps) => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
@@ -156,7 +158,7 @@ export const AIRecommendations = ({ preferences }: AIRecommendationsProps) => {
 
                   <Button 
                     className="w-full"
-                    onClick={() => window.open(`/places/${place.id}`, '_blank')}
+                    onClick={() => navigate(`/places/${place.id}`)}
                   >
                     Explore Details
                   </Button>

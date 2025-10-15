@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { MainNav } from "@/components/MainNav";
 import { CrowdMap } from "@/components/CrowdMap";
@@ -55,6 +56,7 @@ const moodFilters = [
 ];
 
 const Discovery = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [places, setPlaces] = useState<Place[]>([]);
@@ -500,7 +502,7 @@ const Discovery = () => {
 
                   <Button 
                     className="w-full" 
-                    onClick={() => window.open(`/places/${place.id}`, '_blank')}
+                    onClick={() => navigate(`/places/${place.id}`)}
                   >
                     Explore Details
                   </Button>

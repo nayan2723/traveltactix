@@ -121,7 +121,7 @@ export const AlternativeSuggestions = ({
                 </p>
 
                 <Button
-                  onClick={() => navigate(`/place/${place.id}`)}
+                  onClick={() => navigate(`/places/${place.id}`)}
                   className="w-full"
                   variant="outline"
                 >
