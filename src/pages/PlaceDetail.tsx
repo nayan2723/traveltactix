@@ -43,13 +43,19 @@ const PlaceDetail = () => {
   const [place, setPlace] = useState<Place | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
+  const isValidUuid = (value: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
   useEffect(() => {
-    if (id) {
-      fetchPlace();
-      if (user) {
-        checkFavoriteStatus();
-      }
+    if (!id) return;
+    if (!isValidUuid(id)) {
+      // Avoid making invalid UUID requests; show not found state instead
+      setLoading(false);
+      return;
+    }
+    fetchPlace();
+    if (user) {
+      checkFavoriteStatus();
     }
   }, [id, user]);
 
@@ -61,7 +67,7 @@ const PlaceDetail = () => {
         .from('places')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       setPlace(data);
@@ -78,7 +84,7 @@ const PlaceDetail = () => {
   };
 
   const checkFavoriteStatus = async () => {
-    if (!user || !id) return;
+    if (!user || !id || !isValidUuid(id)) return;
     
     try {
       const { data, error } = await supabase
