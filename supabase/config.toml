@@ -23,3 +23,6 @@ verify_jwt = true
 
 [functions.crowd-recommendations]
 verify_jwt = true
+
+[functions.ai-learning-assistant]
+verify_jwt = true

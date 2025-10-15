@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   BookOpen, 
   Play, 
@@ -13,7 +15,10 @@ import {
   Star,
   Trophy,
   ArrowRight,
-  Volume2
+  Volume2,
+  Lightbulb,
+  Languages,
+  Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,6 +53,11 @@ const CulturalLessons = () => {
   const [answers, setAnswers] = useState<any[]>([]);
   const [lessonComplete, setLessonComplete] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [aiHint, setAiHint] = useState<string>("");
+  const [loadingHint, setLoadingHint] = useState(false);
+  const [translationText, setTranslationText] = useState("");
+  const [translatedText, setTranslatedText] = useState("");
+  const [loadingTranslation, setLoadingTranslation] = useState(false);
 
   useEffect(() => {
     fetchLessonsAndProgress();
@@ -170,6 +180,66 @@ const CulturalLessons = () => {
     return userProgress.some(p => p.lesson_id === lessonId);
   };
 
+  const getAiHint = async () => {
+    if (!selectedLesson) return;
+    
+    setLoadingHint(true);
+    try {
+      const question = selectedLesson.lesson_data.questions[currentQuestion];
+      
+      const { data, error } = await supabase.functions.invoke('ai-learning-assistant', {
+        body: {
+          type: 'hint',
+          question: question.question || question.text,
+          context: {
+            lesson: selectedLesson.title,
+            language: selectedLesson.language,
+            difficulty: selectedLesson.difficulty_level
+          }
+        }
+      });
+
+      if (error) throw error;
+      setAiHint(data.hint);
+    } catch (error) {
+      console.error('Error getting AI hint:', error);
+      toast({
+        title: "Hint Unavailable",
+        description: "Could not generate hint at this time",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingHint(false);
+    }
+  };
+
+  const translateText = async () => {
+    if (!translationText.trim() || !selectedLesson) return;
+    
+    setLoadingTranslation(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-learning-assistant', {
+        body: {
+          type: 'translate',
+          text: translationText,
+          targetLanguage: selectedLesson.language
+        }
+      });
+
+      if (error) throw error;
+      setTranslatedText(data.translation);
+    } catch (error) {
+      console.error('Error translating:', error);
+      toast({
+        title: "Translation Failed",
+        description: "Could not translate text at this time",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingTranslation(false);
+    }
+  };
+
   const getDifficultyColor = (level: string) => {
     switch (level) {
       case 'beginner': return 'bg-emerald-500/10 text-emerald-500';
@@ -199,14 +269,19 @@ const CulturalLessons = () => {
     return (
       <div className="min-h-screen bg-black text-white">
         <div className="container mx-auto px-4 py-8">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             {/* Progress Header */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="heading-display text-2xl">{selectedLesson.title}</h1>
                 <Button
                   variant="outline"
-                  onClick={() => setSelectedLesson(null)}
+                  onClick={() => {
+                    setSelectedLesson(null);
+                    setAiHint("");
+                    setTranslationText("");
+                    setTranslatedText("");
+                  }}
                 >
                   Exit Lesson
                 </Button>
@@ -220,35 +295,40 @@ const CulturalLessons = () => {
               </div>
             </div>
 
-            {/* Question Card */}
-            <Card className="p-8 relative">
-              <GlowingEffect
-                spread={30}
-                glow={true}
-                disabled={false}
-                proximity={50}
-                inactiveZone={0.01}
-                borderWidth={2}
-              />
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Main Question Card */}
+              <div className="md:col-span-2">
+                <Card className="p-8 relative">
+                  <GlowingEffect
+                    spread={30}
+                    glow={true}
+                    disabled={false}
+                    proximity={50}
+                    inactiveZone={0.01}
+                    borderWidth={2}
+                  />
 
-              {question.type === 'multiple_choice' && (
-                <div>
-                  <h2 className="text-xl font-semibold mb-6">{question.question}</h2>
-                  <div className="space-y-3">
-                    {question.options.map((option: string, index: number) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        className="w-full text-left justify-start p-4 h-auto"
-                        onClick={() => submitAnswer(index)}
-                      >
-                        <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
-                        {option}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
+                  {question.type === 'multiple_choice' && (
+                    <div>
+                      <h2 className="text-xl font-semibold mb-6">{question.question}</h2>
+                      <div className="space-y-3">
+                        {question.options.map((option: string, index: number) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            className="w-full text-left justify-start p-4 h-auto"
+                            onClick={() => {
+                              submitAnswer(index);
+                              setAiHint("");
+                            }}
+                          >
+                            <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
+                            {option}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
               {question.type === 'pronunciation' && (
                 <div className="text-center">
@@ -290,25 +370,137 @@ const CulturalLessons = () => {
                 </div>
               )}
 
-              {question.type === 'scenario' && (
-                <div>
-                  <h2 className="text-xl font-semibold mb-4">Cultural Scenario</h2>
-                  <div className="mb-6 p-4 bg-muted/30 rounded-lg">
-                    <p className="text-muted-foreground">{question.situation}</p>
+                  {question.type === 'scenario' && (
+                    <div>
+                      <h2 className="text-xl font-semibold mb-4">Cultural Scenario</h2>
+                      <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+                        <p className="text-muted-foreground">{question.situation}</p>
+                      </div>
+                      <div className="mb-6">
+                        <div className="text-sm font-medium text-muted-foreground mb-2">Appropriate Response:</div>
+                        <div className="text-lg font-semibold">{question.response}</div>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          submitAnswer(question.response);
+                          setAiHint("");
+                        }}
+                        className="btn-adventure"
+                      >
+                        Continue
+                      </Button>
+                    </div>
+                  )}
+                </Card>
+              </div>
+
+              {/* AI Assistant Sidebar */}
+              <div className="space-y-4">
+                {/* AI Hint Card */}
+                <Card className="p-4 relative">
+                  <GlowingEffect
+                    spread={20}
+                    glow={true}
+                    disabled={false}
+                    proximity={40}
+                    inactiveZone={0.01}
+                    borderWidth={1}
+                  />
+                  
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Lightbulb className="h-5 w-5 text-yellow-500" />
+                    <h3 className="font-semibold">AI Learning Assistant</h3>
                   </div>
-                  <div className="mb-6">
-                    <div className="text-sm font-medium text-muted-foreground mb-2">Appropriate Response:</div>
-                    <div className="text-lg font-semibold">{question.response}</div>
+                  
+                  {aiHint ? (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
+                        <p className="text-sm leading-relaxed">{aiHint}</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setAiHint("")}
+                        className="w-full"
+                      >
+                        Clear Hint
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={getAiHint}
+                      disabled={loadingHint}
+                      className="w-full"
+                      variant="outline"
+                    >
+                      {loadingHint ? (
+                        <>
+                          <Sparkles className="h-4 w-4 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Lightbulb className="h-4 w-4 mr-2" />
+                          Get AI Hint
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </Card>
+
+                {/* Translation Card */}
+                <Card className="p-4 relative">
+                  <GlowingEffect
+                    spread={20}
+                    glow={true}
+                    disabled={false}
+                    proximity={40}
+                    inactiveZone={0.01}
+                    borderWidth={1}
+                  />
+                  
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Languages className="h-5 w-5 text-blue-500" />
+                    <h3 className="font-semibold">Translator</h3>
                   </div>
-                  <Button
-                    onClick={() => submitAnswer(question.response)}
-                    className="btn-adventure"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              )}
-            </Card>
+                  
+                  <div className="space-y-3">
+                    <Textarea
+                      placeholder="Enter English text to translate..."
+                      value={translationText}
+                      onChange={(e) => setTranslationText(e.target.value)}
+                      className="min-h-[80px] text-sm"
+                    />
+                    
+                    <Button
+                      onClick={translateText}
+                      disabled={loadingTranslation || !translationText.trim()}
+                      className="w-full"
+                      size="sm"
+                    >
+                      {loadingTranslation ? (
+                        <>
+                          <Sparkles className="h-4 w-4 mr-2 animate-spin" />
+                          Translating...
+                        </>
+                      ) : (
+                        <>
+                          <Languages className="h-4 w-4 mr-2" />
+                          Translate to {selectedLesson.language}
+                        </>
+                      )}
+                    </Button>
+                    
+                    {translatedText && (
+                      <div className="p-3 bg-blue-500/5 rounded-lg border border-blue-500/20">
+                        <div className="text-xs text-muted-foreground mb-1">Translation:</div>
+                        <p className="text-sm leading-relaxed">{translatedText}</p>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
