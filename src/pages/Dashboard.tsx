@@ -43,6 +43,9 @@ const Dashboard = () => {
   const [missions, setMissions] = useState<any[]>([]);
   const [userMissions, setUserMissions] = useState<any[]>([]);
   const [userBadges, setUserBadges] = useState<any[]>([]);
+  const [placesVisited, setPlacesVisited] = useState(0);
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [culturalProgress, setCulturalProgress] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // Use profile data or fallback to mock
@@ -96,6 +99,30 @@ const Dashboard = () => {
         .eq('user_id', user.id);
 
       setUserBadges(badgesData || []);
+
+      // Fetch places visited count
+      const { count: visitedCount } = await supabase
+        .from('user_place_visits')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+
+      setPlacesVisited(visitedCount || 0);
+
+      // Fetch favorites count
+      const { count: favCount } = await supabase
+        .from('user_favorites')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+
+      setFavoritesCount(favCount || 0);
+
+      // Fetch cultural progress count
+      const { count: culturalCount } = await supabase
+        .from('user_cultural_progress')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+
+      setCulturalProgress(culturalCount || 0);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({
@@ -234,7 +261,7 @@ const Dashboard = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-success/5 to-success/10"></div>
                 <div className="relative">
                   <MapPin className="h-8 w-8 text-success mx-auto mb-3" />
-                  <div className="heading-display text-3xl text-success mb-1">0</div>
+                  <div className="heading-display text-3xl text-success mb-1">{placesVisited}</div>
                   <div className="text-sm text-muted-foreground">Places Visited</div>
                 </div>
               </Card>
@@ -342,7 +369,11 @@ const Dashboard = () => {
                           </div>
                         </div>
                         
-                        <Button size="sm" className="ml-6 btn-adventure">
+                        <Button 
+                          size="sm" 
+                          className="ml-6 btn-adventure"
+                          onClick={() => navigate(`/missions/${userMission.mission_id}`)}
+                        >
                           Continue Quest
                         </Button>
                       </div>
@@ -474,13 +505,25 @@ const Dashboard = () => {
             <Card className="travel-card p-6">
               <h3 className="heading-display text-lg mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <Button onClick={() => window.location.href = "/cultural-feed"} className="w-full">
+                <Button onClick={() => navigate('/cultural-feed')} className="w-full">
                   <BookOpen className="mr-2 h-4 w-4" />
-                  View Cultural Feed
+                  Cultural Feed
                 </Button>
-                <Button onClick={() => window.location.href = "/discovery"} className="w-full" variant="outline">
+                <Button onClick={() => navigate('/discovery')} className="w-full" variant="outline">
                   <Search className="mr-2 h-4 w-4" />
-                  Discover Places
+                  Discovery
+                </Button>
+                <Button onClick={() => navigate('/favorites')} className="w-full" variant="outline">
+                  <Star className="mr-2 h-4 w-4" />
+                  Favorites ({favoritesCount})
+                </Button>
+                <Button onClick={() => navigate('/cultural-lessons')} className="w-full" variant="outline">
+                  <Languages className="mr-2 h-4 w-4" />
+                  Learn Culture
+                </Button>
+                <Button onClick={() => navigate('/ar-scan')} className="w-full" variant="outline">
+                  <Camera className="mr-2 h-4 w-4" />
+                  AR Scanner
                 </Button>
               </div>
             </Card>
@@ -494,12 +537,16 @@ const Dashboard = () => {
                   <span className="font-medium">{userMissions.filter(m => m.is_completed).length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total XP Earned</span>
-                  <span className="font-medium">{currentXP.toLocaleString()}</span>
+                  <span className="text-muted-foreground">Places Visited</span>
+                  <span className="font-medium">{placesVisited}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Current Level</span>
-                  <span className="font-medium text-primary">Level {level}</span>
+                  <span className="text-muted-foreground">Favorites Saved</span>
+                  <span className="font-medium">{favoritesCount}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Cultural Lessons</span>
+                  <span className="font-medium">{culturalProgress}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Global Rank</span>
