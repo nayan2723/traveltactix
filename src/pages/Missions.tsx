@@ -4,9 +4,81 @@ import { MainNav } from '@/components/MainNav';
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Compass, Target, Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { MapPin, Compass, Target, Star, Plus, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { useGeolocation } from '@/hooks/useGeolocation';
 
 export default function Missions() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const { latitude, longitude } = useGeolocation();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleGenerateMissions = async () => {
+    if (!user) {
+      toast({
+        title: 'Authentication Required',
+        description: 'Please sign in to generate missions',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!city && !latitude) {
+      toast({
+        title: 'Location Required',
+        description: 'Please enter a city or enable location services',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-missions', {
+        body: {
+          city: city || undefined,
+          country: country || undefined,
+          latitude: latitude || undefined,
+          longitude: longitude || undefined,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.missions && data.missions.length > 0) {
+        toast({
+          title: 'Missions Generated! 🎯',
+          description: `${data.missions.length} new missions available`,
+        });
+        setRefreshKey(prev => prev + 1);
+        setCity('');
+        setCountry('');
+      } else {
+        toast({
+          title: 'No New Missions',
+          description: 'Recent missions already exist for this location',
+        });
+      }
+    } catch (error: any) {
+      console.error('Generate missions error:', error);
+      toast({
+        title: 'Generation Failed',
+        description: error.message || 'Failed to generate missions',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <MainNav />
@@ -47,9 +119,59 @@ export default function Missions() {
         </div>
       </section>
 
+      {/* Mission Generator */}
+      <div className="container-wide mx-auto px-4 sm:px-6 pb-8">
+        <Card className="max-w-3xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              Generate Custom Missions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Input
+                placeholder="City (e.g., Mumbai)"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                disabled={isGenerating}
+              />
+              <Input
+                placeholder="Country (e.g., India)"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                disabled={isGenerating}
+              />
+              <Button
+                onClick={handleGenerateMissions}
+                disabled={isGenerating}
+                className="w-full"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Target className="h-4 w-4 mr-2" />
+                    Generate
+                  </>
+                )}
+              </Button>
+            </div>
+            {latitude && longitude && (
+              <p className="text-xs text-muted-foreground mt-2">
+                📍 Using your location: {latitude.toFixed(4)}, {longitude.toFixed(4)}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Main Content */}
       <div className="container-wide mx-auto px-4 sm:px-6 pb-20">
-        <MissionsList />
+        <MissionsList key={refreshKey} />
       </div>
 
       {/* Features Section */}

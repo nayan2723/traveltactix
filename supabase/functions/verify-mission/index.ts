@@ -124,17 +124,21 @@ serve(async (req) => {
 
       case 'photo':
         // Use existing recognize-landmark function for photo verification
-        if (verification_data.photo) {
+        if (verification_data.imageData) {
           const { data: recognitionData, error: recognitionError } = await supabase.functions.invoke('recognize-landmark', {
-            body: { image: verification_data.photo }
+            body: { imageData: verification_data.imageData }
           });
 
-          if (!recognitionError && recognitionData?.landmarks?.length > 0) {
-            isVerified = true;
-            verificationNotes = `Photo verified: ${recognitionData.landmarks[0].description}`;
+          if (!recognitionError && recognitionData?.success && recognitionData?.landmark) {
+            isVerified = recognitionData.landmark.confidence !== 'low';
+            verificationNotes = isVerified 
+              ? `Photo verified: ${recognitionData.landmark.name} in ${recognitionData.landmark.city}`
+              : `Could not clearly identify landmark. Detected: ${recognitionData.landmark.name || 'unknown'}`;
           } else {
             verificationNotes = 'Could not verify landmark in photo';
           }
+        } else {
+          verificationNotes = 'No photo provided for verification';
         }
         break;
 

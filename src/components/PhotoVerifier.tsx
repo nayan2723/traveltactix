@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface PhotoVerifierProps {
   missionId: string;
-  onVerify: (data: { photo: string }) => Promise<void>;
+  onVerify: (data: { imageData: string }) => void;
 }
 
 export const PhotoVerifier = ({ missionId, onVerify }: PhotoVerifierProps) => {
@@ -40,7 +40,7 @@ export const PhotoVerifier = ({ missionId, onVerify }: PhotoVerifierProps) => {
 
     setIsUploading(true);
     try {
-      await onVerify({ photo: preview });
+      await onVerify({ imageData: preview });
     } catch (error) {
       toast({
         title: "Verification failed",
