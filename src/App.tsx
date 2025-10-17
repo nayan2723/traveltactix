@@ -18,6 +18,8 @@ import Discovery from "./pages/Discovery";
 import PlaceDetail from "./pages/PlaceDetail";
 import Favorites from "./pages/Favorites";
 import CrowdMonitor from "./pages/CrowdMonitor";
+import Profile from "./pages/Profile";
+import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +46,8 @@ const App = () => (
         <Route path="/places/:id" element={<PlaceDetail />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/crowd-monitor" element={<CrowdMonitor />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

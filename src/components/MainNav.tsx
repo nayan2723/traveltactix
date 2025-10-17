@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useProfile } from "@/hooks/useProfile";
 import {
   Search,
   Trophy,
@@ -12,7 +14,8 @@ import {
   Menu,
   X,
   LogOut,
-  User
+  User,
+  Award
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -20,6 +23,7 @@ export const MainNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { profile } = useProfile();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -35,6 +39,7 @@ export const MainNav = () => {
     { name: "Discovery", path: "/discovery", icon: Search },
     { name: "Missions", path: "/missions", icon: Trophy },
     { name: "Crowd Monitor", path: "/crowd-monitor", icon: Users },
+    { name: "Leaderboard", path: "/leaderboard", icon: Award },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -88,6 +93,19 @@ export const MainNav = () => {
                 >
                   <LayoutDashboard className="h-4 w-4 mr-2" />
                   Dashboard
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate("/profile")}
+                >
+                  <Avatar className="w-6 h-6 mr-2">
+                    <AvatarImage src={profile?.avatar_url || undefined} />
+                    <AvatarFallback className="text-xs">
+                      {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  Profile
                 </Button>
                 <Button 
                   variant="ghost" 

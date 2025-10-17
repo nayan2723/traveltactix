@@ -578,10 +578,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leaderboard: {
+        Row: {
+          avatar_url: string | null
+          full_name: string | null
+          id: string | null
+          level: number | null
+          rank: number | null
+          total_xp: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      calculate_level_from_xp: {
+        Args: { xp: number }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
