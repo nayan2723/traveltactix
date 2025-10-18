@@ -69,25 +69,66 @@ const ARScan = () => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } 
-      });
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+      // Prefer rear camera, but gracefully fall back to any available camera
+      const tryGetStream = async (constraints: MediaStreamConstraints) =>
+        await navigator.mediaDevices.getUserMedia(constraints);
+
+      let stream: MediaStream | null = null;
+      try {
+        stream = await tryGetStream({
+          video: {
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        });
+      } catch (e) {
+        // Fallback to front camera if environment is unavailable (e.g., desktops)
+        stream = await tryGetStream({
+          video: {
+            facingMode: { ideal: 'user' },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        });
+      }
+
+      if (videoRef.current && stream) {
+        const video = videoRef.current;
+        video.srcObject = stream;
+        // Switch UI immediately; playback will be attempted next
         setCameraPermission('granted');
+        // On iOS Safari, ensure we explicitly call play() after metadata loads
+        const playVideo = async () => {
+          try {
+            await video.play();
+          } catch (err) {
+            console.error('Video play() failed:', err);
+            toast({
+              title: 'Unable to start camera preview',
+              description: 'Tap the screen once, then try again. Some browsers require an extra gesture.',
+              variant: 'destructive',
+            });
+          }
+        };
+
+        if (video.readyState >= 2) {
+          await playVideo();
+        } else {
+          video.onloadedmetadata = () => {
+            playVideo();
+          };
+        }
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
       setCameraPermission('denied');
       toast({
-        title: "Camera Access Denied",
-        description: "Please allow camera access to use AR scanning",
-        variant: "destructive",
+        title: 'Camera Access Failed',
+        description: 'Please grant camera permission and ensure you are on HTTPS. If on desktop, try a different camera.',
+        variant: 'destructive',
       });
     }
   };
