@@ -16,7 +16,10 @@ import {
   Zap,
   X,
   Navigation,
-  Clock
+  Clock,
+  Utensils,
+  Sparkles,
+  Calendar
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +34,10 @@ interface LandmarkResult {
   confidence: string;
   latitude?: number;
   longitude?: number;
+  famousFoods?: Array<{ name: string; description: string }>;
+  culturalFacts?: string[];
+  nearbyAttractions?: Array<{ name: string; distance?: string; type?: string }>;
+  bestTimeToVisit?: string;
 }
 
 interface PlaceData {
@@ -412,6 +419,85 @@ const ARScan = () => {
                 </p>
               </div>
 
+              {/* Best Time to Visit */}
+              {recognizedLandmark.bestTimeToVisit && (
+                <div className="bg-primary/10 border border-primary/20 p-4 rounded-xl mb-6">
+                  <div className="flex items-start gap-3">
+                    <Calendar className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-sm mb-1">Best Time to Visit</h4>
+                      <p className="text-sm text-foreground/80">{recognizedLandmark.bestTimeToVisit}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Cultural Facts */}
+              {recognizedLandmark.culturalFacts && recognizedLandmark.culturalFacts.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-3 flex items-center">
+                    <Sparkles className="h-4 w-4 mr-2 text-primary" />
+                    Cultural Facts
+                  </h3>
+                  <div className="space-y-2">
+                    {recognizedLandmark.culturalFacts.map((fact, index) => (
+                      <div key={index} className="bg-muted/20 p-3 rounded-lg">
+                        <p className="text-sm leading-relaxed">{fact}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Famous Foods */}
+              {recognizedLandmark.famousFoods && recognizedLandmark.famousFoods.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-3 flex items-center">
+                    <Utensils className="h-4 w-4 mr-2 text-primary" />
+                    Famous Local Foods
+                  </h3>
+                  <div className="grid gap-3">
+                    {recognizedLandmark.famousFoods.map((food, index) => (
+                      <div key={index} className="travel-card p-4">
+                        <h4 className="font-medium text-sm mb-1">{food.name}</h4>
+                        <p className="text-xs text-muted-foreground">{food.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* AI Nearby Attractions */}
+              {recognizedLandmark.nearbyAttractions && recognizedLandmark.nearbyAttractions.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-3 flex items-center">
+                    <MapPin className="h-4 w-4 mr-2 text-primary" />
+                    Nearby Attractions
+                  </h3>
+                  <div className="grid gap-3">
+                    {recognizedLandmark.nearbyAttractions.map((attraction, index) => (
+                      <div key={index} className="travel-card p-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm mb-1">{attraction.name}</h4>
+                            {attraction.type && (
+                              <Badge variant="outline" className="text-xs">
+                                {attraction.type}
+                              </Badge>
+                            )}
+                          </div>
+                          {attraction.distance && (
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">
+                              {attraction.distance}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Matched Place Details */}
               {matchedPlace && (
                 <div className="mb-6">
@@ -439,12 +525,12 @@ const ARScan = () => {
                 </div>
               )}
 
-              {/* Nearby Places */}
+              {/* Database Nearby Places */}
               {nearbyPlaces.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-3 flex items-center">
                     <Navigation className="h-4 w-4 mr-2 text-primary" />
-                    Nearby Attractions ({nearbyPlaces.length})
+                    More Places to Explore ({nearbyPlaces.length})
                   </h3>
                   <div className="grid gap-3">
                     {nearbyPlaces.map((place) => (

@@ -51,13 +51,26 @@ serve(async (req) => {
                 - name: The name of the landmark/place
                 - city: The city where it's located
                 - country: The country where it's located
-                - description: A brief 2-3 sentence description
+                - description: A detailed 3-4 sentence description about the landmark's history, architecture, and cultural significance
                 - category: Type of place (monument, temple, museum, park, etc.)
                 - confidence: Your confidence level (high/medium/low)
                 - latitude: Approximate latitude (if known)
                 - longitude: Approximate longitude (if known)
+                - famousFoods: Array of 3-5 famous local dishes/foods from this area (with name and brief description)
+                - culturalFacts: Array of 3-5 interesting cultural facts about the area
+                - nearbyAttractions: Array of 3-5 other famous places or attractions in the same city
+                - bestTimeToVisit: Best time of day or season to visit
                 
-                If you cannot identify a clear landmark, set confidence to "low" and provide your best guess or say "unidentified".`
+                If you cannot identify a clear landmark, set confidence to "low" and provide your best guess or say "unidentified".
+                
+                Example format for famousFoods:
+                [{"name": "Dish Name", "description": "Brief description of the dish"}]
+                
+                Example for culturalFacts:
+                ["Interesting fact 1", "Interesting fact 2"]
+                
+                Example for nearbyAttractions:
+                [{"name": "Place Name", "distance": "2km away", "type": "museum"}]`
               },
               {
                 type: "image_url",
