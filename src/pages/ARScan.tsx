@@ -65,6 +65,7 @@ const ARScan = () => {
   const [showDetails, setShowDetails] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
   const [cameraPermission, setCameraPermission] = useState<string>('prompt');
 
   const startCamera = async () => {
@@ -97,6 +98,10 @@ const ARScan = () => {
 
       if (videoRef.current && stream) {
         const video = videoRef.current;
+        // Ensure correct playback attributes across mobile browsers
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('autoplay', 'true');
+        video.muted = true;
         video.srcObject = stream;
         // Switch UI immediately; playback will be attempted next
         setCameraPermission('granted');
@@ -162,28 +167,39 @@ const ARScan = () => {
     return canvas.toDataURL('image/jpeg', 0.8);
   };
 
-  const scanLandmark = async () => {
-    const imageData = captureImage();
-    if (!imageData) {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
       toast({
-        title: "Error",
-        description: "Failed to capture image",
-        variant: "destructive",
+        title: 'Invalid file',
+        description: 'Please select an image file',
+        variant: 'destructive',
       });
       return;
     }
 
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64 = reader.result as string;
+      await scanFromImage(base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const scanFromImage = async (imageData: string) => {
     setIsScanning(true);
     setScanningProgress(0);
 
     try {
       // Animate progress
       const progressInterval = setInterval(() => {
-        setScanningProgress(prev => Math.min(prev + 15, 90));
+        setScanningProgress((prev) => Math.min(prev + 15, 90));
       }, 200);
 
       const { data, error } = await supabase.functions.invoke('recognize-landmark', {
-        body: { imageData }
+        body: { imageData },
       });
 
       clearInterval(progressInterval);
@@ -194,7 +210,7 @@ const ARScan = () => {
       }
 
       if (!data.success) {
-        throw new Error(data.error || "Recognition failed");
+        throw new Error(data.error || 'Recognition failed');
       }
 
       setRecognizedLandmark(data.landmark);
@@ -203,48 +219,60 @@ const ARScan = () => {
 
       if (data.landmark.confidence === 'low') {
         toast({
-          title: "No Clear Landmark Detected",
-          description: "Try getting closer or pointing at a clearer view of the landmark",
-          variant: "destructive",
+          title: 'No Clear Landmark Detected',
+          description: 'Try getting closer or pointing at a clearer view of the landmark',
+          variant: 'destructive',
         });
       } else {
         toast({
-          title: "Landmark Recognized!",
+          title: 'Landmark Recognized!',
           description: `Found ${data.landmark.name}`,
         });
         setShowDetails(true);
 
         // Track the AR scan
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
-          await supabase
-            .from('user_cultural_progress')
-            .insert({
-              user_id: user.id,
-              content_id: null,
-              lesson_id: null,
-              progress_type: 'challenge_completed',
-              cultural_xp_earned: 20,
-              completion_data: {
-                ar_scan: data.landmark.name,
-                city: data.landmark.city,
-                scanned_at: new Date().toISOString()
-              }
-            });
+          await supabase.from('user_cultural_progress').insert({
+            user_id: user.id,
+            content_id: null,
+            lesson_id: null,
+            progress_type: 'challenge_completed',
+            cultural_xp_earned: 20,
+            completion_data: {
+              ar_scan: data.landmark.name,
+              city: data.landmark.city,
+              scanned_at: new Date().toISOString(),
+            },
+          });
         }
       }
-
     } catch (error: any) {
       console.error('Error scanning landmark:', error);
       toast({
-        title: "Scan Failed",
-        description: error.message || "Failed to recognize landmark. Please try again.",
-        variant: "destructive",
+        title: 'Scan Failed',
+        description: error.message || 'Failed to recognize landmark. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsScanning(false);
       setScanningProgress(0);
     }
+  };
+
+  const scanLandmark = async () => {
+    const imageData = captureImage();
+    if (!imageData) {
+      toast({
+        title: 'Error',
+        description: 'Failed to capture image',
+        variant: 'destructive',
+      });
+      return;
+    }
+    await scanFromImage(imageData);
   };
 
   const getCategoryIcon = (category: string) => {
@@ -296,13 +324,25 @@ const ARScan = () => {
               <p className="text-gray-300 mb-6 max-w-md mx-auto">
                 Point your camera at monuments and landmarks to discover details and nearby attractions
               </p>
-              <Button
-                onClick={startCamera}
-                className="btn-primary rounded-full px-8"
-              >
-                <Camera className="h-4 w-4 mr-2" />
-                Enable Camera
-              </Button>
+              <input
+                ref={uploadInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button onClick={startCamera} className="btn-primary rounded-full px-8">
+                  <Camera className="h-4 w-4 mr-2" />
+                  Enable Camera
+                </Button>
+                <Button variant="outline" onClick={() => uploadInputRef.current?.click()} className="rounded-full px-8">
+                  Upload Photo Instead
+                </Button>
+              </div>
+              <p className="text-xs text-white/60 mt-3">
+                If the camera is blocked in this preview, try opening the site in a new tab and allow camera access.
+              </p>
             </div>
           </div>
         )}
