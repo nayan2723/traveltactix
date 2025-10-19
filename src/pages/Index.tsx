@@ -84,7 +84,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground overflow-hidden">
       <MainNav />
       
       {/* Animated Background Blobs */}
@@ -143,7 +143,7 @@ const Index = () => {
             className="max-w-7xl"
           >
             <motion.h1 
-              className="heading-display text-white mb-12 max-w-6xl"
+              className="heading-display text-foreground mb-12 max-w-6xl"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -152,7 +152,7 @@ const Index = () => {
               <br />
               destinations
               <br />
-              <span className="text-white/40">
+              <span className="text-muted-foreground">
                 people remember.
               </span>
             </motion.h1>
@@ -173,7 +173,7 @@ const Index = () => {
               <Button 
                 size="lg"
                 variant="ghost"
-                className="btn-adventure rounded-full text-base text-white border-white/30 hover:bg-white hover:text-black"
+                className="btn-adventure rounded-full text-base"
                 onClick={() => {
                   const featuresSection = document.getElementById('features');
                   featuresSection?.scrollIntoView({ behavior: 'smooth' });
@@ -193,7 +193,7 @@ const Index = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.7 }}
-              className="mt-32 max-w-2xl text-white/50 text-base leading-relaxed"
+              className="mt-32 max-w-2xl text-muted-foreground text-base leading-relaxed"
             >
               TravelTacTix came from constantly exploring hidden gems wondering, 
               "How do I find truly authentic experiences?" It is your personal 
@@ -215,7 +215,7 @@ const Index = () => {
                 explore smarter
               </span>
             </h2>
-            <p className="text-white/60 text-center text-lg mb-20 max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-center text-lg mb-20 max-w-2xl mx-auto">
               Powerful features designed to transform your travels into unforgettable adventures
             </p>
           </AnimatedSection>
@@ -226,20 +226,20 @@ const Index = () => {
                 <motion.div
                   whileHover={{ scale: 1.02, y: -5 }}
                   transition={{ duration: 0.2 }}
-                  className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 cursor-pointer overflow-hidden hover:border-white/20 transition-all"
+                  className="group relative bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-8 cursor-pointer overflow-hidden hover:border-border/50 transition-all"
                   onClick={() => navigate(feature.route)}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   
                   <div className="relative">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                      <feature.icon className="h-6 w-6 text-orange-400" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-primary/20">
+                      <feature.icon className="h-6 w-6 text-primary" />
                     </div>
                     
                     <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
-                    <p className="text-white/60 leading-relaxed">{feature.description}</p>
+                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                     
-                    <div className="mt-6 flex items-center text-orange-400 text-sm group-hover:translate-x-2 transition-transform">
+                    <div className="mt-6 flex items-center text-primary text-sm group-hover:translate-x-2 transition-transform">
                       Learn more
                       <ArrowRight className="h-4 w-4 ml-1" />
                     </div>
@@ -257,7 +257,7 @@ const Index = () => {
           <AnimatedSection>
             <h2 className="text-5xl md:text-7xl font-bold mb-20 text-center">
               Simple,{" "}
-              <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 powerful,
               </span>
               <br />
@@ -269,41 +269,41 @@ const Index = () => {
             <AnimatedSection>
               <div className="grid md:grid-cols-2 gap-16 items-center">
                 <div>
-                  <div className="text-6xl font-bold text-white/10 mb-4">01</div>
+                  <div className="text-6xl font-bold text-muted/30 mb-4">01</div>
                   <h3 className="text-4xl font-bold mb-6">Sign up & discover</h3>
-                  <p className="text-white/60 text-lg leading-relaxed mb-6">
+                  <p className="text-muted-foreground text-lg leading-relaxed mb-6">
                     Create your account and immediately start discovering hidden gems across India 
                     with our AI-powered recommendation engine tailored to your travel style.
                   </p>
                   <Button 
                     size="lg"
-                    className="bg-white text-black hover:bg-white/90"
+                    className="btn-primary"
                     onClick={() => navigate("/discovery")}
                   >
                     Explore Destinations
                   </Button>
                 </div>
-                <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-3xl p-12 h-64 flex items-center justify-center">
-                  <Compass className="h-24 w-24 text-orange-400" />
+                <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-3xl p-12 h-64 flex items-center justify-center border border-border/50">
+                  <Compass className="h-24 w-24 text-primary" />
                 </div>
               </div>
             </AnimatedSection>
 
             <AnimatedSection>
               <div className="grid md:grid-cols-2 gap-16 items-center">
-                <div className="order-2 md:order-1 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-3xl p-12 h-64 flex items-center justify-center">
-                  <Trophy className="h-24 w-24 text-purple-400" />
+                <div className="order-2 md:order-1 bg-gradient-to-br from-primary/10 to-accent/10 rounded-3xl p-12 h-64 flex items-center justify-center border border-border/50">
+                  <Trophy className="h-24 w-24 text-primary" />
                 </div>
                 <div className="order-1 md:order-2">
-                  <div className="text-6xl font-bold text-white/10 mb-4">02</div>
+                  <div className="text-6xl font-bold text-muted/30 mb-4">02</div>
                   <h3 className="text-4xl font-bold mb-6">Complete missions</h3>
-                  <p className="text-white/60 text-lg leading-relaxed mb-6">
+                  <p className="text-muted-foreground text-lg leading-relaxed mb-6">
                     Take on cultural challenges, learn local customs, and earn XP points as you explore. 
                     Every destination becomes an interactive adventure.
                   </p>
                   <Button 
                     size="lg"
-                    className="bg-white text-black hover:bg-white/90"
+                    className="btn-primary"
                     onClick={() => navigate("/missions")}
                   >
                     View Missions
@@ -315,41 +315,41 @@ const Index = () => {
             <AnimatedSection>
               <div className="grid md:grid-cols-2 gap-16 items-center">
                 <div>
-                  <div className="text-6xl font-bold text-white/10 mb-4">03</div>
+                  <div className="text-6xl font-bold text-muted/30 mb-4">03</div>
                   <h3 className="text-4xl font-bold mb-6">Learn culture</h3>
-                  <p className="text-white/60 text-lg leading-relaxed mb-6">
+                  <p className="text-muted-foreground text-lg leading-relaxed mb-6">
                     Master local customs, traditions, and language through interactive cultural lessons
                     from all 29 states of India.
                   </p>
                   <Button 
                     size="lg"
-                    className="bg-white text-black hover:bg-white/90"
+                    className="btn-primary"
                     onClick={() => navigate("/cultural-lessons")}
                   >
                     Start Learning
                   </Button>
                 </div>
-                <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-3xl p-12 h-64 flex items-center justify-center">
-                  <BookOpen className="h-24 w-24 text-cyan-400" />
+                <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-3xl p-12 h-64 flex items-center justify-center border border-border/50">
+                  <BookOpen className="h-24 w-24 text-primary" />
                 </div>
               </div>
             </AnimatedSection>
 
             <AnimatedSection>
               <div className="grid md:grid-cols-2 gap-16 items-center">
-                <div className="order-2 md:order-1 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-3xl p-12 h-64 flex items-center justify-center">
-                  <Camera className="h-24 w-24 text-green-400" />
+                <div className="order-2 md:order-1 bg-gradient-to-br from-primary/10 to-accent/10 rounded-3xl p-12 h-64 flex items-center justify-center border border-border/50">
+                  <Camera className="h-24 w-24 text-primary" />
                 </div>
                 <div className="order-1 md:order-2">
-                  <div className="text-6xl font-bold text-white/10 mb-4">04</div>
+                  <div className="text-6xl font-bold text-muted/30 mb-4">04</div>
                   <h3 className="text-4xl font-bold mb-6">Scan landmarks</h3>
-                  <p className="text-white/60 text-lg leading-relaxed mb-6">
+                  <p className="text-muted-foreground text-lg leading-relaxed mb-6">
                     Use AR to discover fascinating stories at India's most iconic monuments and
                     unlock cultural insights at famous landmarks.
                   </p>
                   <Button 
                     size="lg"
-                    className="bg-white text-black hover:bg-white/90"
+                    className="btn-primary"
                     onClick={() => navigate("/ar-scan")}
                   >
                     Try AR Scanner
@@ -361,22 +361,22 @@ const Index = () => {
             <AnimatedSection>
               <div className="grid md:grid-cols-2 gap-16 items-center">
                 <div>
-                  <div className="text-6xl font-bold text-white/10 mb-4">05</div>
+                  <div className="text-6xl font-bold text-muted/30 mb-4">05</div>
                   <h3 className="text-4xl font-bold mb-6">Monitor crowds</h3>
-                  <p className="text-white/60 text-lg leading-relaxed mb-6">
+                  <p className="text-muted-foreground text-lg leading-relaxed mb-6">
                     Real-time crowd monitoring with live updates, best visiting times, and smart 
                     alternative suggestions when places get too crowded.
                   </p>
                   <Button 
                     size="lg"
-                    className="bg-white text-black hover:bg-white/90"
+                    className="btn-primary"
                     onClick={() => navigate("/crowd-monitor")}
                   >
                     Check Crowd Levels
                   </Button>
                 </div>
-                <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-3xl p-12 h-64 flex items-center justify-center">
-                  <Users className="h-24 w-24 text-blue-400" />
+                <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-3xl p-12 h-64 flex items-center justify-center border border-border/50">
+                  <Users className="h-24 w-24 text-primary" />
                 </div>
               </div>
             </AnimatedSection>
@@ -407,7 +407,7 @@ const Index = () => {
               </h2>
             </motion.div>
 
-            <p className="text-white/60 text-xl mb-12 max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-xl mb-12 max-w-2xl mx-auto">
               Join thousands of travelers discovering India's hidden treasures through 
               gamified exploration and AI-powered recommendations.
             </p>
@@ -415,7 +415,7 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg"
-                className="bg-white text-black hover:bg-white/90 px-10 py-6 text-lg"
+                className="btn-primary px-10 py-6 text-lg"
                 onClick={() => navigate("/auth")}
               >
                 Get Started Free
@@ -423,14 +423,14 @@ const Index = () => {
               <Button 
                 size="lg"
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/5 px-10 py-6 text-lg"
+                className="px-10 py-6 text-lg"
                 onClick={() => navigate("/discovery")}
               >
                 Explore Places
               </Button>
             </div>
 
-            <div className="mt-8 text-white/40 text-sm">
+            <div className="mt-8 text-muted-foreground text-sm">
               ✨ Free to start • 🌍 33+ Places • 🏆 500+ Missions
             </div>
           </AnimatedSection>
@@ -438,7 +438,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 border-t border-white/5">
+      <footer className="py-12 px-6 border-t border-border/50">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center space-x-3">
