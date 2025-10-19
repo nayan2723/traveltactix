@@ -47,7 +47,7 @@ export const MainNav = () => {
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
       scrolled 
-        ? 'bg-black/95 backdrop-blur-xl border-b border-white/10 shadow-xl' 
+        ? 'bg-background/95 backdrop-blur-xl border-b border-border shadow-xl' 
         : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-6 py-4">
@@ -71,8 +71,8 @@ export const MainNav = () => {
                 onClick={() => navigate(item.path)}
                 className={`text-sm transition-colors flex items-center space-x-2 ${
                   isActive(item.path)
-                    ? "text-white"
-                    : "text-white/60 hover:text-white"
+                    ? "text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <item.icon className="h-4 w-4" />
@@ -156,7 +156,7 @@ export const MainNav = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-black/95 border-t border-white/5"
+            className="lg:hidden bg-background/95 backdrop-blur-xl border-t border-border"
           >
             <div className="container mx-auto px-6 py-6 space-y-4">
               {navItems.map((item) => (
@@ -168,8 +168,8 @@ export const MainNav = () => {
                   }}
                   className={`flex items-center space-x-3 w-full py-3 px-4 rounded-lg transition-colors ${
                     isActive(item.path)
-                      ? "bg-white/10 text-white"
-                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                      ? "bg-primary/10 text-foreground font-medium"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
@@ -177,12 +177,12 @@ export const MainNav = () => {
                 </button>
               ))}
 
-              <div className="border-t border-white/10 pt-4 space-y-3">
+              <div className="border-t border-border pt-4 space-y-3">
                 {user ? (
                   <>
                     <Button 
                       variant="outline" 
-                      className="w-full border-white/20 text-white hover:bg-white/5"
+                      className="w-full"
                       onClick={() => {
                         navigate("/dashboard");
                         setMenuOpen(false);
@@ -193,7 +193,7 @@ export const MainNav = () => {
                     </Button>
                     <Button 
                       variant="outline" 
-                      className="w-full border-white/20 text-white hover:bg-white/5"
+                      className="w-full"
                       onClick={() => {
                         signOut();
                         setMenuOpen(false);
@@ -207,7 +207,7 @@ export const MainNav = () => {
                   <>
                     <Button 
                       variant="outline" 
-                      className="w-full border-white/20 text-white hover:bg-white/5"
+                      className="w-full"
                       onClick={() => {
                         navigate("/auth");
                         setMenuOpen(false);
@@ -217,7 +217,7 @@ export const MainNav = () => {
                       Log in
                     </Button>
                     <Button 
-                      className="w-full bg-white text-black hover:bg-white/90"
+                      className="w-full btn-primary"
                       onClick={() => {
                         navigate("/auth");
                         setMenuOpen(false);

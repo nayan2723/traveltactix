@@ -223,12 +223,12 @@ const Discovery = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white p-6">
+      <div className="min-h-screen bg-background text-foreground p-6">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-white/5 rounded-xl h-64"></div>
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-muted/20 rounded-xl h-64"></div>
               </div>
             ))}
           </div>
@@ -238,14 +238,14 @@ const Discovery = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <MainNav />
       
       {/* Hero Section */}
       <section className="relative min-h-[60vh] flex items-center justify-center px-6 pt-20">
         <div className="absolute inset-0 overflow-hidden">
           <motion.div 
-            className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-full blur-3xl"
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.3, 0.5, 0.3],
@@ -272,14 +272,14 @@ const Discovery = () => {
               transition={{ duration: 1, delay: 0.2 }}
             >
               Discover{" "}
-              <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Hidden
               </span>
               <br />
               Gems
             </motion.h1>
 
-            <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
               AI-powered recommendations for offbeat destinations and unique experiences
             </p>
           </motion.div>

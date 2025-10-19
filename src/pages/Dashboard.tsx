@@ -158,11 +158,11 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
           <Compass className="h-16 w-16 mx-auto mb-4 animate-spin text-primary" />
           <div className="heading-display text-3xl mb-2">Loading Your Epic Journey...</div>
-          <div className="text-white/80">Preparing your adventure dashboard</div>
+          <div className="text-muted-foreground">Preparing your adventure dashboard</div>
         </div>
       </div>
     );
@@ -174,12 +174,12 @@ const Dashboard = () => {
   const xpProgress = (currentXP % 1000) / 10; // Progress to next level as percentage
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <MainNav />
       
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div 
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3],
