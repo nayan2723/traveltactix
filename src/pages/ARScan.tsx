@@ -291,18 +291,18 @@ const ARScan = () => {
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
       case 'monument':
-      case 'landmark': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+      case 'landmark': return 'bg-warning/10 text-warning border-warning/20';
       case 'temple':
-      case 'religious': return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
-      case 'museum': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+      case 'religious': return 'bg-accent/10 text-accent-foreground border-accent/20';
+      case 'museum': return 'bg-primary/10 text-primary border-primary/20';
       case 'park':
-      case 'nature': return 'bg-green-500/10 text-green-500 border-green-500/20';
-      default: return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+      case 'nature': return 'bg-success/10 text-success-foreground border-success/20';
+      default: return 'bg-muted/10 text-muted-foreground border-muted/20';
     }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
       {/* Hidden canvas for capturing */}
       <canvas ref={canvasRef} className="hidden" />
 
@@ -317,11 +317,11 @@ const ARScan = () => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
-            <div className="text-center text-white px-6">
-              <Camera className="h-24 w-24 mx-auto mb-6 opacity-50" />
+          <div className="w-full h-full bg-gradient-to-br from-background via-card to-muted/50 flex items-center justify-center">
+            <div className="text-center px-6">
+              <Camera className="h-24 w-24 mx-auto mb-6 text-muted-foreground" />
               <h2 className="text-3xl font-bold mb-4">AR Landmark Scanner</h2>
-              <p className="text-gray-300 mb-6 max-w-md mx-auto">
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 Point your camera at monuments and landmarks to discover details and nearby attractions
               </p>
               <input
@@ -340,8 +340,8 @@ const ARScan = () => {
                   Upload Photo Instead
                 </Button>
               </div>
-              <p className="text-xs text-white/60 mt-3">
-                If the camera is blocked in this preview, try opening the site in a new tab and allow camera access.
+              <p className="text-xs text-muted-foreground mt-3">
+                Camera requires HTTPS. If blocked, open in a new tab and allow camera access.
               </p>
             </div>
           </div>
@@ -358,9 +358,9 @@ const ARScan = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm"
+                className="absolute inset-0 bg-background/80 flex items-center justify-center backdrop-blur-sm"
               >
-                <div className="text-center text-white">
+                <div className="text-center">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
@@ -368,13 +368,13 @@ const ARScan = () => {
                     <ScanLine className="h-16 w-16 mx-auto mb-4 text-primary" />
                   </motion.div>
                   <div className="text-xl font-semibold mb-4">Analyzing landmark...</div>
-                  <div className="w-64 h-2 bg-white/20 rounded-full overflow-hidden mx-auto">
+                  <div className="w-64 h-2 bg-muted/30 rounded-full overflow-hidden mx-auto">
                     <motion.div
                       className="h-full bg-primary transition-all duration-300"
                       style={{ width: `${scanningProgress}%` }}
                     />
                   </div>
-                  <p className="text-sm text-white/60 mt-3">Using AI to identify the landmark</p>
+                  <p className="text-sm text-muted-foreground mt-3">Using AI to identify the landmark</p>
                 </div>
               </motion.div>
             )}
@@ -396,7 +396,7 @@ const ARScan = () => {
                 className="border-4 border-primary rounded-2xl w-64 h-64"
               />
               <div className="absolute bottom-24 left-0 right-0 text-center">
-                <p className="text-white text-sm font-medium bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full inline-block">
+                <p className="text-sm font-medium bg-card/80 backdrop-blur-sm px-4 py-2 rounded-full inline-block border border-border/50">
                   Center landmark in frame
                 </p>
               </div>
@@ -405,15 +405,15 @@ const ARScan = () => {
 
           {/* Controls */}
           <div className="absolute top-6 left-6 right-6 flex justify-between items-center z-10">
-            <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
-              <h1 className="text-base font-semibold text-white">AR Scanner</h1>
+            <div className="bg-card/80 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50">
+              <h1 className="text-base font-semibold">AR Scanner</h1>
             </div>
             
             <Button
               variant="ghost"
               size="sm"
               onClick={stopCamera}
-              className="bg-black/60 backdrop-blur-sm text-white hover:bg-black/80 rounded-full"
+              className="bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-card rounded-full"
             >
               <X className="h-4 w-4" />
             </Button>

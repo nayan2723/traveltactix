@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BeamsBackground } from "@/components/BeamsBackground";
 
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -36,17 +37,17 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/missions" element={<Missions />} />
-          <Route path="/missions/:id" element={<MissionTracker />} />
-        <Route path="/cultural-feed" element={<CulturalFeed />} />
-        <Route path="/cultural-lessons" element={<CulturalLessons />} />
-        <Route path="/ar-scan" element={<ARScan />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/missions" element={<ProtectedRoute><Missions /></ProtectedRoute>} />
+          <Route path="/missions/:id" element={<ProtectedRoute><MissionTracker /></ProtectedRoute>} />
+        <Route path="/cultural-feed" element={<ProtectedRoute><CulturalFeed /></ProtectedRoute>} />
+        <Route path="/cultural-lessons" element={<ProtectedRoute><CulturalLessons /></ProtectedRoute>} />
+        <Route path="/ar-scan" element={<ProtectedRoute><ARScan /></ProtectedRoute>} />
         <Route path="/discovery" element={<Discovery />} />
         <Route path="/places/:id" element={<PlaceDetail />} />
-        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
         <Route path="/crowd-monitor" element={<CrowdMonitor />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/leaderboard" element={<Leaderboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
