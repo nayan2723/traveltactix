@@ -302,11 +302,20 @@ Return ONLY a JSON array with this exact structure:
       const deadlineDate = new Date();
       deadlineDate.setDate(deadlineDate.getDate() + (mission.deadline_days || 7));
       
+      // Normalize difficulty to match database constraint (Easy, Medium, Hard)
+      let difficulty = 'Medium'; // default
+      if (mission.difficulty) {
+        const lower = mission.difficulty.toLowerCase();
+        if (lower === 'easy') difficulty = 'Easy';
+        else if (lower === 'medium') difficulty = 'Medium';
+        else if (lower === 'hard') difficulty = 'Hard';
+      }
+      
       return {
         title: mission.title,
         description: mission.description,
         category: mission.category,
-        difficulty: mission.difficulty,
+        difficulty: difficulty,
         xp_reward: mission.xp_reward,
         city: targetCity,
         country: targetCountry,
@@ -317,14 +326,37 @@ Return ONLY a JSON array with this exact structure:
       };
     });
 
-    // Save missions to database
-    const { data: savedMissions, error: saveError } = await supabase
+    // Save missions to database using service role to bypass RLS
+    const supabaseServiceRole = createClient(
+      SUPABASE_URL!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
+    const { data: savedMissions, error: saveError } = await supabaseServiceRole
       .from('missions')
       .insert(formattedMissions)
       .select();
 
     if (saveError) {
       console.error('Error saving missions:', saveError);
+      
+      // If save fails, try to return existing missions for this location
+      const { data: existingMissions } = await supabase
+        .from('missions')
+        .select('*')
+        .eq('city', targetCity)
+        .eq('country', targetCountry)
+        .gte('deadline', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (existingMissions && existingMissions.length > 0) {
+        return new Response(
+          JSON.stringify({ missions: existingMissions }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
       throw saveError;
     }
 
