@@ -153,6 +153,7 @@ export function MissionsList() {
       // Auto-detect and fetch missions for current location
       const detectLocationAndFetch = async () => {
         try {
+          // First try to fetch existing missions based on location
           const { data, error } = await supabase.functions.invoke('generate-missions', {
             body: { latitude, longitude }
           });
@@ -165,7 +166,6 @@ export function MissionsList() {
                 country: firstMission.country 
               });
               setMissions(data.missions);
-              setLoading(false);
               
               toast({
                 title: "Missions found nearby!",
@@ -175,9 +175,12 @@ export function MissionsList() {
           }
         } catch (err) {
           console.error('Error auto-detecting location:', err);
+        } finally {
+          setLoading(false);
         }
       };
 
+      setLoading(true);
       detectLocationAndFetch();
     }
   }, [latitude, longitude, geoError, selectedLocation]);

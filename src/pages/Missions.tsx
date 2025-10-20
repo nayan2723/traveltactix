@@ -58,14 +58,17 @@ export default function Missions() {
           title: 'Missions Generated! 🎯',
           description: `${data.missions.length} new missions available`,
         });
+        // Force refresh by incrementing key - this will remount MissionsList
         setRefreshKey(prev => prev + 1);
-        setCity('');
-        setCountry('');
+        
+        // Clear the form but keep location to show generated missions
+        // Don't clear city/country so the list knows what to fetch
       } else {
         toast({
           title: 'No New Missions',
           description: 'Recent missions already exist for this location',
         });
+        setRefreshKey(prev => prev + 1);
       }
     } catch (error: any) {
       console.error('Generate missions error:', error);
