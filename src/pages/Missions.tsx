@@ -11,6 +11,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useGeolocation } from '@/hooks/useGeolocation';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { MyTasksTabs } from '@/components/MyTasksTabs';
 
 export default function Missions() {
   const { user } = useAuth();
@@ -20,6 +22,7 @@ export default function Missions() {
   const [city, setCity] = useState('');
   const [country, setCountry] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
+  const [lastGeneratedLocation, setLastGeneratedLocation] = useState<{ city: string; country: string } | null>(null);
 
   const handleGenerateMissions = async () => {
     if (!user) {
@@ -58,11 +61,22 @@ export default function Missions() {
           title: 'Missions Generated! 🎯',
           description: `${data.missions.length} new missions available`,
         });
+        // Set the location for display and focus the list on it
+        const generatedMissions = data.missions;
+        if (generatedMissions.length > 0) {
+          const firstMission = generatedMissions[0];
+          if (firstMission.city && firstMission.country) {
+            setLastGeneratedLocation({
+              city: firstMission.city,
+              country: firstMission.country
+            });
+            setCity(firstMission.city);
+            setCountry(firstMission.country);
+          }
+        }
+        
         // Force refresh by incrementing key - this will remount MissionsList
         setRefreshKey(prev => prev + 1);
-        
-        // Clear the form but keep location to show generated missions
-        // Don't clear city/country so the list knows what to fetch
       } else {
         toast({
           title: 'No New Missions',
@@ -174,7 +188,18 @@ export default function Missions() {
 
       {/* Main Content */}
       <div className="container-wide mx-auto px-4 sm:px-6 pb-20">
-        <MissionsList key={refreshKey} />
+        <Tabs defaultValue="discover" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="discover">Discover</TabsTrigger>
+            <TabsTrigger value="my">My Tasks</TabsTrigger>
+          </TabsList>
+          <TabsContent value="discover">
+            <MissionsList key={refreshKey} initialLocation={lastGeneratedLocation || undefined} />
+          </TabsContent>
+          <TabsContent value="my">
+            <MyTasksTabs />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Features Section */}

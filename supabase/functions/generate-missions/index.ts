@@ -362,6 +362,50 @@ Return ONLY a JSON array with this exact structure:
 
     console.log(`Generated and saved ${savedMissions?.length || 0} missions`);
 
+    // If the request is authenticated, auto-save generated missions to the user's task list
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (authHeader) {
+        const supabaseAuthed = createClient(
+          SUPABASE_URL!,
+          SUPABASE_ANON_KEY!,
+          { global: { headers: { Authorization: authHeader } } }
+        );
+        const { data: userData } = await supabaseAuthed.auth.getUser();
+        const userId = userData?.user?.id;
+        if (userId && savedMissions && savedMissions.length > 0) {
+          const missionIds = savedMissions.map((m: any) => m.id);
+          // Check existing links to avoid duplicates
+          const { data: existingLinks } = await supabaseServiceRole
+            .from('user_missions')
+            .select('mission_id')
+            .eq('user_id', userId)
+            .in('mission_id', missionIds);
+
+          const existingIds = new Set((existingLinks || []).map((e: any) => e.mission_id));
+          const toInsert = missionIds
+            .filter((id: string) => !existingIds.has(id))
+            .map((id: string) => ({
+              user_id: userId,
+              mission_id: id,
+              progress: 0,
+              total_required: 1,
+              verification_type: 'location',
+              verification_status: 'saved',
+            }));
+
+          if (toInsert.length > 0) {
+            const { error: linkErr } = await supabaseServiceRole
+              .from('user_missions')
+              .insert(toInsert);
+            if (linkErr) console.error('Failed to link missions to user:', linkErr);
+          }
+        }
+      }
+    } catch (assignErr) {
+      console.error('Auto-assign missions to user failed:', assignErr);
+    }
+
     return new Response(
       JSON.stringify({ missions: savedMissions || [] }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

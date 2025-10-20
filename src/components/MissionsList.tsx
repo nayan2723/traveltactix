@@ -38,7 +38,7 @@ interface Place {
   cultural_tips: any;
 }
 
-export function MissionsList() {
+export function MissionsList({ initialLocation }: { initialLocation?: { city: string; country: string } }) {
   const [selectedLocation, setSelectedLocation] = useState<{ city: string; country: string } | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [places, setPlaces] = useState<Place[]>([]);
@@ -141,6 +141,19 @@ export function MissionsList() {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     return R * c;
   };
+
+  // If parent provides an initial location (e.g., after generation), use it
+  useEffect(() => {
+    if (initialLocation) {
+      const needsUpdate = !selectedLocation ||
+        initialLocation.city !== selectedLocation.city ||
+        initialLocation.country !== selectedLocation.country;
+      if (needsUpdate) {
+        setSelectedLocation(initialLocation);
+        fetchLocationData(initialLocation.city, initialLocation.country, true);
+      }
+    }
+  }, [initialLocation?.city, initialLocation?.country]);
 
   const handleLocationSelect = (city: string, country: string) => {
     setSelectedLocation({ city, country });
