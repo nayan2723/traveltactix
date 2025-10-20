@@ -7,6 +7,14 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProfile } from "@/hooks/useProfile";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Search,
   Trophy,
   Users,
@@ -15,7 +23,8 @@ import {
   X,
   LogOut,
   User,
-  Award
+  Award,
+  ChevronDown
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -64,20 +73,22 @@ export const MainNav = () => {
           </motion.div>
           
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-1">
             {navItems.map((item) => (
-              <button
+              <Button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className={`text-sm transition-colors flex items-center space-x-2 ${
+                variant="ghost"
+                size="sm"
+                className={`${
                   isActive(item.path)
-                    ? "text-foreground font-medium"
+                    ? "text-foreground font-medium bg-accent"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-4 w-4 mr-2" />
                 <span>{item.name}</span>
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -85,37 +96,37 @@ export const MainNav = () => {
           <div className="hidden lg:flex items-center space-x-2">
             <ThemeToggle />
             {user ? (
-              <>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  <LayoutDashboard className="h-4 w-4 mr-2" />
-                  Dashboard
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate("/profile")}
-                >
-                  <Avatar className="w-6 h-6 mr-2">
-                    <AvatarImage src={profile?.avatar_url || undefined} />
-                    <AvatarFallback className="text-xs">
-                      {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  Profile
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={signOut}
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <Avatar className="w-6 h-6">
+                      <AvatarImage src={profile?.avatar_url || undefined} />
+                      <AvatarFallback className="text-xs">
+                        {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="hidden xl:inline">{profile?.full_name || 'Account'}</span>
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-background border-border z-50">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                    <LayoutDashboard className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
+                    <User className="h-4 w-4 mr-2" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <>
                 <Button 
@@ -123,7 +134,6 @@ export const MainNav = () => {
                   size="sm"
                   onClick={() => navigate("/auth")}
                 >
-                  <User className="h-4 w-4 mr-2" />
                   Log in
                 </Button>
                 <Button 
