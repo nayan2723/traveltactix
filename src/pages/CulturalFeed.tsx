@@ -123,20 +123,20 @@ const CulturalFeed = () => {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'greeting': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-      case 'tip': return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'trivia': return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
-      case 'ar_fact': return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
-      default: return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+      case 'greeting': return 'bg-secondary/10 text-secondary-foreground border-border';
+      case 'tip': return 'bg-accent/10 text-accent-foreground border-border';
+      case 'trivia': return 'bg-primary/10 text-primary border-border';
+      case 'ar_fact': return 'bg-warning/10 text-warning border-border';
+      default: return 'bg-muted/10 text-muted-foreground border-border';
     }
   };
 
   const getDifficultyColor = (level: string) => {
     switch (level) {
-      case 'beginner': return 'bg-emerald-500/10 text-emerald-500';
-      case 'intermediate': return 'bg-yellow-500/10 text-yellow-500';
-      case 'advanced': return 'bg-red-500/10 text-red-500';
-      default: return 'bg-gray-500/10 text-gray-500';
+      case 'beginner': return 'bg-accent/10 text-accent-foreground';
+      case 'intermediate': return 'bg-warning/10 text-warning';
+      case 'advanced': return 'bg-destructive/10 text-destructive';
+      default: return 'bg-muted/10 text-muted-foreground';
     }
   };
 
@@ -144,25 +144,25 @@ const CulturalFeed = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
           <Globe className="h-16 w-16 mx-auto mb-4 animate-spin text-primary" />
           <div className="heading-display text-2xl mb-2">Loading Cultural Insights...</div>
-          <div className="text-white/80">Discovering amazing cultural content</div>
+          <div className="text-muted-foreground">Discovering amazing cultural content</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <MainNav />
       
       {/* Hero Section */}
       <section className="relative min-h-[60vh] flex items-center justify-center px-6 pt-20">
         <div className="absolute inset-0 overflow-hidden">
           <motion.div 
-            className="absolute top-1/2 left-1/4 w-96 h-96 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full blur-3xl"
+            className="absolute top-1/2 left-1/4 w-96 h-96 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.2, 0.4, 0.2],
@@ -189,12 +189,12 @@ const CulturalFeed = () => {
               transition={{ duration: 1, delay: 0.2 }}
             >
               Cultural{" "}
-              <span className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent">
                 Feed
               </span>
             </motion.h1>
 
-            <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
               Daily insights, greetings, and customs from cultures around the world
             </p>
           </motion.div>
@@ -258,7 +258,7 @@ const CulturalFeed = () => {
                     {getContentIcon(content.content_type)}
                     <h3 className="font-semibold text-lg">{content.title}</h3>
                   </div>
-                  <div className="flex items-center space-x-1 text-xs text-orange-500">
+                  <div className="flex items-center space-x-1 text-xs text-primary">
                     <Star className="h-3 w-3 fill-current" />
                     <span>{content.cultural_xp} XP</span>
                   </div>

@@ -242,20 +242,20 @@ const CulturalLessons = () => {
 
   const getDifficultyColor = (level: string) => {
     switch (level) {
-      case 'beginner': return 'bg-emerald-500/10 text-emerald-500';
-      case 'intermediate': return 'bg-yellow-500/10 text-yellow-500';
-      case 'advanced': return 'bg-red-500/10 text-red-500';
-      default: return 'bg-gray-500/10 text-gray-500';
+      case 'beginner': return 'bg-accent/10 text-accent-foreground';
+      case 'intermediate': return 'bg-warning/10 text-warning';
+      case 'advanced': return 'bg-destructive/10 text-destructive';
+      default: return 'bg-muted/10 text-muted-foreground';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
           <BookOpen className="h-16 w-16 mx-auto mb-4 animate-pulse text-primary" />
           <div className="heading-display text-2xl mb-2">Loading Cultural Lessons...</div>
-          <div className="text-white/80">Preparing your learning experience</div>
+          <div className="text-muted-foreground">Preparing your learning experience</div>
         </div>
       </div>
     );
@@ -267,7 +267,7 @@ const CulturalLessons = () => {
     const progress = ((currentQuestion + 1) / selectedLesson.lesson_data.questions.length) * 100;
 
     return (
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-background text-foreground">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Progress Header */}
@@ -408,7 +408,7 @@ const CulturalLessons = () => {
                   />
                   
                   <div className="flex items-center space-x-2 mb-3">
-                    <Lightbulb className="h-5 w-5 text-yellow-500" />
+                    <Lightbulb className="h-5 w-5 text-warning" />
                     <h3 className="font-semibold">AI Learning Assistant</h3>
                   </div>
                   
@@ -460,7 +460,7 @@ const CulturalLessons = () => {
                   />
                   
                   <div className="flex items-center space-x-2 mb-3">
-                    <Languages className="h-5 w-5 text-blue-500" />
+                    <Languages className="h-5 w-5 text-secondary" />
                     <h3 className="font-semibold">Translator</h3>
                   </div>
                   

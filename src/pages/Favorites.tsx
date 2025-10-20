@@ -116,11 +116,11 @@ const Favorites = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
-          <Heart className="w-16 h-16 mx-auto text-white/60 mb-4" />
+          <Heart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
           <h2 className="text-2xl font-bold mb-4">Sign in to view favorites</h2>
-          <p className="text-white/60 mb-6">
+          <p className="text-muted-foreground mb-6">
             Create an account to save your favorite destinations
           </p>
           <Button onClick={() => navigate('/auth')}>
@@ -133,12 +133,12 @@ const Favorites = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white p-6">
+      <div className="min-h-screen bg-background text-foreground p-6">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-white/5 rounded-xl h-64"></div>
+                <div className="bg-muted/20 rounded-xl h-64"></div>
               </div>
             ))}
           </div>
@@ -148,14 +148,14 @@ const Favorites = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <MainNav />
       
       {/* Header */}
       <section className="relative min-h-[50vh] flex items-center justify-center px-6 pt-20">
         <div className="absolute inset-0 overflow-hidden">
           <motion.div 
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-red-500/20 to-pink-500/20 rounded-full blur-3xl"
+            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-destructive/10 to-primary/10 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.3, 1],
               opacity: [0.2, 0.3, 0.2],
@@ -181,12 +181,12 @@ const Favorites = () => {
               transition={{ duration: 1, delay: 0.2 }}
             >
               Your{" "}
-              <span className="bg-gradient-to-r from-red-500 via-pink-500 to-rose-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-destructive via-primary to-secondary bg-clip-text text-transparent">
                 Favorites
               </span>
             </motion.h1>
 
-            <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
               Your personal collection of amazing places you want to explore
             </p>
           </motion.div>
@@ -250,14 +250,14 @@ const Favorites = () => {
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="absolute top-3 right-3 bg-white/20 hover:bg-red-500 text-white"
+                          className="absolute top-3 right-3 bg-background/20 hover:bg-destructive text-foreground"
                           onClick={() => removeFavorite(favorite.id, favorite.places.name)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
 
                         {/* Location Info */}
-                        <div className="absolute bottom-3 left-3 text-white">
+                        <div className="absolute bottom-3 left-3 text-foreground">
                           <div className="flex items-center text-sm">
                             <MapPin className="w-4 h-4 mr-1" />
                             {favorite.places.city}, {favorite.places.country}
@@ -314,7 +314,7 @@ const Favorites = () => {
                           size="sm"
                           onClick={() => removeFavorite(favorite.id, favorite.places.name)}
                         >
-                          <Heart className="w-4 h-4 fill-red-500 text-red-500" />
+                          <Heart className="w-4 h-4 fill-destructive text-destructive" />
                         </Button>
                       </div>
                     </CardContent>
