@@ -123,6 +123,22 @@ export default {
           "25%": { transform: "scale(1.1) rotate(5deg)" },
           "75%": { transform: "scale(1.1) rotate(-5deg)" },
           "100%": { transform: "scale(1) rotate(0deg)" }
+        },
+        "shimmer": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" }
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" }
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 20px hsl(var(--primary) / 0.3)" },
+          "50%": { boxShadow: "0 0 40px hsl(var(--primary) / 0.6)" }
+        },
+        "travel-bounce": {
+          "0%, 100%": { transform: "translateY(0) scale(1)" },
+          "50%": { transform: "translateY(-8px) scale(1.02)" }
         }
       },
       animation: {
@@ -133,7 +149,11 @@ export default {
         "scale-in": "scale-in 0.2s ease-out",
         "bounce-in": "bounce-in 0.6s ease-out",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
-        "achievement": "achievement-celebration 0.6s ease-in-out"
+        "achievement": "achievement-celebration 0.6s ease-in-out",
+        "shimmer": "shimmer 2s linear infinite",
+        "float": "float 3s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "travel-bounce": "travel-bounce 1s ease-in-out infinite"
       },
     },
   },

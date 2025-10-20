@@ -96,68 +96,75 @@
   }
 
   .dark {
-    /* Pure Black Osmo Style - Dark Mode */
-    --background: 0 0% 3%;
-    --foreground: 0 0% 95%;
+    /* Travel Theme - Rich Adventure Palette */
+    --background: 220 25% 8%;
+    --foreground: 40 15% 95%;
 
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 95%;
+    --card: 220 20% 12%;
+    --card-foreground: 40 15% 95%;
 
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 220 20% 12%;
+    --popover-foreground: 40 15% 95%;
 
-    --primary: 40 25% 88%;
-    --primary-foreground: 0 0% 5%;
-    --primary-glow: 40 30% 75%;
+    /* Travel Gold Primary */
+    --primary: 45 90% 55%;
+    --primary-foreground: 220 25% 8%;
+    --primary-glow: 45 100% 65%;
 
-    --secondary: 35 15% 18%;
-    --secondary-foreground: 0 0% 95%;
-    --secondary-muted: 35 10% 22%;
+    /* Deep Teal Secondary */
+    --secondary: 180 40% 35%;
+    --secondary-foreground: 40 15% 95%;
+    --secondary-muted: 180 30% 45%;
 
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 140 15% 30%;
-    --accent-foreground: 0 0% 95%;
-    --accent-light: 140 20% 40%;
+    /* Adventure Accent - Coral */
+    --accent: 15 80% 60%;
+    --accent-foreground: 220 25% 8%;
+    --accent-light: 15 85% 70%;
 
-    --destructive: 0 60% 60%;
-    --destructive-foreground: 0 0% 5%;
-    --success: 142 40% 55%;
-    --success-foreground: 0 0% 5%;
-    --warning: 35 70% 65%;
-    --warning-foreground: 0 0% 5%;
+    /* Travel Status Colors */
+    --destructive: 0 70% 60%;
+    --destructive-foreground: 220 25% 8%;
+    --success: 142 50% 50%;
+    --success-foreground: 220 25% 8%;
+    --warning: 35 90% 55%;
+    --warning-foreground: 220 25% 8%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 12%;
-    --ring: 40 25% 88%;
+    --border: 220 15% 22%;
+    --input: 220 20% 15%;
+    --ring: 45 90% 55%;
 
-    /* Dark mode gamification */
-    --xp-bar: 142 35% 60%;
-    --badge-gold: 45 55% 70%;
-    --badge-silver: 0 0% 75%;
-    --badge-bronze: 25 45% 65%;
+    /* Travel gamification - vibrant */
+    --xp-bar: 142 60% 50%;
+    --badge-gold: 45 95% 60%;
+    --badge-silver: 210 20% 70%;
+    --badge-bronze: 25 70% 55%;
 
-    /* Dark gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 2%) 0%, hsl(0 0% 6%) 50%, hsl(0 0% 4%) 100%);
-    --gradient-sunset: linear-gradient(90deg, hsl(35 15% 15%), hsl(40 20% 18%), hsl(45 25% 20%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 6%) 0%, hsl(0 0% 8%) 100%);
-    --gradient-adventure: linear-gradient(120deg, hsl(0 0% 8%), hsl(140 15% 12%), hsl(35 15% 10%));
+    /* Travel gradients - adventurous */
+    --gradient-hero: linear-gradient(135deg, hsl(220 30% 10%) 0%, hsl(45 20% 15%) 50%, hsl(180 25% 12%) 100%);
+    --gradient-sunset: linear-gradient(90deg, hsl(15 80% 50%), hsl(45 90% 55%), hsl(35 85% 60%));
+    --gradient-card: linear-gradient(145deg, hsl(220 20% 12%) 0%, hsl(220 25% 15%) 100%);
+    --gradient-adventure: linear-gradient(120deg, hsl(180 40% 25%), hsl(45 60% 40%), hsl(15 70% 45%));
+    --gradient-ocean: linear-gradient(180deg, hsl(200 60% 30%), hsl(180 50% 40%));
+    --gradient-tropical: linear-gradient(45deg, hsl(142 60% 40%), hsl(160 55% 45%), hsl(180 50% 50%));
 
-    /* Dark shadows */
-    --shadow-card: 0 2px 15px hsl(0 0% 0% / 0.5);
-    --shadow-hero: 0 10px 50px hsl(0 0% 0% / 0.7);
-    --shadow-glow: 0 0 30px hsl(0 0% 100% / 0.04);
+    /* Travel shadows - dramatic */
+    --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.4);
+    --shadow-hero: 0 15px 60px hsl(45 90% 55% / 0.15);
+    --shadow-glow: 0 0 40px hsl(45 90% 55% / 0.25);
+    --shadow-adventure: 0 10px 40px hsl(15 80% 60% / 0.2);
 
-    /* Sidebar dark */
-    --sidebar-background: 0 0% 5%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 0 0% 95%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 0 0% 12%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 40 25% 88%;
+    /* Sidebar travel theme */
+    --sidebar-background: 220 25% 10%;
+    --sidebar-foreground: 40 15% 90%;
+    --sidebar-primary: 45 90% 55%;
+    --sidebar-primary-foreground: 220 25% 8%;
+    --sidebar-accent: 220 20% 15%;
+    --sidebar-accent-foreground: 40 15% 95%;
+    --sidebar-border: 220 15% 20%;
+    --sidebar-ring: 45 90% 55%;
   }
 }
 
@@ -229,10 +236,22 @@
     overflow: hidden;
   }
   
+  .dark .travel-card {
+    background: linear-gradient(145deg, hsl(var(--card) / 0.8), hsl(var(--card) / 0.6));
+    border: 1px solid hsl(var(--primary) / 0.2);
+    box-shadow: var(--shadow-card), 0 0 30px hsl(var(--primary) / 0.05);
+  }
+  
   .travel-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px) scale(1.02);
     box-shadow: var(--shadow-luxury);
     border-color: hsl(var(--border) / 0.5);
+  }
+  
+  .dark .travel-card:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: var(--shadow-adventure), 0 0 50px hsl(var(--primary) / 0.15);
+    transform: translateY(-8px) scale(1.02);
   }
   
   /* Minimal Mission Cards */
@@ -245,10 +264,21 @@
     position: relative;
   }
   
+  .dark .mission-card {
+    background: linear-gradient(135deg, hsl(var(--card)), hsl(220 18% 14%));
+    border: 1px solid hsl(var(--accent) / 0.2);
+  }
+  
   .mission-card:hover {
     border-color: hsl(var(--primary) / 0.3);
     box-shadow: var(--shadow-card);
-    transform: scale(1.01);
+    transform: translateY(-2px) scale(1.01);
+  }
+  
+  .dark .mission-card:hover {
+    border-color: hsl(var(--accent) / 0.5);
+    box-shadow: 0 8px 30px hsl(var(--accent) / 0.2), 0 0 40px hsl(var(--primary) / 0.1);
+    transform: translateY(-4px) scale(1.02);
   }
   
   /* Soft XP Progress Bar */
@@ -302,12 +332,25 @@
     letter-spacing: 0.01em;
   }
   
+  .dark .btn-adventure {
+    border-color: hsl(var(--primary) / 0.3);
+    color: hsl(var(--primary));
+  }
+  
   .btn-adventure:hover {
     background: hsl(var(--foreground));
     color: hsl(var(--background));
     border-color: hsl(var(--foreground));
     transform: translateY(-2px);
     box-shadow: var(--shadow-card);
+  }
+  
+  .dark .btn-adventure:hover {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.3);
+    transform: translateY(-3px) scale(1.05);
   }
 
   .btn-primary {
@@ -319,11 +362,21 @@
     transition: var(--transition-smooth);
     font-weight: 600;
   }
+  
+  .dark .btn-primary {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.2);
+  }
 
   .btn-primary:hover {
     background: hsl(var(--primary) / 0.9);
     transform: translateY(-2px);
     box-shadow: var(--shadow-card);
+  }
+  
+  .dark .btn-primary:hover {
+    background: hsl(var(--primary) / 1);
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.4);
+    transform: translateY(-3px) scale(1.05);
   }
   
   /* Stats Cards with Asymmetric Layout */
