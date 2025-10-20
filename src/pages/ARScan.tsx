@@ -70,30 +70,48 @@ const ARScan = () => {
 
   const startCamera = async () => {
     try {
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not supported in this browser');
+      }
+
       // Prefer rear camera, but gracefully fall back to any available camera
       const tryGetStream = async (constraints: MediaStreamConstraints) =>
         await navigator.mediaDevices.getUserMedia(constraints);
 
       let stream: MediaStream | null = null;
       try {
+        // Try rear camera first (mobile)
         stream = await tryGetStream({
           video: {
             facingMode: { ideal: 'environment' },
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
           },
           audio: false,
         });
       } catch (e) {
-        // Fallback to front camera if environment is unavailable (e.g., desktops)
-        stream = await tryGetStream({
-          video: {
-            facingMode: { ideal: 'user' },
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-          },
-          audio: false,
-        });
+        console.log('Rear camera not available, trying front camera...');
+        try {
+          // Fallback to front camera
+          stream = await tryGetStream({
+            video: {
+              facingMode: { ideal: 'user' },
+              width: { ideal: 1920 },
+              height: { ideal: 1080 },
+            },
+            audio: false,
+          });
+        } catch (e2) {
+          // Final fallback: any camera without facing mode
+          stream = await tryGetStream({
+            video: {
+              width: { ideal: 1920 },
+              height: { ideal: 1080 },
+            },
+            audio: false,
+          });
+        }
       }
 
       if (videoRef.current && stream) {
@@ -103,17 +121,21 @@ const ARScan = () => {
         video.setAttribute('autoplay', 'true');
         video.muted = true;
         video.srcObject = stream;
-        // Switch UI immediately; playback will be attempted next
         setCameraPermission('granted');
+        
         // On iOS Safari, ensure we explicitly call play() after metadata loads
         const playVideo = async () => {
           try {
             await video.play();
+            toast({
+              title: 'Camera Ready',
+              description: 'Point at a landmark and tap "Scan Landmark"',
+            });
           } catch (err) {
             console.error('Video play() failed:', err);
             toast({
               title: 'Unable to start camera preview',
-              description: 'Tap the screen once, then try again. Some browsers require an extra gesture.',
+              description: 'Tap the screen once, then try again. Some browsers require user interaction.',
               variant: 'destructive',
             });
           }
@@ -127,12 +149,24 @@ const ARScan = () => {
           };
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error accessing camera:', error);
       setCameraPermission('denied');
+      
+      let errorMessage = 'Please grant camera permission and ensure you are on HTTPS.';
+      if (error.name === 'NotAllowedError') {
+        errorMessage = 'Camera permission denied. Please allow camera access in your browser settings.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = 'No camera found on this device.';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage = 'Camera is already in use by another application.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: 'Camera Access Failed',
-        description: 'Please grant camera permission and ensure you are on HTTPS. If on desktop, try a different camera.',
+        description: errorMessage,
         variant: 'destructive',
       });
     }
@@ -206,11 +240,20 @@ const ARScan = () => {
       setScanningProgress(100);
 
       if (error) {
-        throw error;
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Failed to connect to recognition service');
+      }
+
+      if (!data) {
+        throw new Error('No response from recognition service');
       }
 
       if (!data.success) {
         throw new Error(data.error || 'Recognition failed');
+      }
+
+      if (!data.landmark) {
+        throw new Error('No landmark data received');
       }
 
       setRecognizedLandmark(data.landmark);
@@ -219,41 +262,61 @@ const ARScan = () => {
 
       if (data.landmark.confidence === 'low') {
         toast({
-          title: 'No Clear Landmark Detected',
+          title: 'Low Confidence Detection',
           description: 'Try getting closer or pointing at a clearer view of the landmark',
           variant: 'destructive',
         });
+        setShowDetails(true); // Still show results
       } else {
         toast({
-          title: 'Landmark Recognized!',
+          title: 'Landmark Recognized! 🎉',
           description: `Found ${data.landmark.name}`,
         });
         setShowDetails(true);
 
-        // Track the AR scan
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          await supabase.from('user_cultural_progress').insert({
-            user_id: user.id,
-            content_id: null,
-            lesson_id: null,
-            progress_type: 'challenge_completed',
-            cultural_xp_earned: 20,
-            completion_data: {
-              ar_scan: data.landmark.name,
-              city: data.landmark.city,
-              scanned_at: new Date().toISOString(),
-            },
-          });
+        // Track the AR scan with error handling
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { error: insertError } = await supabase
+              .from('user_cultural_progress')
+              .insert({
+                user_id: user.id,
+                content_id: null,
+                lesson_id: null,
+                progress_type: 'challenge_completed',
+                cultural_xp_earned: 20,
+                completion_data: {
+                  ar_scan: data.landmark.name,
+                  city: data.landmark.city,
+                  scanned_at: new Date().toISOString(),
+                },
+              });
+            
+            if (insertError) {
+              console.error('Failed to save progress:', insertError);
+              // Don't show error to user, as scan was successful
+            }
+          }
+        } catch (progressError) {
+          console.error('Error tracking progress:', progressError);
         }
       }
     } catch (error: any) {
       console.error('Error scanning landmark:', error);
+      
+      let errorMessage = 'Failed to recognize landmark. Please try again.';
+      if (error.message.includes('API')) {
+        errorMessage = 'AI service temporarily unavailable. Please try again in a moment.';
+      } else if (error.message.includes('network')) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: 'Scan Failed',
-        description: error.message || 'Failed to recognize landmark. Please try again.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

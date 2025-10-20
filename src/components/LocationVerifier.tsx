@@ -21,21 +21,34 @@ export const LocationVerifier = ({ missionId, targetLat, targetLng, onVerify }: 
     if (!navigator.geolocation) {
       toast({
         title: "Location not supported",
-        description: "Your browser doesn't support geolocation",
+        description: "Your browser doesn't support geolocation. Please use a modern browser.",
         variant: "destructive",
       });
       setIsChecking(false);
       return;
     }
 
+    // Request location permission with enhanced error handling
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
+          console.log('Current position:', {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+          });
+          
+          console.log('Target position:', {
+            lat: targetLat,
+            lng: targetLng,
+          });
+          
           await onVerify({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
         } catch (error) {
+          console.error('Verification error:', error);
           toast({
             title: "Verification failed",
             description: error instanceof Error ? error.message : "Could not verify location",
@@ -46,14 +59,33 @@ export const LocationVerifier = ({ missionId, targetLat, targetLng, onVerify }: 
         }
       },
       (error) => {
+        console.error('Geolocation error:', error);
+        let errorMessage = "Please enable location access to verify this mission";
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Location permission denied. Please enable location access in your browser settings.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Location information unavailable. Please try again.";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Location request timed out. Please try again.";
+            break;
+        }
+        
         toast({
-          title: "Location access denied",
-          description: "Please enable location access to verify this mission",
+          title: "Location access failed",
+          description: errorMessage,
           variant: "destructive",
         });
         setIsChecking(false);
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { 
+        enableHighAccuracy: true, 
+        timeout: 15000,
+        maximumAge: 0
+      }
     );
   };
 

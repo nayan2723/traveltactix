@@ -39,6 +39,12 @@ export const MissionVerificationModal = ({
   const handleVerify = async (verificationData: any) => {
     setIsVerifying(true);
     try {
+      console.log('Verifying mission:', {
+        userMissionId,
+        verificationType,
+        verificationData,
+      });
+
       const { data, error } = await supabase.functions.invoke('verify-mission', {
         body: {
           user_mission_id: userMissionId,
@@ -47,8 +53,16 @@ export const MissionVerificationModal = ({
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Verification service unavailable');
+      }
 
+      if (!data) {
+        throw new Error('No response from verification service');
+      }
+
+      console.log('Verification result:', data);
       setVerificationResult(data);
 
       if (data.verified) {
@@ -60,14 +74,25 @@ export const MissionVerificationModal = ({
       } else {
         toast({
           title: "Verification Failed",
-          description: data.notes,
+          description: data.notes || "Could not verify mission. Please try again.",
           variant: "destructive",
         });
       }
     } catch (error) {
+      console.error('Verification error:', error);
+      let errorMessage = "Verification failed. Please try again.";
+      
+      if (error instanceof Error) {
+        if (error.message.includes('network')) {
+          errorMessage = "Network error. Please check your connection.";
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+      }
+      
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Verification failed",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

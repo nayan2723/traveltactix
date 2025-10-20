@@ -22,17 +22,47 @@ export const PhotoVerifier = ({ missionId, onVerify }: PhotoVerifierProps) => {
     if (!file.type.startsWith('image/')) {
       toast({
         title: "Invalid file",
-        description: "Please select an image file",
+        description: "Please select an image file (JPG, PNG, etc.)",
         variant: "destructive",
       });
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    // Check file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 10MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+        toast({
+          title: "Photo loaded",
+          description: "Review your photo and tap Submit when ready",
+        });
+      };
+      reader.onerror = () => {
+        toast({
+          title: "Failed to load image",
+          description: "Please try again with a different photo",
+          variant: "destructive",
+        });
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast({
+        title: "Error loading photo",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = async () => {

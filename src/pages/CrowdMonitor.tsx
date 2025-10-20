@@ -33,21 +33,31 @@ const CrowdMonitor = () => {
   }, []);
 
   const fetchPlaces = async () => {
-    const { data } = await supabase
-      .from('places')
-      .select('*')
-      .order('crowd_percentage', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('places')
+        .select('*')
+        .order('crowd_percentage', { ascending: false });
 
-    if (data) {
-      setPlaces(data.map(p => ({
-        id: p.id,
-        name: p.name,
-        city: p.city,
-        latitude: Number(p.latitude) || 0,
-        longitude: Number(p.longitude) || 0,
-        crowd_status: p.crowd_status || 'medium',
-        crowd_percentage: p.crowd_percentage || 50
-      })));
+      if (error) {
+        console.error('Error fetching places:', error);
+        return;
+      }
+
+      if (data) {
+        console.log('Fetched places data:', data.length);
+        setPlaces(data.map(p => ({
+          id: p.id,
+          name: p.name,
+          city: p.city,
+          latitude: Number(p.latitude) || 0,
+          longitude: Number(p.longitude) || 0,
+          crowd_status: p.crowd_status || 'medium',
+          crowd_percentage: p.crowd_percentage || 50
+        })));
+      }
+    } catch (error) {
+      console.error('Error in fetchPlaces:', error);
     }
   };
 

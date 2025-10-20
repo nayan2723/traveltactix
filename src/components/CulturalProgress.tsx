@@ -41,22 +41,35 @@ const CulturalProgress = () => {
 
   const fetchCulturalProgress = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) {
+        console.error('Auth error:', authError);
         setLoading(false);
         return;
       }
+      
+      if (!user) {
+        console.log('No user found');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Fetching cultural progress for user:', user.id);
 
       const { data: progress, error } = await supabase
         .from('user_cultural_progress')
         .select('*')
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
 
       const progressData = progress || [];
+      console.log('Cultural progress data:', progressData);
       
-      const totalXP = progressData.reduce((sum, p) => sum + p.cultural_xp_earned, 0);
+      const totalXP = progressData.reduce((sum, p) => sum + (p.cultural_xp_earned || 0), 0);
       const completedLessons = progressData.filter(p => p.progress_type === 'lesson_completed').length;
       const viewedContent = progressData.filter(p => p.progress_type === 'content_viewed').length;
       const arDiscoveries = progressData.filter(p => p.progress_type === 'challenge_completed').length;
@@ -64,6 +77,15 @@ const CulturalProgress = () => {
       // Calculate cultural level (every 100 XP = 1 level)
       const level = Math.floor(totalXP / 100) + 1;
       const nextLevelXP = (level * 100) - totalXP;
+
+      console.log('Calculated stats:', {
+        totalXP,
+        completedLessons,
+        viewedContent,
+        arDiscoveries,
+        level,
+        nextLevelXP
+      });
 
       setStats({
         totalCulturalXP: totalXP,
@@ -75,6 +97,7 @@ const CulturalProgress = () => {
       });
     } catch (error) {
       console.error('Error fetching cultural progress:', error);
+      // Show user-friendly error without disrupting the UI
     } finally {
       setLoading(false);
     }
