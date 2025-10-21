@@ -102,6 +102,16 @@ const CulturalLessons = () => {
   };
 
   const startLesson = (lesson: CulturalLesson) => {
+    // Validate lesson data structure
+    if (!lesson.lesson_data || !lesson.lesson_data.questions || lesson.lesson_data.questions.length === 0) {
+      toast({
+        title: "Lesson Unavailable",
+        description: "This lesson's content is not properly configured",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setSelectedLesson(lesson);
     setCurrentQuestion(0);
     setAnswers([]);
@@ -263,6 +273,23 @@ const CulturalLessons = () => {
 
   // Lesson Detail View
   if (selectedLesson && !lessonComplete) {
+    // Safety check
+    if (!selectedLesson.lesson_data?.questions || selectedLesson.lesson_data.questions.length === 0) {
+      return (
+        <div className="min-h-screen bg-background text-foreground">
+          <MainNav />
+          <div className="container mx-auto px-4 py-8">
+            <Card className="p-8 text-center">
+              <div className="text-destructive mb-4">Lesson data is incomplete</div>
+              <Button onClick={() => setSelectedLesson(null)}>
+                Back to Lessons
+              </Button>
+            </Card>
+          </div>
+        </div>
+      );
+    }
+    
     const question = selectedLesson.lesson_data.questions[currentQuestion];
     const progress = ((currentQuestion + 1) / selectedLesson.lesson_data.questions.length) * 100;
 
