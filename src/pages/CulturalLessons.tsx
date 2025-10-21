@@ -58,6 +58,7 @@ const CulturalLessons = () => {
   const [translationText, setTranslationText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [loadingTranslation, setLoadingTranslation] = useState(false);
+  const [isRetry, setIsRetry] = useState(false);
 
   useEffect(() => {
     fetchLessonsAndProgress();
@@ -115,11 +116,12 @@ const CulturalLessons = () => {
     }
   };
 
-  const startLesson = (lesson: CulturalLesson) => {
+  const startLesson = (lesson: CulturalLesson, retry: boolean = false) => {
     setSelectedLesson(lesson);
     setCurrentQuestion(0);
     setAnswers([]);
     setLessonComplete(false);
+    setIsRetry(retry);
   };
 
   const submitAnswer = (answer: any) => {
@@ -164,28 +166,33 @@ const CulturalLessons = () => {
       const score = (correctAnswers.length / questions.length) * 100;
       const xpEarned = score >= 70 ? selectedLesson.cultural_xp : Math.floor(selectedLesson.cultural_xp * 0.5);
 
-      const { error } = await supabase
-        .from('user_cultural_progress')
-        .insert({
-          user_id: user.id,
-          lesson_id: selectedLesson.id,
-          progress_type: 'lesson_completed',
-          cultural_xp_earned: xpEarned,
-          completion_data: {
-            score,
-            answers: finalAnswers,
-            completed_at: new Date().toISOString()
-          }
-        });
+      // Only save progress and award XP for first attempt
+      if (!isRetry) {
+        const { error } = await supabase
+          .from('user_cultural_progress')
+          .insert({
+            user_id: user.id,
+            lesson_id: selectedLesson.id,
+            progress_type: 'lesson_completed',
+            cultural_xp_earned: xpEarned,
+            completion_data: {
+              score,
+              answers: finalAnswers,
+              completed_at: new Date().toISOString()
+            }
+          });
 
-      if (error && !error.message.includes('duplicate')) {
-        throw error;
+        if (error && !error.message.includes('duplicate')) {
+          throw error;
+        }
       }
 
       setLessonComplete(true);
       toast({
-        title: "Lesson Complete!",
-        description: `You earned ${xpEarned} cultural XP! Score: ${score.toFixed(0)}%`,
+        title: isRetry ? "Quiz Complete!" : "Lesson Complete!",
+        description: isRetry 
+          ? `Score: ${score.toFixed(0)}% (No XP awarded for retries)` 
+          : `You earned ${xpEarned} cultural XP! Score: ${score.toFixed(0)}%`,
       });
 
       // Refresh progress
@@ -570,7 +577,11 @@ const CulturalLessons = () => {
             
             <div className="space-y-4">
               <Button
-                onClick={() => setSelectedLesson(null)}
+                onClick={() => {
+                  setSelectedLesson(null);
+                  setLessonComplete(false);
+                  setIsRetry(false);
+                }}
                 className="btn-adventure"
               >
                 Back to Lessons
@@ -699,14 +710,13 @@ const CulturalLessons = () => {
                   </div>
 
                   <Button
-                    onClick={() => startLesson(lesson)}
+                    onClick={() => startLesson(lesson, completed)}
                     className="w-full btn-adventure"
-                    disabled={completed}
                   >
                     {completed ? (
                       <>
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Completed
+                        <Play className="h-4 w-4 mr-2" />
+                        Retry Quiz
                       </>
                     ) : (
                       <>
