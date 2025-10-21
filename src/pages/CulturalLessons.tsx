@@ -102,16 +102,6 @@ const CulturalLessons = () => {
   };
 
   const startLesson = (lesson: CulturalLesson) => {
-    // Validate lesson data structure
-    if (!lesson.lesson_data || !lesson.lesson_data.questions || lesson.lesson_data.questions.length === 0) {
-      toast({
-        title: "Lesson Unavailable",
-        description: "This lesson's content is not properly configured",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     setSelectedLesson(lesson);
     setCurrentQuestion(0);
     setAnswers([]);
@@ -119,10 +109,12 @@ const CulturalLessons = () => {
   };
 
   const submitAnswer = (answer: any) => {
+    if (!selectedLesson?.lesson_data?.questions) return;
+    
     const newAnswers = [...answers, answer];
     setAnswers(newAnswers);
 
-    if (currentQuestion + 1 >= selectedLesson!.lesson_data.questions.length) {
+    if (currentQuestion + 1 >= selectedLesson.lesson_data.questions.length) {
       completeLesson(newAnswers);
     } else {
       setCurrentQuestion(currentQuestion + 1);
@@ -130,7 +122,7 @@ const CulturalLessons = () => {
   };
 
   const completeLesson = async (finalAnswers: any[]) => {
-    if (!selectedLesson) return;
+    if (!selectedLesson?.lesson_data?.questions) return;
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -191,7 +183,7 @@ const CulturalLessons = () => {
   };
 
   const getAiHint = async () => {
-    if (!selectedLesson) return;
+    if (!selectedLesson?.lesson_data?.questions) return;
     
     setLoadingHint(true);
     try {
@@ -273,15 +265,20 @@ const CulturalLessons = () => {
 
   // Lesson Detail View
   if (selectedLesson && !lessonComplete) {
-    // Safety check
-    if (!selectedLesson.lesson_data?.questions || selectedLesson.lesson_data.questions.length === 0) {
+    // Safety check - ensure lesson_data and questions exist
+    const questions = selectedLesson.lesson_data?.questions;
+    if (!questions || questions.length === 0) {
       return (
         <div className="min-h-screen bg-background text-foreground">
           <MainNav />
           <div className="container mx-auto px-4 py-8">
             <Card className="p-8 text-center">
-              <div className="text-destructive mb-4">Lesson data is incomplete</div>
-              <Button onClick={() => setSelectedLesson(null)}>
+              <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <div className="text-xl font-semibold mb-2">Lesson Content Unavailable</div>
+              <div className="text-muted-foreground mb-4">
+                This lesson's content is being prepared. Please try another lesson.
+              </div>
+              <Button onClick={() => setSelectedLesson(null)} className="btn-adventure">
                 Back to Lessons
               </Button>
             </Card>
@@ -290,8 +287,8 @@ const CulturalLessons = () => {
       );
     }
     
-    const question = selectedLesson.lesson_data.questions[currentQuestion];
-    const progress = ((currentQuestion + 1) / selectedLesson.lesson_data.questions.length) * 100;
+    const question = questions[currentQuestion];
+    const progress = ((currentQuestion + 1) / questions.length) * 100;
 
     return (
       <div className="min-h-screen bg-background text-foreground">
