@@ -63,6 +63,20 @@ const CulturalLessons = () => {
     fetchLessonsAndProgress();
   }, []);
 
+  // Normalize lesson content across different shapes
+  const extractQuestions = (lesson: CulturalLesson | null) => {
+    const ld = lesson?.lesson_data as any;
+    if (!ld) return [] as any[];
+    if (Array.isArray(ld.questions)) return ld.questions;
+    if (Array.isArray(ld.sections)) {
+      const quizSection = ld.sections.find((s: any) => s?.type === 'quiz' && Array.isArray(s.questions));
+      if (quizSection) {
+        return quizSection.questions.map((q: any) => ({ ...q, type: q.type || 'multiple_choice' }));
+      }
+    }
+    return [] as any[];
+  };
+
   const fetchLessonsAndProgress = async () => {
     try {
       const { data: lessonsData, error: lessonsError } = await supabase
@@ -109,12 +123,13 @@ const CulturalLessons = () => {
   };
 
   const submitAnswer = (answer: any) => {
-    if (!selectedLesson?.lesson_data?.questions) return;
+    const questions = extractQuestions(selectedLesson);
+    if (questions.length === 0) return;
     
     const newAnswers = [...answers, answer];
     setAnswers(newAnswers);
 
-    if (currentQuestion + 1 >= selectedLesson.lesson_data.questions.length) {
+    if (currentQuestion + 1 >= questions.length) {
       completeLesson(newAnswers);
     } else {
       setCurrentQuestion(currentQuestion + 1);
@@ -122,7 +137,8 @@ const CulturalLessons = () => {
   };
 
   const completeLesson = async (finalAnswers: any[]) => {
-    if (!selectedLesson?.lesson_data?.questions) return;
+    const questions = extractQuestions(selectedLesson);
+    if (questions.length === 0 || !selectedLesson) return;
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -135,10 +151,11 @@ const CulturalLessons = () => {
         return;
       }
 
-      const questions = selectedLesson.lesson_data.questions;
+      // questions extracted above
       const correctAnswers = finalAnswers.filter((answer, index) => {
         const question = questions[index];
-        if (question.type === 'multiple_choice') {
+        const qType = question?.type || 'multiple_choice';
+        if (qType === 'multiple_choice') {
           return answer === question.correct;
         }
         return true; // For now, mark pronunciation and scenario as correct
@@ -183,11 +200,12 @@ const CulturalLessons = () => {
   };
 
   const getAiHint = async () => {
-    if (!selectedLesson?.lesson_data?.questions) return;
+    const questions = extractQuestions(selectedLesson);
+    if (questions.length === 0) return;
     
     setLoadingHint(true);
     try {
-      const question = selectedLesson.lesson_data.questions[currentQuestion];
+      const question = questions[currentQuestion];
       
       const { data, error } = await supabase.functions.invoke('ai-learning-assistant', {
         body: {
@@ -265,9 +283,9 @@ const CulturalLessons = () => {
 
   // Lesson Detail View
   if (selectedLesson && !lessonComplete) {
-    // Safety check - ensure lesson_data and questions exist
-    const questions = selectedLesson.lesson_data?.questions;
-    if (!questions || questions.length === 0) {
+    // Safety check - support both {questions} and {sections:[{type:'quiz',questions}]}
+    const questions = extractQuestions(selectedLesson);
+    if (questions.length === 0) {
       return (
         <div className="min-h-screen bg-background text-foreground">
           <MainNav />
