@@ -333,7 +333,7 @@ const CulturalLessons = () => {
                 <Progress value={progress} className="h-2" />
               </div>
               <div className="text-sm text-muted-foreground">
-                Question {currentQuestion + 1} of {selectedLesson.lesson_data.questions.length}
+                Question {currentQuestion + 1} of {questions.length}
               </div>
             </div>
 
