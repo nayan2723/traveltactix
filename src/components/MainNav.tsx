@@ -24,7 +24,8 @@ import {
   LogOut,
   User,
   Award,
-  ChevronDown
+  ChevronDown,
+  ShoppingBag
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -47,6 +48,7 @@ export const MainNav = () => {
   const navItems = [
     { name: "Discovery", path: "/discovery", icon: Search },
     { name: "Missions", path: "/missions", icon: Trophy },
+    { name: "Shop", path: "/shop", icon: ShoppingBag },
     { name: "Crowd Monitor", path: "/crowd-monitor", icon: Users },
     { name: "Leaderboard", path: "/leaderboard", icon: Award },
   ];

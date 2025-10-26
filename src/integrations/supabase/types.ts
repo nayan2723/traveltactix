@@ -338,6 +338,42 @@ export type Database = {
         }
         Relationships: []
       }
+      shop_items: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          title: string
+          updated_at: string
+          xp_cost: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          title: string
+          updated_at?: string
+          xp_cost: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+          xp_cost?: number
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_id: string
@@ -538,6 +574,38 @@ export type Database = {
           },
         ]
       }
+      user_redemptions: {
+        Row: {
+          id: string
+          redeemed_at: string
+          shop_item_id: string
+          user_id: string
+          xp_spent: number
+        }
+        Insert: {
+          id?: string
+          redeemed_at?: string
+          shop_item_id: string
+          user_id: string
+          xp_spent: number
+        }
+        Update: {
+          id?: string
+          redeemed_at?: string
+          shop_item_id?: string
+          user_id?: string
+          xp_spent?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_redemptions_shop_item_id_fkey"
+            columns: ["shop_item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_search_history: {
         Row: {
           id: string
@@ -592,10 +660,7 @@ export type Database = {
       }
     }
     Functions: {
-      calculate_level_from_xp: {
-        Args: { xp: number }
-        Returns: number
-      }
+      calculate_level_from_xp: { Args: { xp: number }; Returns: number }
     }
     Enums: {
       [_ in never]: never

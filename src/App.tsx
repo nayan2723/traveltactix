@@ -21,6 +21,7 @@ import Favorites from "./pages/Favorites";
 import CrowdMonitor from "./pages/CrowdMonitor";
 import Profile from "./pages/Profile";
 import Leaderboard from "./pages/Leaderboard";
+import Shop from "./pages/Shop";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ const App = () => (
         <Route path="/crowd-monitor" element={<CrowdMonitor />} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
