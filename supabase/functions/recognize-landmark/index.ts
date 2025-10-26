@@ -1,10 +1,28 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Maximum image size: 10MB (base64 encoded)
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+
+// Input validation schema
+const RequestSchema = z.object({
+  imageData: z.string().min(50).refine(
+    (data) => {
+      // Validate base64 data URI format
+      return data.startsWith('data:image/') && data.includes('base64,');
+    },
+    { message: 'Invalid image format' }
+  ).refine(
+    (data) => data.length <= MAX_IMAGE_SIZE,
+    { message: 'Image too large (max 10MB)' }
+  )
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -12,13 +30,10 @@ serve(async (req) => {
   }
 
   try {
-    const { imageData } = await req.json();
-    
-    if (!imageData) {
-      throw new Error("No image data provided");
-    }
-
-    console.log("Analyzing landmark image...");
+    // Validate input
+    const body = await req.json();
+    const validated = RequestSchema.parse(body);
+    const { imageData } = validated;
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -110,7 +125,7 @@ serve(async (req) => {
       throw new Error("No response from AI");
     }
 
-    console.log("AI Response:", aiContent);
+    
     const landmarkInfo = JSON.parse(aiContent);
 
     // Search for matching places in the database
@@ -182,10 +197,19 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("Error in recognize-landmark:", error);
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid input',
+          success: false
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    console.error("Error in recognize-landmark");
     return new Response(
       JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Unknown error occurred",
+        error: "Failed to recognize landmark",
         success: false
       }),
       { 

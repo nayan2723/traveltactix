@@ -1,11 +1,23 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation schema
+const RequestSchema = z.object({
+  city: z.string().max(100).optional(),
+  country: z.string().max(100).optional(),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional()
+}).refine(
+  (data) => (data.city && data.country) || (data.latitude && data.longitude),
+  { message: 'Must provide either city/country or coordinates' }
+);
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -13,15 +25,18 @@ serve(async (req) => {
   }
 
   try {
-    const { city, country, latitude, longitude } = await req.json();
+    // Validate input
+    const body = await req.json();
+    const validated = RequestSchema.parse(body);
+    let { city, country, latitude, longitude } = validated;
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
 
-    let targetCity = city;
-    let targetCountry = country;
+    let targetCity = city || '';
+    let targetCountry = country || '';
 
     // If coordinates provided but no city/country, use Perplexity to identify location
     if ((latitude && longitude) && (!city || !country)) {
@@ -56,9 +71,9 @@ serve(async (req) => {
         console.log('Location identified:', content);
         
         try {
-          const locationJson = JSON.parse(content.match(/\{[^}]+\}/)?.[0] || '{}');
-          targetCity = locationJson.city || city;
-          targetCountry = locationJson.country || country;
+        
+          targetCity = locationJson.city || city || '';
+          targetCountry = locationJson.country || country || '';
         } catch (e) {
           console.error('Failed to parse location:', e);
         }
@@ -76,7 +91,7 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log('Generating missions for:', targetCity, targetCountry);
+    
 
     // Initialize Supabase client
     const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!);
@@ -191,7 +206,7 @@ COMPREHENSIVE INDIAN DESTINATIONS BY STATE:
       if (contextResponse.ok) {
         const contextData = await contextResponse.json();
         localContext = `\n\nNEARBY ATTRACTIONS & LOCAL CONTEXT:\n${contextData.choices[0].message.content}`;
-        console.log('Local context gathered from Perplexity');
+        
       }
     }
 
@@ -263,7 +278,7 @@ Return ONLY a JSON array with this exact structure:
     const aiData = await aiResponse.json();
     const content = aiData.choices[0].message.content;
     
-    console.log('AI Response:', content);
+    
 
     // Parse the JSON response
     let missions;
@@ -290,7 +305,7 @@ Return ONLY a JSON array with this exact structure:
 
     // If we have fresh missions (created within 24 hours), return them
     if (existingRecentMissions && existingRecentMissions.length >= 6) {
-      console.log(`Returning ${existingRecentMissions.length} existing fresh missions`);
+      
       return new Response(
         JSON.stringify({ missions: existingRecentMissions }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -360,7 +375,7 @@ Return ONLY a JSON array with this exact structure:
       throw saveError;
     }
 
-    console.log(`Generated and saved ${savedMissions?.length || 0} missions`);
+    
 
     // If the request is authenticated, auto-save generated missions to the user's task list
     try {
@@ -412,10 +427,16 @@ Return ONLY a JSON array with this exact structure:
     );
 
   } catch (error) {
-    console.error('Error in generate-missions function:', error);
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid input', missions: [] }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    console.error('Error in generate-missions function');
     return new Response(
       JSON.stringify({ 
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: 'Failed to generate missions',
         missions: [] 
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

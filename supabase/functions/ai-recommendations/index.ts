@@ -1,10 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation schema
+const RequestSchema = z.object({
+  preferences: z.record(z.any()).optional()
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -12,29 +18,53 @@ serve(async (req) => {
   }
 
   try {
-    const { userId, preferences } = await req.json();
-    
+    // Extract and validate user from JWT
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 
-    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
       throw new Error("Missing required environment variables");
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    // Create client with user's auth token
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } }
+    });
 
-    // Get user's past visits and favorites
+    // Verify user from JWT
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate request body
+    const body = await req.json();
+    const validated = RequestSchema.parse(body);
+    const { preferences } = validated;
+    
+    // Get user's past visits and favorites (RLS enforced)
     const { data: visits } = await supabase
       .from('user_place_visits')
       .select('place_id, places(name, category, mood_tags)')
-      .eq('user_id', userId)
+      .eq('user_id', user.id)
       .limit(10);
 
     const { data: favorites } = await supabase
       .from('user_favorites')
       .select('place_id, places(name, category, mood_tags)')
-      .eq('user_id', userId)
+      .eq('user_id', user.id)
       .limit(10);
 
     // Get all available places
@@ -109,7 +139,7 @@ Instructions:
     const aiResponse = await response.json();
     const content = aiResponse.choices[0].message.content;
     
-    console.log("AI Response:", content);
+    
 
     // Parse AI response
     let recommendations;
@@ -137,7 +167,7 @@ Instructions:
       };
     }).filter((r: any) => r.id); // Filter out any that didn't match
 
-    console.log("Enriched recommendations:", enrichedRecommendations.length);
+    
 
     return new Response(
       JSON.stringify({ recommendations: enrichedRecommendations }),
@@ -145,9 +175,15 @@ Instructions:
     );
 
   } catch (error) {
-    console.error("Error in ai-recommendations:", error);
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid input' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    console.error("Error in ai-recommendations");
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "Failed to generate recommendations" }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

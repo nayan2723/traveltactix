@@ -1,10 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation schema
+const RequestSchema = z.object({
+  place_query: z.string().min(1).max(100)
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -12,7 +18,10 @@ serve(async (req) => {
   }
 
   try {
-    const { place_query } = await req.json();
+    // Validate input
+    const body = await req.json();
+    const validated = RequestSchema.parse(body);
+    const place_query = validated.place_query;
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
@@ -42,7 +51,7 @@ serve(async (req) => {
     // Use the first result as target
     const targetPlace = places[0];
 
-    console.log(`Found target place: ${targetPlace.name} in ${targetPlace.city}`);
+    
 
     // Fetch crowd data for target place
     const { data: crowdData } = await supabase.functions.invoke('fetch-crowd-data', {
@@ -239,7 +248,13 @@ Return ONLY valid JSON:
     );
 
   } catch (error) {
-    console.error('Error in crowd-recommendations:', error);
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid input' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    console.error('Error in crowd-recommendations');
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
