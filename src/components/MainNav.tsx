@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProfile } from "@/hooks/useProfile";
+import { CartDrawer } from "@/components/CartDrawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,6 +97,7 @@ export const MainNav = () => {
 
           {/* User Actions */}
           <div className="hidden lg:flex items-center space-x-2">
+            <CartDrawer />
             <ThemeToggle />
             {user ? (
               <DropdownMenu>
@@ -150,8 +152,9 @@ export const MainNav = () => {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
+            <CartDrawer />
             <ThemeToggle />
-            <button 
+            <button
               className="text-foreground"
               onClick={() => setMenuOpen(!menuOpen)}
             >
