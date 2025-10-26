@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShoppingBag, Loader2, Check } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Loader2, Check, Tag } from "lucide-react";
 import { MainNav } from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,11 +11,15 @@ import { Label } from "@/components/ui/label";
 import { fetchProductByHandle, ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
+import { usdToInr, formatINR, applyDiscount } from "@/lib/utils";
+import travelCollage from "@/assets/travel-collage.jpg";
 
 export default function ProductDetail() {
   const { handle } = useParams<{ handle: string }>();
   const navigate = useNavigate();
   const addItem = useCartStore(state => state.addItem);
+
+  const DISCOUNT = 20; // percent
 
   const [product, setProduct] = useState<ShopifyProduct['node'] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -146,19 +150,16 @@ export default function ProductDetail() {
             animate={{ opacity: 1, x: 0 }}
             className="space-y-4"
           >
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden relative">
               <div className="aspect-square bg-gradient-to-br from-primary/5 to-accent/5">
-                {currentImage ? (
-                  <img
-                    src={currentImage.url}
-                    alt={currentImage.altText || product.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <ShoppingBag className="w-32 h-32 text-muted-foreground/20" />
-                  </div>
-                )}
+                <img
+                  src={currentImage?.url || travelCollage}
+                  alt={currentImage?.altText || product.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute top-4 left-4">
+                <Badge variant="secondary">{DISCOUNT}% OFF</Badge>
               </div>
             </Card>
 
@@ -195,15 +196,16 @@ export default function ProductDetail() {
               <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
               
               {selectedVariant && (
-                <div className="flex items-baseline gap-3 mb-4">
+                <div className="flex items-baseline gap-3 mb-2">
                   <span className="text-4xl font-bold text-foreground">
-                    ${parseFloat(selectedVariant.price.amount).toFixed(2)}
+                    {formatINR(applyDiscount(usdToInr(parseFloat(selectedVariant.price.amount)), DISCOUNT))}
                   </span>
-                  <span className="text-xl text-muted-foreground">
-                    {selectedVariant.price.currencyCode}
+                  <span className="text-xl text-muted-foreground line-through">
+                    {formatINR(usdToInr(parseFloat(selectedVariant.price.amount)))}
                   </span>
                 </div>
               )}
+              <div className="text-sm text-muted-foreground">Use code <span className="font-semibold">INDIA20</span> at checkout</div>
 
               {selectedVariant && !selectedVariant.availableForSale && (
                 <Badge variant="destructive" className="mb-4">Out of Stock</Badge>

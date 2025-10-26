@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Sparkles, Loader2 } from "lucide-react";
+import { ShoppingBag, Sparkles, Loader2, Tag } from "lucide-react";
 import { MainNav } from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,10 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { fetchProducts, ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
-
+import { usdToInr, formatINR, applyDiscount } from "@/lib/utils";
+import travelCollage from "@/assets/travel-collage.jpg";
 export default function Shop() {
   const navigate = useNavigate();
   const addItem = useCartStore(state => state.addItem);
+  const DISCOUNT = 20; // percent
   
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -131,6 +133,9 @@ export default function Shop() {
               const defaultVariant = product.node.variants.edges[0]?.node;
               const imageUrl = product.node.images.edges[0]?.node.url;
               const price = defaultVariant?.price;
+              const usd = price ? parseFloat(price.amount) : 0;
+              const inr = usdToInr(usd);
+              const discountedInr = applyDiscount(inr, DISCOUNT);
 
               return (
                 <motion.div
@@ -146,18 +151,14 @@ export default function Shop() {
                       className="relative w-full h-64 bg-gradient-to-br from-primary/5 to-accent/5 overflow-hidden cursor-pointer"
                       onClick={() => handleProductClick(product.node.handle)}
                     >
-                      {imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt={product.node.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <ShoppingBag className="w-20 h-20 text-muted-foreground/20" />
-                        </div>
-                      )}
-                      
+                      <img
+                        src={imageUrl || travelCollage}
+                        alt={product.node.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <Badge variant="secondary">{DISCOUNT}% OFF</Badge>
+                      </div>
                       {defaultVariant && !defaultVariant.availableForSale && (
                         <div className="absolute top-4 right-4">
                           <Badge variant="destructive">Out of Stock</Badge>
@@ -181,12 +182,12 @@ export default function Shop() {
                       {/* Price & Button */}
                       <div className="flex items-center justify-between mt-auto">
                         {price && (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-3">
                             <span className="text-2xl font-bold text-foreground">
-                              ${parseFloat(price.amount).toFixed(2)}
+                              {formatINR(discountedInr)}
                             </span>
-                            <span className="text-sm text-muted-foreground">
-                              {price.currencyCode}
+                            <span className="text-sm text-muted-foreground line-through">
+                              {formatINR(inr)}
                             </span>
                           </div>
                         )}
@@ -199,6 +200,9 @@ export default function Shop() {
                           <ShoppingBag className="w-4 h-4 mr-2" />
                           Add to Cart
                         </Button>
+                      </div>
+                      <div className="mt-2 text-xs text-muted-foreground">
+                        Use code <span className="font-semibold">INDIA20</span> at checkout
                       </div>
                     </div>
                   </Card>

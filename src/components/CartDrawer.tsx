@@ -12,6 +12,7 @@ import {
 import { ShoppingCart, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
+import { usdToInr, formatINR, applyDiscount } from "@/lib/utils";
 
 export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +23,8 @@ export const CartDrawer = () => {
     removeItem, 
     createCheckout 
   } = useCartStore();
+  
+  const { user } = useAuth();
   
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
@@ -81,13 +84,11 @@ export const CartDrawer = () => {
                   {items.map((item) => (
                     <div key={item.variantId} className="flex gap-4 p-2 border-b">
                       <div className="w-16 h-16 bg-secondary/20 rounded-md overflow-hidden flex-shrink-0">
-                        {item.product.node.images?.edges?.[0]?.node && (
-                          <img
-                            src={item.product.node.images.edges[0].node.url}
-                            alt={item.product.node.title}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
+                        <img
+                          src={item.product.node.images?.edges?.[0]?.node?.url || "/placeholder.svg"}
+                          alt={item.product.node.title}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       
                       <div className="flex-1 min-w-0">
