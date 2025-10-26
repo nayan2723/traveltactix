@@ -24,10 +24,10 @@ export const CartDrawer = () => {
     createCheckout 
   } = useCartStore();
   
-  const { user } = useAuth();
-  
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
+  const totalPriceINR = usdToInr(totalPrice);
+  const discountedTotalINR = applyDiscount(totalPriceINR, 20);
 
   const handleCheckout = async () => {
     try {
@@ -99,7 +99,7 @@ export const CartDrawer = () => {
                           </p>
                         )}
                         <p className="font-semibold mt-1">
-                          {item.price.currencyCode} ${parseFloat(item.price.amount).toFixed(2)}
+                          {formatINR(applyDiscount(usdToInr(parseFloat(item.price.amount)), 20))}
                         </p>
                       </div>
                       
@@ -141,9 +141,17 @@ export const CartDrawer = () => {
               <div className="flex-shrink-0 space-y-4 pt-4 border-t bg-background">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold">Total</span>
-                  <span className="text-xl font-bold">
-                    {items[0]?.price.currencyCode || 'USD'} ${totalPrice.toFixed(2)}
-                  </span>
+                  <div className="text-right">
+                    <div className="text-xl font-bold">
+                      {formatINR(discountedTotalINR)}
+                    </div>
+                    <div className="text-sm text-muted-foreground line-through">
+                      {formatINR(totalPriceINR)}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-sm text-muted-foreground text-center">
+                  Use code <span className="font-semibold">INDIA20</span> for 20% OFF
                 </div>
                 
                 <Button 
