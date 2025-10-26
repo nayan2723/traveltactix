@@ -99,7 +99,7 @@ export const LocationVerifier = ({ missionId, targetLat, targetLng, onVerify }: 
         <div className="text-center">
           <h3 className="font-semibold text-base sm:text-lg mb-2">Location Check-In Required</h3>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            You need to be at the mission location to complete this task
+            You must be within 100 meters of the landmark to verify this mission
           </p>
         </div>
 

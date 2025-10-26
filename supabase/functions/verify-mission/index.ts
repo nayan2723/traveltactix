@@ -114,11 +114,21 @@ serve(async (req) => {
             userMission.missions.longitude
           );
           
-          // Within 500 meters
-          isVerified = distance <= 0.5;
+          console.log('Distance calculation:', {
+            userLat: verification_data.latitude,
+            userLng: verification_data.longitude,
+            targetLat: userMission.missions.latitude,
+            targetLng: userMission.missions.longitude,
+            distanceKm: distance,
+            distanceMeters: Math.round(distance * 1000)
+          });
+          
+          // Within 100 meters for accurate landmark verification
+          const VERIFICATION_RADIUS_KM = 0.1; // 100 meters
+          isVerified = distance <= VERIFICATION_RADIUS_KM;
           verificationNotes = isVerified 
             ? `Location verified (${Math.round(distance * 1000)}m from target)`
-            : `Too far from location (${Math.round(distance * 1000)}m away)`;
+            : `Too far from location (${Math.round(distance * 1000)}m away, need to be within ${VERIFICATION_RADIUS_KM * 1000}m)`;
         }
         break;
 
