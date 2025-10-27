@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { fetchProducts, ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
-import { usdToInr, formatINR, applyDiscount } from "@/lib/utils";
+import { formatINR, applyDiscount } from "@/lib/utils";
 import travelCollage from "@/assets/travel-collage.jpg";
 export default function Shop() {
   const navigate = useNavigate();
@@ -133,9 +133,8 @@ export default function Shop() {
               const defaultVariant = product.node.variants.edges[0]?.node;
               const imageUrl = product.node.images.edges[0]?.node.url;
               const price = defaultVariant?.price;
-              const usd = price ? parseFloat(price.amount) : 0;
-              const inr = usdToInr(usd);
-              const discountedInr = applyDiscount(inr, DISCOUNT);
+              const priceINR = price ? parseFloat(price.amount) : 0;
+              const discountedInr = applyDiscount(priceINR, DISCOUNT);
 
               return (
                 <motion.div
@@ -187,7 +186,7 @@ export default function Shop() {
                               {formatINR(discountedInr)}
                             </span>
                             <span className="text-sm text-muted-foreground line-through">
-                              {formatINR(inr)}
+                              {formatINR(priceINR)}
                             </span>
                           </div>
                         )}

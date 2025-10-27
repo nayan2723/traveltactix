@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { fetchProductByHandle, ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
-import { usdToInr, formatINR, applyDiscount } from "@/lib/utils";
+import { formatINR, applyDiscount } from "@/lib/utils";
 import travelCollage from "@/assets/travel-collage.jpg";
 
 export default function ProductDetail() {
@@ -198,10 +198,10 @@ export default function ProductDetail() {
               {selectedVariant && (
                 <div className="flex items-baseline gap-3 mb-2">
                   <span className="text-4xl font-bold text-foreground">
-                    {formatINR(applyDiscount(usdToInr(parseFloat(selectedVariant.price.amount)), DISCOUNT))}
+                    {formatINR(applyDiscount(parseFloat(selectedVariant.price.amount), DISCOUNT))}
                   </span>
                   <span className="text-xl text-muted-foreground line-through">
-                    {formatINR(usdToInr(parseFloat(selectedVariant.price.amount)))}
+                    {formatINR(parseFloat(selectedVariant.price.amount))}
                   </span>
                 </div>
               )}

@@ -12,7 +12,7 @@ import {
 import { ShoppingCart, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
-import { usdToInr, formatINR, applyDiscount } from "@/lib/utils";
+import { formatINR, applyDiscount } from "@/lib/utils";
 
 export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,8 +25,7 @@ export const CartDrawer = () => {
   } = useCartStore();
   
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
-  const totalPriceINR = usdToInr(totalPrice);
+  const totalPriceINR = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
   const discountedTotalINR = applyDiscount(totalPriceINR, 20);
 
   const handleCheckout = async () => {
@@ -99,7 +98,7 @@ export const CartDrawer = () => {
                           </p>
                         )}
                         <p className="font-semibold mt-1">
-                          {formatINR(applyDiscount(usdToInr(parseFloat(item.price.amount)), 20))}
+                          {formatINR(applyDiscount(parseFloat(item.price.amount), 20))}
                         </p>
                       </div>
                       
