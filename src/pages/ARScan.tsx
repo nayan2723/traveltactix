@@ -370,15 +370,19 @@ const ARScan = () => {
       <canvas ref={canvasRef} className="hidden" />
 
       {/* Camera View */}
-      <div className="absolute inset-0 bg-black">
+      <div className="absolute inset-0 bg-black z-0">
         {cameraPermission === 'granted' ? (
           <video
             ref={videoRef}
             autoPlay
             playsInline
             muted
-            className="w-full h-full object-cover block"
-            style={{ minHeight: '100vh' }}
+            className="w-full h-full object-cover"
+            style={{ 
+              minHeight: '100vh',
+              minWidth: '100vw',
+              display: 'block'
+            }}
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-background via-card to-muted/50 flex items-center justify-center">
