@@ -39,7 +39,7 @@ serve(async (req) => {
     let targetCountry = country || '';
 
     // If coordinates provided but no city/country, use Perplexity to identify location
-    if ((latitude && longitude) && (!city || !country)) {
+    if ((latitude && longitude) && (!city || !country) && PERPLEXITY_API_KEY) {
       console.log('Identifying location from coordinates:', latitude, longitude);
       
       const locationResponse = await fetch('https://api.perplexity.ai/chat/completions', {
@@ -86,9 +86,53 @@ serve(async (req) => {
       }
     }
 
+    // Fallback reverse geocoding if Perplexity didn't resolve location
+    if ((!targetCity || !targetCountry) && (latitude && longitude)) {
+      try {
+        const GOOGLE_PLACES_API_KEY = Deno.env.get('GOOGLE_PLACES_API_KEY');
+        if (GOOGLE_PLACES_API_KEY) {
+          const gRes = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_PLACES_API_KEY}`);
+          const gJson = await gRes.json();
+          if (gJson.status === 'OK' && gJson.results && gJson.results.length > 0) {
+            const components = gJson.results[0].address_components || [];
+            const findType = (type: string) => components.find((c: any) => (c.types || []).includes(type));
+            const locality = findType('locality') || findType('administrative_area_level_2') || findType('administrative_area_level_1');
+            const countryComp = findType('country');
+            if (locality && !targetCity) targetCity = locality.long_name;
+            if (countryComp && !targetCountry) targetCountry = countryComp.long_name;
+            console.log('Google geocoding resolved:', targetCity, targetCountry);
+          } else {
+            console.warn('Google geocoding failed:', gJson.status, gJson.error_message);
+          }
+        }
+      } catch (e) {
+        console.error('Google geocoding error:', e);
+      }
+    }
+
+    // Last-resort fallback: OpenStreetMap Nominatim
+    if ((!targetCity || !targetCountry) && (latitude && longitude)) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+        const nRes = await fetch(url, { headers: { 'User-Agent': 'traveltactix-edge-fn', 'Accept-Language': 'en' } });
+        if (nRes.ok) {
+          const nJson = await nRes.json();
+          const addr = nJson.address || {};
+          const cityLike = addr.city || addr.town || addr.village || addr.suburb || addr.state_district || addr.state;
+          if (cityLike && !targetCity) targetCity = cityLike;
+          if (addr.country && !targetCountry) targetCountry = addr.country;
+          console.log('Nominatim resolved:', targetCity, targetCountry);
+        } else {
+          console.warn('Nominatim reverse geocoding failed with status', nRes.status);
+        }
+      } catch (e) {
+        console.error('Nominatim error:', e);
+      }
+    }
+
     if (!targetCity || !targetCountry) {
       return new Response(
-        JSON.stringify({ error: 'Could not determine location. Please provide city and country or enable location services.' }),
+        JSON.stringify({ error: 'Could not determine location. Please enter a city/country or try again later.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
