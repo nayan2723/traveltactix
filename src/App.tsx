@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BeamsBackground } from "@/components/BeamsBackground";
 import { QuickStatsWidget } from "@/components/QuickStatsWidget";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -25,6 +26,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
 import PhotoGallery from "./pages/PhotoGallery";
+import TravelResume from "./pages/TravelResume";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +45,7 @@ const App = () => (
           }}
         >
         <QuickStatsWidget />
+        <OfflineIndicator />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
@@ -61,6 +64,7 @@ const App = () => (
         <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
         <Route path="/product/:handle" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
         <Route path="/gallery" element={<ProtectedRoute><PhotoGallery /></ProtectedRoute>} />
+        <Route path="/resume" element={<ProtectedRoute><TravelResume /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

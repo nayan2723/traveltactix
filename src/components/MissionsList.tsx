@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { motion } from 'framer-motion';
+import { MissionFilterState } from '@/components/MissionFilters';
 
 interface Mission {
   id: string;
@@ -38,9 +39,16 @@ interface Place {
   cultural_tips: any;
 }
 
-export function MissionsList({ initialLocation }: { initialLocation?: { city: string; country: string } }) {
+export function MissionsList({ 
+  initialLocation,
+  filters 
+}: { 
+  initialLocation?: { city: string; country: string };
+  filters?: MissionFilterState;
+}) {
   const [selectedLocation, setSelectedLocation] = useState<{ city: string; country: string } | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
+  const [filteredMissions, setFilteredMissions] = useState<Mission[]>([]);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
   const [userMissions, setUserMissions] = useState<any[]>([]);
@@ -154,6 +162,81 @@ export function MissionsList({ initialLocation }: { initialLocation?: { city: st
       }
     }
   }, [initialLocation?.city, initialLocation?.country]);
+
+  // Apply filters to missions
+  useEffect(() => {
+    if (!filters) {
+      setFilteredMissions(missions);
+      return;
+    }
+
+    let filtered = [...missions];
+
+    // Search filter
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(m => 
+        m.title.toLowerCase().includes(searchLower) ||
+        m.description.toLowerCase().includes(searchLower) ||
+        m.city.toLowerCase().includes(searchLower) ||
+        m.country.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Difficulty filter
+    if (filters.difficulty.length > 0) {
+      filtered = filtered.filter(m => filters.difficulty.includes(m.difficulty));
+    }
+
+    // Category filter
+    if (filters.category.length > 0) {
+      filtered = filtered.filter(m => filters.category.includes(m.category));
+    }
+
+    // XP range filter
+    filtered = filtered.filter(m => 
+      m.xp_reward >= filters.xpMin && m.xp_reward <= filters.xpMax
+    );
+
+    // Near me filter
+    if (filters.nearMe && latitude && longitude) {
+      filtered = filtered.filter(m => {
+        if (!m.latitude || !m.longitude) return false;
+        const distance = calculateDistance(
+          latitude,
+          longitude,
+          Number(m.latitude),
+          Number(m.longitude)
+        );
+        return distance <= 10; // Within 10km
+      });
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      switch (filters.sortBy) {
+        case 'xp':
+          return b.xp_reward - a.xp_reward;
+        case 'difficulty':
+          const diffOrder = { 'Easy': 1, 'Medium': 2, 'Hard': 3 };
+          return (diffOrder[a.difficulty as keyof typeof diffOrder] || 0) - 
+                 (diffOrder[b.difficulty as keyof typeof diffOrder] || 0);
+        case 'deadline':
+          return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+        case 'distance':
+          if (latitude && longitude && a.latitude && a.longitude && b.latitude && b.longitude) {
+            const distA = calculateDistance(latitude, longitude, a.latitude, a.longitude);
+            const distB = calculateDistance(latitude, longitude, b.latitude, b.longitude);
+            return distA - distB;
+          }
+          return 0;
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredMissions(filtered);
+  }, [missions, filters, latitude, longitude]);
 
   const handleLocationSelect = (city: string, country: string) => {
     setSelectedLocation({ city, country });
@@ -392,6 +475,18 @@ export function MissionsList({ initialLocation }: { initialLocation?: { city: st
         </motion.div>
       )}
 
+      {selectedLocation && !loading && filteredMissions.length === 0 && missions.length > 0 && (
+        <Card className="text-center py-8">
+          <CardContent>
+            <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No Matching Missions</h3>
+            <p className="text-muted-foreground">
+              No missions match your current filters. Try adjusting your search.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {selectedLocation && !loading && missions.length === 0 && (
         <Card className="text-center py-8">
           <CardContent>
@@ -405,7 +500,7 @@ export function MissionsList({ initialLocation }: { initialLocation?: { city: st
       )}
 
       {/* Missions Grid */}
-      {selectedLocation && !loading && missions.length > 0 && (
+      {selectedLocation && !loading && filteredMissions.length > 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -415,11 +510,13 @@ export function MissionsList({ initialLocation }: { initialLocation?: { city: st
           <div className="flex items-end justify-between">
             <div>
               <h3 className="text-2xl font-bold">Available Missions</h3>
-              <p className="text-sm text-muted-foreground mt-1">Complete quests to earn XP and unlock rewards</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {filteredMissions.length} {filteredMissions.length === 1 ? 'mission' : 'missions'} found
+              </p>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {missions.map((mission, index) => {
+            {filteredMissions.map((mission, index) => {
               const userMission = userMissions.find(um => um.mission_id === mission.id);
               return (
                 <motion.div

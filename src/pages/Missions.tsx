@@ -14,6 +14,7 @@ import { useGeolocation } from '@/hooks/useGeolocation';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MyTasksTabs } from '@/components/MyTasksTabs';
 import { MissionRecommendations } from '@/components/MissionRecommendations';
+import { MissionFilters, MissionFilterState } from '@/components/MissionFilters';
 
 export default function Missions() {
   const { user } = useAuth();
@@ -24,6 +25,15 @@ export default function Missions() {
   const [country, setCountry] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
   const [lastGeneratedLocation, setLastGeneratedLocation] = useState<{ city: string; country: string } | null>(null);
+  const [filters, setFilters] = useState<MissionFilterState>({
+    search: '',
+    difficulty: [],
+    category: [],
+    xpMin: 0,
+    xpMax: 500,
+    sortBy: 'xp',
+    nearMe: false,
+  });
 
   const handleGenerateMissions = async () => {
     if (!user) {
@@ -198,7 +208,15 @@ export default function Missions() {
             <TabsTrigger value="my">My Tasks</TabsTrigger>
           </TabsList>
           <TabsContent value="discover">
-            <MissionsList key={refreshKey} initialLocation={lastGeneratedLocation || undefined} />
+            <MissionFilters 
+              onFilterChange={setFilters} 
+              hasLocation={!!(latitude && longitude)} 
+            />
+            <MissionsList 
+              key={refreshKey} 
+              initialLocation={lastGeneratedLocation || undefined}
+              filters={filters}
+            />
           </TabsContent>
           <TabsContent value="my">
             <MyTasksTabs />

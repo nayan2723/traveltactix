@@ -27,7 +27,8 @@ import {
   Award,
   ChevronDown,
   ShoppingBag,
-  Image
+  Image,
+  FileText
 } from "lucide-react";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import logo from "@/assets/logo.png";
@@ -53,6 +54,7 @@ export const MainNav = () => {
     { name: "Missions", path: "/missions", icon: Trophy },
     { name: "Shop", path: "/shop", icon: ShoppingBag },
     { name: "Gallery", path: "/gallery", icon: Image },
+    { name: "Resume", path: "/resume", icon: FileText },
     { name: "Crowd Monitor", path: "/crowd-monitor", icon: Users },
     { name: "Leaderboard", path: "/leaderboard", icon: Award },
   ];

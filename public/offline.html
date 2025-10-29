@@ -74,15 +74,53 @@
       font-size: 0.9rem;
       opacity: 0.8;
     }
+
+    .features {
+      margin-top: 40px;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .features h3 {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+
+    .features ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .features li {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .features li:last-child {
+      border-bottom: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="icon">📡</div>
     <h1>You're Offline</h1>
-    <p>It looks like you've lost your internet connection. Some features may not be available, but you can still view your saved missions and places.</p>
+    <p>No internet connection detected. But don't worry - you can still:</p>
+    
+    <div class="features">
+      <h3>Available Offline:</h3>
+      <ul>
+        <li>✅ View saved missions</li>
+        <li>✅ Browse your photo gallery</li>
+        <li>✅ Check your profile stats</li>
+        <li>✅ View completed achievements</li>
+      </ul>
+    </div>
+
     <button class="retry-button" onclick="window.location.reload()">
-      Try Again
+      Reconnect
     </button>
     <div class="status" id="status">
       Checking connection...
@@ -94,11 +132,13 @@
       const status = document.getElementById('status');
       if (navigator.onLine) {
         status.textContent = '✅ You\'re back online!';
+        status.style.color = '#4ade80';
         setTimeout(() => {
           window.location.reload();
         }, 1000);
       } else {
         status.textContent = '❌ Still offline';
+        status.style.color = '#fbbf24';
       }
     }
     
