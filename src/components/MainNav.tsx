@@ -26,8 +26,10 @@ import {
   User,
   Award,
   ChevronDown,
-  ShoppingBag
+  ShoppingBag,
+  Image
 } from "lucide-react";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import logo from "@/assets/logo.png";
 
 export const MainNav = () => {
@@ -50,6 +52,7 @@ export const MainNav = () => {
     { name: "Discovery", path: "/discovery", icon: Search },
     { name: "Missions", path: "/missions", icon: Trophy },
     { name: "Shop", path: "/shop", icon: ShoppingBag },
+    { name: "Gallery", path: "/gallery", icon: Image },
     { name: "Crowd Monitor", path: "/crowd-monitor", icon: Users },
     { name: "Leaderboard", path: "/leaderboard", icon: Award },
   ];
@@ -97,6 +100,7 @@ export const MainNav = () => {
 
           {/* User Actions */}
           <div className="hidden lg:flex items-center space-x-2">
+            {user && <NotificationCenter />}
             <CartDrawer />
             <ThemeToggle />
             {user ? (

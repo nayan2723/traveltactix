@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { MissionVerificationModal } from '@/components/MissionVerificationModal';
+import { ShareButton } from '@/components/ShareButton';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -294,6 +295,12 @@ export default function MissionTracker() {
                     <p className="text-sm font-semibold text-travel-gold mt-2">
                       +{mission.xp_reward} XP Earned
                     </p>
+                    <div className="mt-4">
+                      <ShareButton
+                        title={`Completed: ${mission.title}`}
+                        text={`I just completed ${mission.title} in ${mission.city} and earned ${mission.xp_reward} XP!`}
+                      />
+                    </div>
                   </div>
                 )}
               </CardContent>

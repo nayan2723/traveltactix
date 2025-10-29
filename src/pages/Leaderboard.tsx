@@ -3,10 +3,18 @@ import { MainNav } from "@/components/MainNav";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Trophy, Medal, Award, Star } from "lucide-react";
+import { Trophy, Medal, Award, Star, Filter } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface LeaderboardEntry {
   id: string;
@@ -23,6 +31,8 @@ const Leaderboard = () => {
   const [leaders, setLeaders] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [userRank, setUserRank] = useState<LeaderboardEntry | null>(null);
+  const [filterBy, setFilterBy] = useState<'all' | 'level' | 'xp'>('all');
+  const [timeRange, setTimeRange] = useState<'all-time' | 'monthly' | 'weekly'>('all-time');
 
   useEffect(() => {
     fetchLeaderboard();
@@ -107,6 +117,39 @@ const Leaderboard = () => {
             Compete with travelers worldwide. Earn XP by completing missions, learning culture, and exploring new places!
           </p>
         </div>
+
+        {/* Filters */}
+        <Card className="p-4 mb-8">
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Filters:</span>
+            </div>
+            <Select value={filterBy} onValueChange={(value: any) => setFilterBy(value)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Rankings</SelectItem>
+                <SelectItem value="level">By Level</SelectItem>
+                <SelectItem value="xp">By XP</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Time range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all-time">All Time</SelectItem>
+                <SelectItem value="monthly">This Month</SelectItem>
+                <SelectItem value="weekly">This Week</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="ml-auto flex gap-2">
+              <Badge variant="outline">{leaders.length} Travelers</Badge>
+            </div>
+          </div>
+        </Card>
 
         {/* Current User Rank */}
         {userRank && (

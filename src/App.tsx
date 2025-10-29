@@ -23,6 +23,7 @@ import Profile from "./pages/Profile";
 import Leaderboard from "./pages/Leaderboard";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
+import PhotoGallery from "./pages/PhotoGallery";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ const App = () => (
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
         <Route path="/product/:handle" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
+        <Route path="/gallery" element={<ProtectedRoute><PhotoGallery /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { CulturalProgress } from "@/components/CulturalProgress";
+import { StreakTracker } from "@/components/StreakTracker";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { 
@@ -196,6 +197,8 @@ const Dashboard = () => {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
+            {/* Streak Tracker */}
+            <StreakTracker />
             {/* Stats Overview */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="stats-card p-6 text-center relative overflow-hidden">
