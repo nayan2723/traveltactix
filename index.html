@@ -7,6 +7,8 @@
     <title>TravelTacTix - Your Journey Begins Here</title>
     <meta name="description" content="Discover offbeat destinations, experience local cultures, and turn every trip into an unforgettable adventure." />
     <meta name="author" content="TravelTacTix" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#667eea" />
     
     <!-- Osmo-Inspired Fonts - Elegant Sans-Serif -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,5 +28,19 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register Service Worker for offline support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('SW registered:', registration);
+            })
+            .catch(error => {
+              console.log('SW registration failed:', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

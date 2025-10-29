@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BeamsBackground } from "@/components/BeamsBackground";
+import { QuickStatsWidget } from "@/components/QuickStatsWidget";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -35,6 +36,7 @@ const App = () => (
         {/* <BeamsBackground /> */}
         <Toaster />
         <Sonner />
+        <QuickStatsWidget />
         <BrowserRouter
           future={{
             v7_startTransition: true,

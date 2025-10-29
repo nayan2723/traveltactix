@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { MyTasksTabs } from '@/components/MyTasksTabs';
+import { MissionRecommendations } from '@/components/MissionRecommendations';
 
 export default function Missions() {
   const { user } = useAuth();
@@ -187,7 +188,10 @@ export default function Missions() {
       </div>
 
       {/* Main Content */}
-      <div className="container-wide mx-auto px-4 sm:px-6 pb-20">
+      <div className="container-wide mx-auto px-4 sm:px-6 pb-20 space-y-8">
+        {/* AI Recommendations Section */}
+        <MissionRecommendations />
+
         <Tabs defaultValue="discover" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="discover">Discover</TabsTrigger>

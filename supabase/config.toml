@@ -24,6 +24,9 @@ verify_jwt = true
 [functions.recognize-landmark]
 verify_jwt = true
 
+[functions.recommend-missions]
+verify_jwt = true
+
 [functions.smart-recommendations]
 verify_jwt = true
 
