@@ -71,9 +71,15 @@ serve(async (req) => {
         console.log('Location identified:', content);
         
         try {
-        
-          targetCity = locationJson.city || city || '';
-          targetCountry = locationJson.country || country || '';
+          // Parse the JSON from the content
+          const jsonMatch = content.match(/\{[\s\S]*\}/);
+          const locationJson = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+          
+          if (locationJson) {
+            targetCity = locationJson.city || city || '';
+            targetCountry = locationJson.country || country || '';
+            console.log('Parsed location:', targetCity, targetCountry);
+          }
         } catch (e) {
           console.error('Failed to parse location:', e);
         }
