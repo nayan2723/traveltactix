@@ -62,8 +62,11 @@ export const useOfflineSync = () => {
           action_type: actionType,
           action_data: actionData,
         });
-      } catch (error) {
-        console.error('Failed to queue action:', error);
+      } catch (error: any) {
+        // Silently ignore if table doesn't exist (PGRST205 error)
+        if (error?.code !== 'PGRST205') {
+          console.error('Failed to queue action:', error);
+        }
       }
     }
   };
@@ -76,28 +79,46 @@ export const useOfflineSync = () => {
       // Get local queue
       const localQueue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
 
-      // Get database queue
-      // Type casting needed until Supabase types are regenerated
-      const { data: dbQueue, error } = await (supabase.from as any)('offline_queue')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('synced', false);
+      // Try to get database queue, but handle if table doesn't exist
+      let dbQueue: any[] = [];
+      try {
+        // Type casting needed until Supabase types are regenerated
+        const { data, error } = await (supabase.from as any)('offline_queue')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('synced', false);
 
-      if (error) throw error;
+        if (error && error.code !== 'PGRST205') {
+          throw error;
+        }
+        dbQueue = data || [];
+      } catch (error: any) {
+        // If table doesn't exist (PGRST205), just use local queue
+        if (error?.code !== 'PGRST205') {
+          console.error('Error fetching database queue:', error);
+        }
+      }
 
-      const allActions = [...localQueue, ...(dbQueue || [])];
+      const allActions = [...localQueue, ...dbQueue];
 
       // Process each action
       for (const action of allActions) {
         try {
           await processAction(action);
 
-          // Mark as synced in database
+          // Mark as synced in database if it came from database
           if (action.id && typeof action.id === 'string' && action.id.length === 36) {
-            // Type casting needed until Supabase types are regenerated
-            await (supabase.from as any)('offline_queue')
-              .update({ synced: true, synced_at: new Date().toISOString() })
-              .eq('id', action.id);
+            try {
+              // Type casting needed until Supabase types are regenerated
+              await (supabase.from as any)('offline_queue')
+                .update({ synced: true, synced_at: new Date().toISOString() })
+                .eq('id', action.id);
+            } catch (error: any) {
+              // Silently ignore if table doesn't exist
+              if (error?.code !== 'PGRST205') {
+                console.error('Failed to mark action as synced:', error);
+              }
+            }
           }
         } catch (error) {
           console.error('Failed to sync action:', error);
@@ -106,7 +127,9 @@ export const useOfflineSync = () => {
 
       // Clear local queue
       localStorage.setItem('offlineQueue', '[]');
-      toast.success('All changes synced!');
+      if (allActions.length > 0) {
+        toast.success('All changes synced!');
+      }
     } catch (error) {
       console.error('Sync failed:', error);
       toast.error('Some changes could not be synced');

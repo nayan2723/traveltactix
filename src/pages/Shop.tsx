@@ -10,6 +10,7 @@ import { fetchProducts, ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import { formatINR, applyDiscount } from "@/lib/utils";
+import { XPDiscountBadge } from "@/components/XPDiscountBadge";
 import travelCollage from "@/assets/travel-collage.jpg";
 export default function Shop() {
   const navigate = useNavigate();
@@ -155,8 +156,12 @@ export default function Shop() {
                         alt={product.node.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute top-4 left-4">
+                      <div className="absolute top-4 left-4 flex flex-col gap-2">
                         <Badge variant="secondary">{DISCOUNT}% OFF</Badge>
+                        {/* Mock XP discount - In production, fetch from database */}
+                        {Math.random() > 0.5 && (
+                          <XPDiscountBadge xpDiscount={10} />
+                        )}
                       </div>
                       {defaultVariant && !defaultVariant.availableForSale && (
                         <div className="absolute top-4 right-4">
