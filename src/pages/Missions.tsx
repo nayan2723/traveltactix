@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { MissionsList } from '@/components/MissionsList';
 import { MainNav } from '@/components/MainNav';
 import { motion } from "framer-motion";
