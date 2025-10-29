@@ -36,13 +36,13 @@ const App = () => (
         {/* <BeamsBackground /> */}
         <Toaster />
         <Sonner />
-        <QuickStatsWidget />
         <BrowserRouter
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,
           }}
         >
+        <QuickStatsWidget />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
