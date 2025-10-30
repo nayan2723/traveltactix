@@ -10,9 +10,8 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react({ jsxImportSource: "react" }),
-    mode === "development" && componentTagger()
-  ].filter(Boolean),
+    react({ jsxImportSource: "react" })
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
