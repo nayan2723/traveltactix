@@ -81,8 +81,8 @@ export const MainNav = () => {
           </motion.div>
           
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
-            {navItems.map((item) => (
+          <div className="hidden lg:flex items-center space-x-0.5">
+            {navItems.slice(0, 4).map((item) => (
               <Button
                 key={item.path}
                 onClick={() => navigate(item.path)}
@@ -92,30 +92,51 @@ export const MainNav = () => {
                   isActive(item.path)
                     ? "text-foreground font-medium bg-accent"
                     : "text-muted-foreground hover:text-foreground"
-                }`}
+                } px-2 xl:px-3`}
               >
-                <item.icon className="h-4 w-4 mr-2" />
-                <span>{item.name}</span>
+                <item.icon className="h-4 w-4" />
+                <span className="ml-1.5 hidden xl:inline text-sm">{item.name}</span>
               </Button>
             ))}
+            
+            {/* More dropdown for remaining items */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="px-2 xl:px-3">
+                  <Menu className="h-4 w-4" />
+                  <span className="ml-1.5 hidden xl:inline text-sm">More</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-background border-border">
+                {navItems.slice(4).map((item) => (
+                  <DropdownMenuItem 
+                    key={item.path}
+                    onClick={() => navigate(item.path)} 
+                    className="cursor-pointer"
+                  >
+                    <item.icon className="h-4 w-4 mr-2" />
+                    {item.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* User Actions */}
-          <div className="hidden lg:flex items-center space-x-2">
+          <div className="hidden lg:flex items-center space-x-1.5">
             {user && <NotificationCenter />}
             <CartDrawer />
             <ThemeToggle />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <Avatar className="w-6 h-6">
+                  <Button variant="ghost" size="sm" className="gap-1.5 px-2">
+                    <Avatar className="w-7 h-7">
                       <AvatarImage src={profile?.avatar_url || undefined} />
                       <AvatarFallback className="text-xs">
                         {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="hidden xl:inline">{profile?.full_name || 'Account'}</span>
                     <ChevronDown className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -138,21 +159,13 @@ export const MainNav = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate("/auth")}
-                >
-                  Log in
-                </Button>
-                <Button 
-                  size="sm"
-                  onClick={() => navigate("/auth")}
-                >
-                  Get Started
-                </Button>
-              </>
+              <Button 
+                size="sm"
+                onClick={() => navigate("/auth")}
+                className="px-4"
+              >
+                Sign In
+              </Button>
             )}
           </div>
 
