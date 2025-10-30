@@ -288,7 +288,7 @@ export function SmartRecommendationQuestionnaire() {
                     alt={rec.name}
                     className="w-full h-full object-cover"
                   />
-                  <Badge className="absolute top-4 right-4 bg-gradient-to-r from-primary to-purple-600">
+                  <Badge className="absolute top-4 right-4 bg-gradient-to-r from-primary to-purple-600 text-primary-foreground font-semibold border-0">
                     {rec.match_score}% Match
                   </Badge>
                 </div>
