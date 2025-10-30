@@ -1,13 +1,7 @@
-import * as React from 'react';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-if (typeof window !== 'undefined') {
-  // @ts-ignore
-  console.log('[Debug] React AuthContext version:', React.version, 'same as main?', React === (window as any).__react_ref_main);
-}
 
 interface AuthContextType {
   user: User | null;
