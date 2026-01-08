@@ -1,4 +1,4 @@
-# 🌍 Travel TacTix
+# 🌍 TravelTacTix
 
 **Travel. Play. Discover. Level Up Your Journey.**
 
