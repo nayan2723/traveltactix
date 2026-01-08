@@ -76,7 +76,7 @@ export default function MissionTracker() {
         .from('missions')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (missionError) throw missionError;
       setMission(missionData);
@@ -87,9 +87,9 @@ export default function MissionTracker() {
         .select('*')
         .eq('mission_id', id)
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (userMissionError && userMissionError.code !== 'PGRST116') {
+      if (userMissionError) {
         throw userMissionError;
       }
       

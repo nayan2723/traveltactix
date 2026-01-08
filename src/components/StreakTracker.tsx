@@ -34,11 +34,13 @@ export const StreakTracker = () => {
         .from('user_streaks')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       const today = new Date().toISOString().split('T')[0];
       
-      if (fetchError && fetchError.code === 'PGRST116') {
+      if (fetchError) throw fetchError;
+
+      if (!existingStreak) {
         // Create new streak
         const { data: newStreak, error: insertError } = await supabase
           .from('user_streaks')
@@ -50,13 +52,13 @@ export const StreakTracker = () => {
             total_logins: 1,
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (insertError) throw insertError;
         setStreak(newStreak);
         setRewardEarned(true);
         await awardDailyXP(1);
-      } else if (existingStreak) {
+      } else {
         const lastLogin = existingStreak.last_login_date;
         
         if (lastLogin !== today) {
@@ -88,7 +90,7 @@ export const StreakTracker = () => {
             })
             .eq('user_id', user.id)
             .select()
-            .single();
+            .maybeSingle();
 
           if (updateError) throw updateError;
           setStreak(updatedStreak);
@@ -121,7 +123,7 @@ export const StreakTracker = () => {
         .from('profiles')
         .select('total_xp')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (profile) {
         await supabase

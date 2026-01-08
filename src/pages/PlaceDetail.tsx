@@ -92,9 +92,9 @@ const PlaceDetail = () => {
         .select('id')
         .eq('user_id', user.id)
         .eq('place_id', id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error) throw error;
       setIsFavorite(!!data);
     } catch (error) {
       console.error('Error checking favorite status:', error);
