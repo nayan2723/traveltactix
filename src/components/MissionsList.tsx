@@ -124,11 +124,11 @@ export function MissionsList({
         setUserMissions(userMissionsData || []);
         
         // Refresh profile data to update XP
-        const { data: profileData } = await supabase
+        await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
       }
     } catch (error) {
       console.error('Error fetching location data:', error);
