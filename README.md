@@ -1,73 +1,150 @@
-# Welcome to your Lovable project
+# 🌍 WanderQuest
 
-## Project info
+**Travel. Play. Discover. Level Up Your Journey.**
 
-**URL**: https://lovable.dev/projects/67f409c1-6c8e-4756-843e-ad0c0020acff
+WanderQuest is a next-gen travel platform that blends **gamification**, **real-time travel intelligence**, **cultural immersion**, and **offbeat discovery** into one seamless experience.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Features
 
-**Use Lovable**
+### 🎯 Dynamic Gamified Missions
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/67f409c1-6c8e-4756-843e-ad0c0020acff) and start prompting.
+* Missions unlock based on **your location**
+* Earn XP for completing tasks
+* Track mission progress and completion
+* Start/Stop missions with real-time state updates
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🎭 Cultural Immersion
 
-**Use your preferred IDE**
+* Local phrases, etiquette, customs
+* Region-based cultural cards
+* Micro-tasks for extra XP
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🏞️ Offbeat Destination Discovery
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+* Hidden gems not in typical guides
+* Vibe filters (Adventure, Chill, Foodie, etc.)
+* Map integration
 
-Follow these steps:
+### 👥 Real-Time Crowd Monitoring
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+* Live heatmap of crowd density
+* Color-coded (Green/Yellow/Red)
+* Suggests alternate quieter locations
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 🛍️ Rewards Shop
 
-# Step 3: Install the necessary dependencies.
-npm i
+* Redeem XP for items/perks
+* Reward cards with animations
+* Balance updates immediately
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+---
+
+## 🧱 Tech Stack
+
+### Frontend
+
+* React (Vite)
+* TailwindCSS
+* Framer Motion
+* Lucide Icons
+* React Google Maps API
+* React Hot Toast
+
+### Data / Backend
+
+* Firestore (optional)
+* LocalStorage fallback
+* Google Places API
+* Geolocation API
+
+---
+
+## 📁 Project Structure
+
+```
+/src
+ ├── components
+ ├── pages
+ ├── data
+ ├── utils
+ └── styles
+```
+
+---
+
+## ⚙️ Installation
+
+```
+git clone <repo-url>
+npm install
+npm install framer-motion lucide-react react-hot-toast
+```
+
+Add your `.env` file:
+
+```
+VITE_GOOGLE_MAPS_API_KEY=your_key
+```
+
+Start the app:
+
+```
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🧠 Logic Flow
 
-**Use GitHub Codespaces**
+### Missions
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Get location
+2. Filter missions by distance
+3. Start mission → XP updates
 
-## What technologies are used for this project?
+### Crowd Map
 
-This project is built with:
+1. Load map
+2. Fetch/Simulate crowd data
+3. Show heatmap
+4. Suggest alternatives
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Shop
 
-## How can I deploy this project?
+1. Fetch XP
+2. Display rewards
+3. Deduct XP on redeem
 
-Simply open [Lovable](https://lovable.dev/projects/67f409c1-6c8e-4756-843e-ad0c0020acff) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## 🎨 UI Style (Osmo-inspired)
 
-Yes, you can!
+* Minimalist layout
+* Clean typography
+* Soft shadows and gradients
+* Smooth transitions
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🐛 Troubleshooting
+
+* **Missions not loading:** Check location permissions
+* **Map not showing:** Validate API key
+* **XP not updating:** Check localStorage or Firestore sync
+
+---
+
+## 🛣️ Roadmap
+
+* AR missions
+* Social groups
+* Shop inventory system
+* Local events feed
+
+---
+
+## 📜 License
+
+MIT License
