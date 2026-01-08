@@ -1,4 +1,4 @@
-# 🌍 WanderQuest
+# 🌍 Travel TacTix
 
 **Travel. Play. Discover. Level Up Your Journey.**
 
