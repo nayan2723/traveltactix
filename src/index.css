@@ -166,6 +166,78 @@
     --sidebar-border: 220 15% 20%;
     --sidebar-ring: 45 90% 55%;
   }
+
+  /* Travel Theme - Warm Earthy Adventure Palette */
+  .travel {
+    --background: 30 25% 10%;
+    --foreground: 45 20% 92%;
+
+    --card: 30 20% 14%;
+    --card-foreground: 45 20% 92%;
+
+    --popover: 30 20% 14%;
+    --popover-foreground: 45 20% 92%;
+
+    /* Compass Gold Primary */
+    --primary: 38 85% 55%;
+    --primary-foreground: 30 25% 10%;
+    --primary-glow: 38 90% 65%;
+
+    /* Sage Green Secondary */
+    --secondary: 150 30% 35%;
+    --secondary-foreground: 45 20% 92%;
+    --secondary-muted: 150 25% 45%;
+
+    --muted: 30 15% 18%;
+    --muted-foreground: 30 10% 60%;
+
+    /* Terracotta Accent */
+    --accent: 18 70% 55%;
+    --accent-foreground: 30 25% 10%;
+    --accent-light: 18 75% 65%;
+
+    /* Status Colors */
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 30 25% 10%;
+    --success: 142 50% 45%;
+    --success-foreground: 30 25% 10%;
+    --warning: 35 90% 50%;
+    --warning-foreground: 30 25% 10%;
+
+    --border: 30 15% 22%;
+    --input: 30 20% 15%;
+    --ring: 38 85% 55%;
+
+    /* Travel gamification */
+    --xp-bar: 142 55% 45%;
+    --badge-gold: 38 90% 60%;
+    --badge-silver: 200 20% 65%;
+    --badge-bronze: 25 65% 50%;
+
+    /* Travel gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(30 30% 12%) 0%, hsl(38 25% 15%) 50%, hsl(150 20% 12%) 100%);
+    --gradient-sunset: linear-gradient(90deg, hsl(18 70% 50%), hsl(38 85% 55%), hsl(45 80% 60%));
+    --gradient-card: linear-gradient(145deg, hsl(30 20% 14%) 0%, hsl(30 25% 17%) 100%);
+    --gradient-adventure: linear-gradient(120deg, hsl(150 30% 30%), hsl(38 60% 45%), hsl(18 65% 50%));
+    --gradient-ocean: linear-gradient(180deg, hsl(180 50% 30%), hsl(150 40% 35%));
+    --gradient-tropical: linear-gradient(45deg, hsl(142 55% 35%), hsl(150 50% 40%), hsl(160 45% 45%));
+
+    /* Travel shadows */
+    --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.4);
+    --shadow-hero: 0 15px 60px hsl(38 85% 55% / 0.15);
+    --shadow-glow: 0 0 40px hsl(38 85% 55% / 0.25);
+    --shadow-adventure: 0 10px 40px hsl(18 70% 55% / 0.2);
+
+    /* Sidebar travel theme */
+    --sidebar-background: 30 25% 12%;
+    --sidebar-foreground: 45 15% 88%;
+    --sidebar-primary: 38 85% 55%;
+    --sidebar-primary-foreground: 30 25% 10%;
+    --sidebar-accent: 30 20% 18%;
+    --sidebar-accent-foreground: 45 20% 92%;
+    --sidebar-border: 30 15% 22%;
+    --sidebar-ring: 38 85% 55%;
+  }
 }
 
 @layer base {
