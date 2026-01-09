@@ -34,8 +34,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        {/* Beams background temporarily disabled while we fix R3F crash */}
-        {/* <BeamsBackground /> */}
+        <BeamsBackground />
         <Toaster />
         <Sonner />
         <BrowserRouter

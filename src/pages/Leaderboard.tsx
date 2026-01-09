@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MainNav } from "@/components/MainNav";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Trophy, Medal, Award, Star, Filter } from "lucide-react";
 import { motion } from "framer-motion";
@@ -63,6 +62,40 @@ const Leaderboard = () => {
 
     setLoading(false);
   };
+
+  // Apply filtering and sorting based on selected options
+  const filteredLeaders = useMemo(() => {
+    let result = [...leaders];
+
+    // Apply sorting based on filterBy
+    switch (filterBy) {
+      case 'level':
+        result.sort((a, b) => {
+          // Primary sort by level (descending), secondary by XP
+          if (b.level !== a.level) return b.level - a.level;
+          return b.total_xp - a.total_xp;
+        });
+        break;
+      case 'xp':
+        result.sort((a, b) => b.total_xp - a.total_xp);
+        break;
+      case 'all':
+      default:
+        // Keep original rank order from database
+        result.sort((a, b) => a.rank - b.rank);
+        break;
+    }
+
+    // Note: Time range filtering would require additional database queries
+    // with created_at or activity timestamps. For now, we show a visual indicator
+    // that the filter is active but data remains the same (all-time data)
+
+    // Recalculate display ranks after sorting
+    return result.map((entry, index) => ({
+      ...entry,
+      displayRank: index + 1,
+    }));
+  }, [leaders, filterBy]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -125,7 +158,7 @@ const Leaderboard = () => {
               <Filter className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">Filters:</span>
             </div>
-            <Select value={filterBy} onValueChange={(value: any) => setFilterBy(value)}>
+            <Select value={filterBy} onValueChange={(value: 'all' | 'level' | 'xp') => setFilterBy(value)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Filter by" />
               </SelectTrigger>
@@ -135,7 +168,7 @@ const Leaderboard = () => {
                 <SelectItem value="xp">By XP</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
+            <Select value={timeRange} onValueChange={(value: 'all-time' | 'monthly' | 'weekly') => setTimeRange(value)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Time range" />
               </SelectTrigger>
@@ -146,7 +179,12 @@ const Leaderboard = () => {
               </SelectContent>
             </Select>
             <div className="ml-auto flex gap-2">
-              <Badge variant="outline">{leaders.length} Travelers</Badge>
+              <Badge variant="outline">{filteredLeaders.length} Travelers</Badge>
+              {timeRange !== 'all-time' && (
+                <Badge variant="secondary" className="text-xs">
+                  {timeRange === 'monthly' ? '📅 Monthly' : '📆 Weekly'}
+                </Badge>
+              )}
             </div>
           </div>
         </Card>
@@ -191,7 +229,7 @@ const Leaderboard = () => {
 
         {/* Leaderboard List */}
         <div className="space-y-2">
-          {leaders.map((entry, index) => (
+          {filteredLeaders.map((entry, index) => (
             <motion.div
               key={entry.id}
               initial={{ opacity: 0, x: -20 }}
@@ -205,7 +243,7 @@ const Leaderboard = () => {
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 flex items-center justify-center">
-                    {getRankIcon(entry.rank)}
+                    {getRankIcon(entry.displayRank)}
                   </div>
 
                   <Avatar className="w-10 h-10">
@@ -223,9 +261,9 @@ const Leaderboard = () => {
                       {entry.user_id === user?.id && (
                         <Badge variant="secondary" className="text-xs">You</Badge>
                       )}
-                      {getRankBadge(entry.rank) && (
+                      {getRankBadge(entry.displayRank) && (
                         <Badge variant="outline" className="text-xs">
-                          {getRankBadge(entry.rank)}
+                          {getRankBadge(entry.displayRank)}
                         </Badge>
                       )}
                     </div>
@@ -247,7 +285,7 @@ const Leaderboard = () => {
           ))}
         </div>
 
-        {leaders.length === 0 && (
+        {filteredLeaders.length === 0 && (
           <Card className="p-12 text-center">
             <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
