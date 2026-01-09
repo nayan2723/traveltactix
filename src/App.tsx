@@ -33,43 +33,128 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <BeamsBackground />
-        <Toaster />
-        <Sonner />
-        <BrowserRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-        <QuickStatsWidget />
-        <OfflineIndicator />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/missions" element={<ProtectedRoute><Missions /></ProtectedRoute>} />
-          <Route path="/missions/:id" element={<ProtectedRoute><MissionTracker /></ProtectedRoute>} />
-        <Route path="/cultural-feed" element={<ProtectedRoute><CulturalFeed /></ProtectedRoute>} />
-        <Route path="/cultural-lessons" element={<ProtectedRoute><CulturalLessons /></ProtectedRoute>} />
-        <Route path="/ar-scan" element={<ProtectedRoute><ARScan /></ProtectedRoute>} />
-        <Route path="/discovery" element={<Discovery />} />
-        <Route path="/places/:id" element={<PlaceDetail />} />
-        <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
-        <Route path="/crowd-monitor" element={<CrowdMonitor />} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
-        <Route path="/product/:handle" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
-        <Route path="/gallery" element={<ProtectedRoute><PhotoGallery /></ProtectedRoute>} />
-        <Route path="/resume" element={<ProtectedRoute><TravelResume /></ProtectedRoute>} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    
+    <TooltipProvider>
+      <BeamsBackground />
+      <Toaster />
+      <Sonner />
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <div className="relative z-10">
+          <QuickStatsWidget />
+          <OfflineIndicator />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/missions"
+              element={
+                <ProtectedRoute>
+                  <Missions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/missions/:id"
+              element={
+                <ProtectedRoute>
+                  <MissionTracker />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cultural-feed"
+              element={
+                <ProtectedRoute>
+                  <CulturalFeed />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cultural-lessons"
+              element={
+                <ProtectedRoute>
+                  <CulturalLessons />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ar-scan"
+              element={
+                <ProtectedRoute>
+                  <ARScan />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/discovery" element={<Discovery />} />
+            <Route path="/places/:id" element={<PlaceDetail />} />
+            <Route
+              path="/favorites"
+              element={
+                <ProtectedRoute>
+                  <Favorites />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/crowd-monitor" element={<CrowdMonitor />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route
+              path="/shop"
+              element={
+                <ProtectedRoute>
+                  <Shop />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/product/:handle"
+              element={
+                <ProtectedRoute>
+                  <ProductDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/gallery"
+              element={
+                <ProtectedRoute>
+                  <PhotoGallery />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/resume"
+              element={
+                <ProtectedRoute>
+                  <TravelResume />
+                </ProtectedRoute>
+              }
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 

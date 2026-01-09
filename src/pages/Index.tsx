@@ -84,11 +84,11 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground overflow-hidden relative">
       <MainNav />
-      
+
       {/* Animated Background Blobs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <motion.div 
           style={{ y: backgroundY }}
           className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-orange-500/30 to-red-500/30 rounded-full blur-3xl"
@@ -131,10 +131,9 @@ const Index = () => {
         />
       </div>
 
-      {/* Navbar - Using MainNav Component */}
-
-      {/* Hero Section - Osmo Style */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 py-20">
+      <main className="relative z-10">
+        {/* Hero Section - Osmo Style */}
+        <section className="relative min-h-screen flex items-center justify-center px-6 py-20">
         <div className="container-wide relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -461,6 +460,7 @@ const Index = () => {
           </div>
         </div>
       </footer>
+    </main>
     </div>
   );
 };
