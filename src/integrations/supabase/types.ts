@@ -727,6 +727,16 @@ export type Database = {
     }
     Functions: {
       calculate_level_from_xp: { Args: { xp: number }; Returns: number }
+      get_leaderboard_entry: {
+        Args: { target_user_id: string }
+        Returns: {
+          display_name: string
+          level: number
+          rank: number
+          total_xp: number
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
