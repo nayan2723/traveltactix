@@ -338,6 +338,33 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          created_at: string
+          function_name: string
+          id: string
+          request_count: number
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          function_name: string
+          id?: string
+          request_count?: number
+          user_id: string
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          function_name?: string
+          id?: string
+          request_count?: number
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       shop_items: {
         Row: {
           category: string
@@ -727,6 +754,21 @@ export type Database = {
     }
     Functions: {
       calculate_level_from_xp: { Args: { xp: number }; Returns: number }
+      check_rate_limit: {
+        Args: {
+          p_function_name: string
+          p_max_requests?: number
+          p_user_id: string
+          p_window_minutes?: number
+        }
+        Returns: {
+          allowed: boolean
+          current_count: number
+          max_allowed: number
+          reset_at: string
+        }[]
+      }
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
       get_leaderboard_entry: {
         Args: { target_user_id: string }
         Returns: {

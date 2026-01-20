@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
@@ -28,12 +29,82 @@ const RequestSchema = z.discriminatedUnion('type', [
   TranslateRequestSchema
 ]);
 
+// Rate limit configuration: 30 requests per hour per user
+const RATE_LIMIT_MAX = 30;
+const RATE_LIMIT_WINDOW = 60; // minutes
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Extract auth header for user identification
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authorization required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+
+    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_ANON_KEY) {
+      throw new Error('Missing required environment variables');
+    }
+
+    // Create client with user's auth token to get user ID
+    const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Create service role client for rate limiting
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Check rate limit
+    const { data: rateLimitResult, error: rateLimitError } = await supabase
+      .rpc('check_rate_limit', {
+        p_user_id: user.id,
+        p_function_name: 'ai-learning-assistant',
+        p_max_requests: RATE_LIMIT_MAX,
+        p_window_minutes: RATE_LIMIT_WINDOW
+      });
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError);
+    } else if (rateLimitResult && rateLimitResult.length > 0 && !rateLimitResult[0].allowed) {
+      const resetAt = new Date(rateLimitResult[0].reset_at);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded',
+          message: `You've used ${rateLimitResult[0].current_count}/${rateLimitResult[0].max_allowed} requests. Try again after ${resetAt.toLocaleTimeString()}.`,
+          reset_at: rateLimitResult[0].reset_at
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'X-RateLimit-Limit': String(RATE_LIMIT_MAX),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult[0].reset_at
+          } 
+        }
+      );
+    }
+
     const body = await req.json();
     
     // Validate input
@@ -44,19 +115,11 @@ serve(async (req) => {
           error: 'Invalid request', 
           details: validationResult.error.issues.map(i => i.message).join(', ')
         }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
     
     const data = validationResult.data;
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
-    }
 
     let systemPrompt = '';
     let userPrompt = '';
@@ -109,24 +172,30 @@ Provide only the translation, no explanations.`;
     const aiData = await response.json();
     const content = aiData.choices[0].message.content;
 
+    // Include rate limit info in response headers
+    const remaining = rateLimitResult?.[0] ? RATE_LIMIT_MAX - rateLimitResult[0].current_count : RATE_LIMIT_MAX;
+    const responseHeaders = {
+      ...corsHeaders, 
+      'Content-Type': 'application/json',
+      'X-RateLimit-Limit': String(RATE_LIMIT_MAX),
+      'X-RateLimit-Remaining': String(Math.max(0, remaining)),
+    };
+
     if (data.type === 'hint') {
       return new Response(
         JSON.stringify({ hint: content }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { headers: responseHeaders }
       );
     } else if (data.type === 'translate') {
       return new Response(
         JSON.stringify({ translation: content }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { headers: responseHeaders }
       );
     }
 
     return new Response(
       JSON.stringify({ error: 'Invalid request type' }),
-      { 
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
