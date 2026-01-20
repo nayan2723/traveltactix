@@ -16,10 +16,8 @@ import {
 } from "@/components/ui/select";
 
 interface LeaderboardEntry {
-  id: string;
   user_id: string;
-  full_name: string | null;
-  avatar_url: string | null;
+  display_name: string;
   total_xp: number;
   level: number;
   rank: number;
@@ -34,17 +32,22 @@ const Leaderboard = () => {
   const [timeRange, setTimeRange] = useState<'all-time' | 'monthly' | 'weekly'>('all-time');
 
   useEffect(() => {
-    fetchLeaderboard();
+    if (user) {
+      fetchLeaderboard();
+    }
   }, [user]);
 
   const fetchLeaderboard = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
     
-    // Fetch top 100 from leaderboard view
+    // Use secure RPC function that returns anonymized names
     const { data, error } = await supabase
-      .from('leaderboard')
-      .select('*')
-      .limit(100);
+      .rpc('get_leaderboard_entry', { target_user_id: null });
 
     if (error) {
       console.error('Error fetching leaderboard:', error);
@@ -52,13 +55,20 @@ const Leaderboard = () => {
       return;
     }
 
-    setLeaders(data || []);
+    // Sort by XP and assign ranks
+    const sortedData = (data || [])
+      .sort((a: LeaderboardEntry, b: LeaderboardEntry) => (b.total_xp || 0) - (a.total_xp || 0))
+      .slice(0, 100)
+      .map((entry: LeaderboardEntry, index: number) => ({
+        ...entry,
+        rank: index + 1
+      }));
+
+    setLeaders(sortedData);
 
     // Find current user's rank
-    if (user && data) {
-      const currentUser = data.find(entry => entry.user_id === user.id);
-      setUserRank(currentUser || null);
-    }
+    const currentUser = sortedData.find((entry: LeaderboardEntry) => entry.user_id === user.id);
+    setUserRank(currentUser || null);
 
     setLoading(false);
   };
@@ -201,9 +211,8 @@ const Leaderboard = () => {
                 <div className="flex items-center gap-3">
                   {getRankIcon(userRank.rank)}
                   <Avatar className="w-12 h-12">
-                    <AvatarImage src={userRank.avatar_url || undefined} />
                     <AvatarFallback>
-                      {userRank.full_name?.charAt(0)?.toUpperCase() || 'Y'}
+                      {userRank.display_name?.charAt(0)?.toUpperCase() || 'Y'}
                     </AvatarFallback>
                   </Avatar>
                 </div>
@@ -231,7 +240,7 @@ const Leaderboard = () => {
         <div className="space-y-2">
           {filteredLeaders.map((entry, index) => (
             <motion.div
-              key={entry.id}
+              key={entry.user_id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.03 }}
@@ -247,16 +256,15 @@ const Leaderboard = () => {
                   </div>
 
                   <Avatar className="w-10 h-10">
-                    <AvatarImage src={entry.avatar_url || undefined} />
                     <AvatarFallback>
-                      {entry.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                      {entry.display_name?.charAt(0)?.toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
 
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold">
-                        {entry.full_name || 'Anonymous Traveler'}
+                        {entry.display_name || 'Anonymous Traveler'}
                       </span>
                       {entry.user_id === user?.id && (
                         <Badge variant="secondary" className="text-xs">You</Badge>
@@ -289,7 +297,7 @@ const Leaderboard = () => {
           <Card className="p-12 text-center">
             <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
-              No travelers on the leaderboard yet. Be the first!
+              {user ? 'No travelers on the leaderboard yet. Be the first!' : 'Sign in to view the leaderboard.'}
             </p>
           </Card>
         )}
