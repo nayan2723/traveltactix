@@ -12,6 +12,10 @@ const RequestSchema = z.object({
   preferences: z.record(z.any()).optional()
 });
 
+// Rate limit configuration: 15 requests per hour per user
+const RATE_LIMIT_MAX = 15;
+const RATE_LIMIT_WINDOW = 60; // minutes
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -30,8 +34,9 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
       throw new Error("Missing required environment variables");
     }
 
@@ -46,6 +51,41 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Create service role client for rate limiting
+    const supabaseService = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Check rate limit
+    const { data: rateLimitResult, error: rateLimitError } = await supabaseService
+      .rpc('check_rate_limit', {
+        p_user_id: user.id,
+        p_function_name: 'ai-recommendations',
+        p_max_requests: RATE_LIMIT_MAX,
+        p_window_minutes: RATE_LIMIT_WINDOW
+      });
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError);
+    } else if (rateLimitResult && rateLimitResult.length > 0 && !rateLimitResult[0].allowed) {
+      const resetAt = new Date(rateLimitResult[0].reset_at);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded',
+          message: `You've used ${rateLimitResult[0].current_count}/${rateLimitResult[0].max_allowed} requests. Try again after ${resetAt.toLocaleTimeString()}.`,
+          reset_at: rateLimitResult[0].reset_at
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'X-RateLimit-Limit': String(RATE_LIMIT_MAX),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult[0].reset_at
+          } 
+        }
       );
     }
 
@@ -138,8 +178,6 @@ Instructions:
 
     const aiResponse = await response.json();
     const content = aiResponse.choices[0].message.content;
-    
-    
 
     // Parse AI response
     let recommendations;
@@ -167,11 +205,19 @@ Instructions:
       };
     }).filter((r: any) => r.id); // Filter out any that didn't match
 
-    
+    // Include rate limit info in response headers
+    const remaining = rateLimitResult?.[0] ? RATE_LIMIT_MAX - rateLimitResult[0].current_count : RATE_LIMIT_MAX;
 
     return new Response(
       JSON.stringify({ recommendations: enrichedRecommendations }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'X-RateLimit-Limit': String(RATE_LIMIT_MAX),
+          'X-RateLimit-Remaining': String(Math.max(0, remaining)),
+        } 
+      }
     );
 
   } catch (error) {
