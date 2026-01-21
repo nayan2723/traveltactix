@@ -1,4 +1,4 @@
-const CACHE_NAME = 'traveltactix-v1';
+const CACHE_NAME = 'traveltactix-v2';
 const OFFLINE_URL = '/offline.html';
 
 // Assets to cache for offline use
@@ -31,6 +31,74 @@ self.addEventListener('activate', (event) => {
     })
   );
   self.clients.claim();
+});
+
+// Push notification event - handle incoming push notifications
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+
+  try {
+    const data = event.data.json();
+    const options = {
+      body: data.body || data.message,
+      icon: '/logo.png',
+      badge: '/logo.png',
+      vibrate: [100, 50, 100],
+      data: {
+        url: data.url || '/',
+        ...data.metadata
+      },
+      actions: data.actions || [
+        { action: 'open', title: 'Open' },
+        { action: 'dismiss', title: 'Dismiss' }
+      ],
+      tag: data.tag || 'traveltactix-notification',
+      renotify: true
+    };
+
+    event.waitUntil(
+      self.registration.showNotification(data.title || 'TravelTacTix', options)
+    );
+  } catch (error) {
+    console.error('Error showing push notification:', error);
+  }
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'dismiss') return;
+
+  const urlToOpen = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // Check if there is already a window/tab open with the target URL
+      for (const client of windowClients) {
+        if (client.url.includes(urlToOpen) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // If not, open a new window/tab
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
+// Handle messages from the main thread
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+    const { title, options } = event.data;
+    self.registration.showNotification(title, {
+      icon: '/logo.png',
+      badge: '/logo.png',
+      vibrate: [100, 50, 100],
+      ...options
+    });
+  }
 });
 
 // Fetch event - serve from cache when offline

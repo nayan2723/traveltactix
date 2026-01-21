@@ -3,10 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { BeamsBackground } from "@/components/BeamsBackground";
 import { QuickStatsWidget } from "@/components/QuickStatsWidget";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { useNotificationTriggers } from "@/hooks/useNotificationTriggers";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -31,6 +32,12 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Component to initialize notification triggers within AuthProvider context
+const NotificationInitializer = ({ children }: { children: React.ReactNode }) => {
+  useNotificationTriggers();
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -43,116 +50,128 @@ const App = () => (
           v7_relativeSplatPath: true,
         }}
       >
-        <div className="relative z-10">
-          <QuickStatsWidget />
-          <OfflineIndicator />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/missions"
-              element={
-                <ProtectedRoute>
-                  <Missions />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/missions/:id"
-              element={
-                <ProtectedRoute>
-                  <MissionTracker />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/cultural-feed"
-              element={
-                <ProtectedRoute>
-                  <CulturalFeed />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/cultural-lessons"
-              element={
-                <ProtectedRoute>
-                  <CulturalLessons />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ar-scan"
-              element={
-                <ProtectedRoute>
-                  <ARScan />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/discovery" element={<Discovery />} />
-            <Route path="/places/:id" element={<PlaceDetail />} />
-            <Route
-              path="/favorites"
-              element={
-                <ProtectedRoute>
-                  <Favorites />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/crowd-monitor" element={<CrowdMonitor />} />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route
-              path="/shop"
-              element={
-                <ProtectedRoute>
-                  <Shop />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/product/:handle"
-              element={
-                <ProtectedRoute>
-                  <ProductDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/gallery"
-              element={
-                <ProtectedRoute>
-                  <PhotoGallery />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/resume"
-              element={
-                <ProtectedRoute>
-                  <TravelResume />
-                </ProtectedRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </div>
+        <AuthProvider>
+          <NotificationInitializer>
+            <div className="relative z-10">
+              <QuickStatsWidget />
+              <OfflineIndicator />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/missions"
+                  element={
+                    <ProtectedRoute>
+                      <Missions />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/missions/:id"
+                  element={
+                    <ProtectedRoute>
+                      <MissionTracker />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/cultural-feed"
+                  element={
+                    <ProtectedRoute>
+                      <CulturalFeed />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/cultural-lessons"
+                  element={
+                    <ProtectedRoute>
+                      <CulturalLessons />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/ar-scan"
+                  element={
+                    <ProtectedRoute>
+                      <ARScan />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/discovery" element={<Discovery />} />
+                <Route path="/places/:id" element={<PlaceDetail />} />
+                <Route
+                  path="/favorites"
+                  element={
+                    <ProtectedRoute>
+                      <Favorites />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/crowd-monitor" element={<CrowdMonitor />} />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route
+                  path="/shop"
+                  element={
+                    <ProtectedRoute>
+                      <Shop />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/product/:handle"
+                  element={
+                    <ProtectedRoute>
+                      <ProductDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/gallery"
+                  element={
+                    <ProtectedRoute>
+                      <PhotoGallery />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/travel-resume"
+                  element={
+                    <ProtectedRoute>
+                      <TravelResume />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/resume"
+                  element={
+                    <ProtectedRoute>
+                      <TravelResume />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+          </NotificationInitializer>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
