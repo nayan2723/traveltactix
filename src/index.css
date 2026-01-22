@@ -538,4 +538,85 @@
       padding: 10rem 0;
     }
   }
+
+  /* Mobile Touch Optimizations */
+  @media (max-width: 768px) {
+    /* Larger touch targets */
+    .btn-adventure,
+    .btn-primary,
+    button {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Better touch feedback */
+    .travel-card,
+    .mission-card {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .travel-card:active,
+    .mission-card:active {
+      transform: scale(0.98);
+      transition: transform 0.1s ease;
+    }
+
+    /* Improved scrolling */
+    .overflow-y-auto,
+    .overflow-auto {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+
+    /* Safe area insets for notched devices */
+    .safe-area-bottom {
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+
+    .safe-area-top {
+      padding-top: env(safe-area-inset-top, 16px);
+    }
+  }
+
+  /* AR Scanner Mobile Optimizations */
+  .ar-overlay {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .ar-scan-button {
+    min-height: 56px;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    touch-action: manipulation;
+  }
+
+  /* Map Touch Improvements */
+  .leaflet-container {
+    touch-action: pan-x pan-y;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .leaflet-marker-icon,
+  .leaflet-popup-close-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Prevent text selection during interactions */
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  /* Improved focus states for accessibility */
+  .focus-ring:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
 }
