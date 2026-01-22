@@ -365,7 +365,7 @@ const ARScan = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden ar-overlay">
       {/* Hidden canvas for capturing */}
       <canvas ref={canvasRef} className="hidden" />
 
@@ -377,38 +377,47 @@ const ARScan = () => {
             autoPlay
             playsInline
             muted
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover no-select"
             style={{ 
               minHeight: '100vh',
               minWidth: '100vw',
-              display: 'block'
+              display: 'block',
+              WebkitTransform: 'translateZ(0)', // Hardware acceleration for mobile
             }}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-background via-card to-muted/50 flex items-center justify-center">
-            <div className="text-center px-6">
-              <Camera className="h-24 w-24 mx-auto mb-6 text-muted-foreground" />
-              <h2 className="text-3xl font-bold mb-4">AR Landmark Scanner</h2>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+          <div className="w-full h-full bg-gradient-to-br from-background via-card to-muted/50 flex items-center justify-center safe-area-top safe-area-bottom">
+            <div className="text-center px-4 sm:px-6 max-w-md">
+              <Camera className="h-16 w-16 sm:h-24 sm:w-24 mx-auto mb-4 sm:mb-6 text-muted-foreground" />
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">AR Landmark Scanner</h2>
+              <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
                 Point your camera at monuments and landmarks to discover details and nearby attractions
               </p>
               <input
                 ref={uploadInputRef}
                 type="file"
                 accept="image/*"
+                capture="environment"
                 onChange={handleFileSelect}
                 className="hidden"
               />
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Button onClick={startCamera} className="btn-primary rounded-full px-8">
-                  <Camera className="h-4 w-4 mr-2" />
+              <div className="flex flex-col gap-3">
+                <Button 
+                  onClick={startCamera} 
+                  className="btn-primary rounded-full px-6 sm:px-8 h-12 sm:h-11 text-base touch-manipulation"
+                >
+                  <Camera className="h-5 w-5 mr-2" />
                   Enable Camera
                 </Button>
-                <Button variant="outline" onClick={() => uploadInputRef.current?.click()} className="rounded-full px-8">
+                <Button 
+                  variant="outline" 
+                  onClick={() => uploadInputRef.current?.click()} 
+                  className="rounded-full px-6 sm:px-8 h-12 sm:h-11 text-base touch-manipulation"
+                >
                   Upload Photo Instead
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-3">
+              <p className="text-xs text-muted-foreground mt-4">
                 Camera requires HTTPS. If blocked, open in a new tab and allow camera access.
               </p>
             </div>
@@ -471,27 +480,28 @@ const ARScan = () => {
             </div>
           )}
 
-          {/* Controls */}
-          <div className="absolute top-6 left-6 right-6 flex justify-between items-center z-10">
-            <div className="bg-card/80 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50">
-              <h1 className="text-base font-semibold">AR Scanner</h1>
+          {/* Controls - Mobile optimized with safe areas */}
+          <div className="absolute top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 flex justify-between items-center z-10 safe-area-top">
+            <div className="bg-card/80 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full border border-border/50">
+              <h1 className="text-sm sm:text-base font-semibold">AR Scanner</h1>
             </div>
             
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={stopCamera}
-              className="bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-card rounded-full"
+              className="bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-card rounded-full h-10 w-10 sm:h-9 sm:w-auto sm:px-3 touch-manipulation"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5 sm:h-4 sm:w-4" />
             </Button>
           </div>
 
-          <div className="absolute bottom-6 left-6 right-6 z-10">
+          {/* Scan Button - Mobile optimized with safe area */}
+          <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 z-10 safe-area-bottom">
             <Button
               onClick={scanLandmark}
               disabled={isScanning}
-              className="w-full btn-primary rounded-full h-14 text-base font-semibold shadow-xl"
+              className="w-full btn-primary rounded-full h-14 sm:h-14 text-base font-semibold shadow-xl ar-scan-button touch-manipulation"
             >
               {isScanning ? (
                 <>
@@ -509,7 +519,7 @@ const ARScan = () => {
         </>
       )}
 
-      {/* Landmark Details Overlay */}
+      {/* Landmark Details Overlay - Mobile optimized */}
       <AnimatePresence>
         {showDetails && recognizedLandmark && (
           <motion.div
@@ -517,7 +527,8 @@ const ARScan = () => {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30 }}
-            className="absolute bottom-0 left-0 right-0 bg-card/98 backdrop-blur-xl border-t border-border rounded-t-3xl max-h-[70vh] overflow-y-auto"
+            className="absolute bottom-0 left-0 right-0 bg-card/98 backdrop-blur-xl border-t border-border rounded-t-3xl max-h-[75vh] sm:max-h-[70vh] overflow-y-auto safe-area-bottom"
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
             <div className="p-6">
               {/* Header */}
