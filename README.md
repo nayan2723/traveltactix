@@ -125,26 +125,3 @@ npm run dev
 * Clean typography
 * Soft shadows and gradients
 * Smooth transitions
-
----
-
-## 🐛 Troubleshooting
-
-* **Missions not loading:** Check location permissions
-* **Map not showing:** Validate API key
-* **XP not updating:** Check localStorage or Firestore sync
-
----
-
-## 🛣️ Roadmap
-
-* AR missions
-* Social groups
-* Shop inventory system
-* Local events feed
-
----
-
-## 📜 License
-
-MIT License
