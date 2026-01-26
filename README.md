@@ -2,7 +2,7 @@
 
 **Travel. Play. Discover. Level Up Your Journey.**
 
-WanderQuest is a next-gen travel platform that blends **gamification**, **real-time travel intelligence**, **cultural immersion**, and **offbeat discovery** into one seamless experience.
+TravelTacTix is a next-gen travel platform that blends **gamification**, **real-time travel intelligence**, **cultural immersion**, and **offbeat discovery** into one seamless experience.
 
 ---
 
