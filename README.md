@@ -52,13 +52,6 @@ TravelTacTix is a next-gen travel platform that blends **gamification**, **real-
 * React Google Maps API
 * React Hot Toast
 
-### Data / Backend
-
-* Firestore (optional)
-* LocalStorage fallback
-* Google Places API
-* Geolocation API
-
 ---
 
 ## 📁 Project Structure
