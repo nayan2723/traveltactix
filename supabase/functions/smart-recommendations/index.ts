@@ -263,6 +263,17 @@ Make questions engaging, specific, and helpful for understanding travel preferen
       const visitedPlaceIds = new Set(visits?.map(v => v.place_id) || []);
       const availablePlaces = allPlaces?.filter(p => !visitedPlaceIds.has(p.id)) || [];
 
+      // Extract place names with proper typing
+      const visitedNames = visits?.map(v => {
+        const place = v.places as { name: string; category: string; mood_tags: string[] } | null;
+        return place?.name;
+      }).filter(Boolean).join(', ') || 'None';
+      
+      const favoriteNames = favorites?.map(f => {
+        const place = f.places as { name: string; category: string; mood_tags: string[] } | null;
+        return place?.name;
+      }).filter(Boolean).join(', ') || 'None';
+
       // Step 3: Use Gemini to analyze everything and generate personalized recommendations
       const recommendationPrompt = `You are an expert AI travel advisor. Analyze the following data and recommend the TOP 5 personalized destinations.
 
@@ -273,8 +284,8 @@ REAL-TIME TRAVEL TRENDS (from Perplexity):
 ${travelTrends}
 
 USER'S TRAVEL HISTORY:
-Visited: ${visits?.map(v => v.places?.name).join(', ') || 'None'}
-Favorites: ${favorites?.map(f => f.places?.name).join(', ') || 'None'}
+Visited: ${visitedNames}
+Favorites: ${favoriteNames}
 
 AVAILABLE DESTINATIONS:
 ${JSON.stringify(availablePlaces.slice(0, 30).map(p => ({

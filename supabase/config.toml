@@ -32,3 +32,9 @@ verify_jwt = true
 
 [functions.verify-mission]
 verify_jwt = true
+
+[functions.send-notification]
+verify_jwt = true
+
+[functions.ai-travel-assistant]
+verify_jwt = true
