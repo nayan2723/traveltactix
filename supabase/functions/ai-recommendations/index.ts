@@ -118,16 +118,22 @@ serve(async (req) => {
 
     // Build context for AI
     const userContext = {
-      visitHistory: visits?.map(v => ({
-        name: v.places?.name,
-        category: v.places?.category,
-        moods: v.places?.mood_tags
-      })) || [],
-      favorites: favorites?.map(f => ({
-        name: f.places?.name,
-        category: f.places?.category,
-        moods: f.places?.mood_tags
-      })) || [],
+      visitHistory: visits?.map(v => {
+        const place = v.places as { name: string; category: string; mood_tags: string[] } | null;
+        return {
+          name: place?.name,
+          category: place?.category,
+          moods: place?.mood_tags
+        };
+      }) || [],
+      favorites: favorites?.map(f => {
+        const place = f.places as { name: string; category: string; mood_tags: string[] } | null;
+        return {
+          name: place?.name,
+          category: place?.category,
+          moods: place?.mood_tags
+        };
+      }) || [],
       preferences: preferences || {}
     };
 
