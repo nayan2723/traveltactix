@@ -36,6 +36,7 @@ const Shop = lazy(() => import("./pages/Shop"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const PhotoGallery = lazy(() => import("./pages/PhotoGallery"));
 const TravelResume = lazy(() => import("./pages/TravelResume"));
+const Analytics = lazy(() => import("./pages/Analytics"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -247,6 +248,16 @@ const App = () => (
                       <ProtectedRoute>
                         <LazyPage>
                           <TravelResume />
+                        </LazyPage>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/analytics"
+                    element={
+                      <ProtectedRoute>
+                        <LazyPage>
+                          <Analytics />
                         </LazyPage>
                       </ProtectedRoute>
                     }
