@@ -16,10 +16,10 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      react: path.resolve(__dirname, "./node_modules/react"),
-      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
     },
-    dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "scheduler"],
+    // Force a single copy of React in the bundle.
+    // (Do NOT alias react/react-dom to filesystem paths; that can split optimized/non-optimized copies.)
+    dedupe: ["react", "react-dom"],
   },
   optimizeDeps: {
     include: ["react", "react-dom"],
