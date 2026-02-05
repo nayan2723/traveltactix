@@ -1,32 +1,42 @@
 import { createRoot } from "react-dom/client";
-import App from "./App";
 import "./index.css";
 
-// Dev-only: clear any old Service Worker + caches to prevent stale Vite chunks
-// causing "Invalid hook call" / dispatcher-null hook crashes.
-if (import.meta.env.DEV && "serviceWorker" in navigator) {
-  const cleanedFlag = "dev_sw_cleaned_once";
+/**
+ * Prevent "Invalid hook call" / dispatcher-null crashes caused by stale Service Worker caches
+ * in the Lovable/Vite preview.
+ *
+ * Key change: do the cleanup + reload BEFORE rendering React.
+ */
+async function bootstrap() {
+  if (import.meta.env.DEV && "serviceWorker" in navigator) {
+    const cleanedFlag = "dev_sw_cleaned_once";
 
-  (async () => {
-    try {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map((r) => r.unregister()));
+    // First load after code changes: nuke SW + caches, reload, then render on next load.
+    if (!sessionStorage.getItem(cleanedFlag)) {
+      sessionStorage.setItem(cleanedFlag, "1");
 
-      if ("caches" in window) {
-        const keys = await caches.keys();
-        await Promise.all(keys.map((k) => caches.delete(k)));
-      }
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map((r) => r.unregister()));
 
-      if (!sessionStorage.getItem(cleanedFlag)) {
-        sessionStorage.setItem(cleanedFlag, "1");
+        if ("caches" in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
+      } finally {
+        // Reload regardless of cleanup result.
         location.reload();
-      } else {
-        sessionStorage.removeItem(cleanedFlag);
       }
-    } catch {
-      // ignore
+
+      return;
     }
-  })();
+
+    // Second load: proceed normally.
+    sessionStorage.removeItem(cleanedFlag);
+  }
+
+  const { default: App } = await import("./App");
+  createRoot(document.getElementById("root")!).render(<App />);
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+bootstrap();
