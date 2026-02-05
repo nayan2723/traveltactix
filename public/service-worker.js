@@ -1,4 +1,4 @@
-const CACHE_NAME = 'traveltactix-v2';
+const CACHE_NAME = 'traveltactix-v3';
 const OFFLINE_URL = '/offline.html';
 
 // Assets to cache for offline use
@@ -103,35 +103,50 @@ self.addEventListener('message', (event) => {
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests
+  // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
-  // Skip caching for API requests
-  if (event.request.url.includes('/functions/') || 
-      event.request.url.includes('supabase.co')) {
+  const url = new URL(event.request.url);
+
+  // Skip caching for Supabase / Edge Function requests
+  if (
+    url.pathname.includes('/functions/') ||
+    url.hostname.endsWith('supabase.co')
+  ) {
     return;
   }
 
+  // IMPORTANT (Lovable preview / Vite dev): never cache module scripts.
+  // Caching these can lead to stale/mismatched React bundles and "Invalid hook call".
+  if (
+    url.pathname.startsWith('/@vite') ||
+    url.pathname.startsWith('/@react-refresh') ||
+    url.pathname.startsWith('/src/') ||
+    url.pathname.startsWith('/node_modules/') ||
+    url.pathname.includes('/node_modules/.vite/') ||
+    url.searchParams.has('v')
+  ) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // Navigation requests: network-first, fallback to offline page.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(fetch(event.request).catch(() => caches.match(OFFLINE_URL)));
+    return;
+  }
+
+  // Other same-origin assets: cache-first, then network + cache.
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) {
-        return response;
-      }
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
 
       return fetch(event.request).then((response) => {
-        // Cache successful responses
-        if (response && response.status === 200) {
+        if (response && response.status === 200 && url.origin === self.location.origin) {
           const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
         }
         return response;
-      }).catch(() => {
-        // Return offline page for navigation requests
-        if (event.request.mode === 'navigate') {
-          return caches.match(OFFLINE_URL);
-        }
       });
     })
   );
