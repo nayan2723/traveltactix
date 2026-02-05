@@ -10,6 +10,8 @@ interface Profile {
   bio: string | null;
   total_xp: number;
   level: number;
+  is_admin?: boolean;
+  badges?: string[];
   created_at: string;
   updated_at: string;
 }
