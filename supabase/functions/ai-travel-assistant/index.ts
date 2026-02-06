@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
       .from('profiles')
       .select('*')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     // Fetch user's recent missions
     const { data: recentMissions } = await supabase

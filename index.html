@@ -30,10 +30,15 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
+    <script type="module">
       // Service Worker: enable only in production to avoid dev caching issues
       if ('serviceWorker' in navigator) {
-        if (import.meta.env.PROD) {
+        // Check if we're in production by looking for non-localhost
+        const isProduction = !window.location.hostname.includes('localhost') && 
+                            !window.location.hostname.includes('lovableproject.com') &&
+                            !window.location.hostname.includes('preview');
+        
+        if (isProduction) {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('/service-worker.js')
               .then(registration => {
