@@ -13,10 +13,14 @@ const QuestionsSchema = z.object({
 
 const RecommendationsSchema = z.object({
   mode: z.literal('recommendations'),
-  answers: z.array(z.object({
-    question: z.string().max(500),
-    answer: z.string().max(1000)
-  })).max(20)
+  // Answers can be either an array of objects or a record (object with string keys/values)
+  answers: z.union([
+    z.array(z.object({
+      question: z.string().max(500),
+      answer: z.string().max(1000)
+    })).max(20),
+    z.record(z.string().max(1000))
+  ])
 });
 
 // Rate limit configuration: 10 requests per hour per user (expensive due to Perplexity + Gemini)
