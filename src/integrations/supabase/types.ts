@@ -1122,6 +1122,33 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles_public: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          level: number | null
+          total_xp: number | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: never
+          level?: number | null
+          total_xp?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: never
+          level?: number | null
+          total_xp?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_level_from_xp: { Args: { xp: number }; Returns: number }
@@ -1140,6 +1167,7 @@ export type Database = {
         }[]
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      cleanup_old_visits: { Args: never; Returns: undefined }
       get_leaderboard_entry: {
         Args: { target_user_id: string }
         Returns: {

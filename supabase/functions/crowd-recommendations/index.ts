@@ -253,8 +253,9 @@ Return ONLY valid JSON:
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-    console.error('Error in crowd-recommendations');
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    // Minimal production logging
+    console.error('crowd-recommendations error');
+    const message = 'Request failed';
     return new Response(
       JSON.stringify({ error: message }),
       { 

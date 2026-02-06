@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
       });
 
     if (rateLimitError) {
-      console.error('Rate limit check error:', rateLimitError);
+      // Silent fail for rate limit check - continue with request
     } else if (rateLimitResult && rateLimitResult.length > 0 && !rateLimitResult[0].allowed) {
       const resetAt = new Date(rateLimitResult[0].reset_at);
       return new Response(
@@ -385,7 +385,8 @@ Focus on hidden gems they haven't visited yet. Return ONLY JSON, no markdown.`;
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-    console.error("Error in smart-recommendations");
+    // Minimal production logging - no sensitive data
+    console.error("smart-recommendations error");
     return new Response(
       JSON.stringify({ error: "Failed to generate recommendations" }),
       { 

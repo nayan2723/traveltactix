@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    console.log('Verifying mission:', { user_mission_id, verification_type });
+    // Mission verification started
 
     // Fetch user mission with mission details
     const { data: userMission, error: missionError } = await supabase
@@ -86,7 +86,6 @@ Deno.serve(async (req) => {
       .single();
 
     if (missionError || !userMission) {
-      console.error('Mission fetch error:', missionError);
       return new Response(JSON.stringify({ error: 'Mission not found' }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -113,14 +112,7 @@ Deno.serve(async (req) => {
             userMission.missions.longitude
           );
           
-          console.log('Distance calculation:', {
-            userLat: verification_data.latitude,
-            userLng: verification_data.longitude,
-            targetLat: userMission.missions.latitude,
-            targetLng: userMission.missions.longitude,
-            distanceKm: distance,
-            distanceMeters: Math.round(distance * 1000)
-          });
+          // Distance calculated for location verification
           
           // Within 100 meters for accurate landmark verification
           const VERIFICATION_RADIUS_KM = 0.1; // 100 meters
@@ -185,7 +177,6 @@ Deno.serve(async (req) => {
       .eq('id', user_mission_id);
 
     if (updateError) {
-      console.error('Update error:', updateError);
       return new Response(JSON.stringify({ error: 'Failed to update mission' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -232,8 +223,8 @@ Deno.serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Verification error:', error);
-    // Don't expose detailed error messages to client
+    // Minimal production logging
+    console.error('verify-mission error');
     return new Response(
       JSON.stringify({ error: 'Mission verification failed' }),
       {
