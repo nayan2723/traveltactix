@@ -50,6 +50,8 @@ export const MainNav = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const getNavItemLabel = (item: typeof navItems[0]) => item.name;
+
   const navItems = [
     { name: "Discovery", path: "/discovery", icon: Search },
     { name: "Missions", path: "/missions", icon: Trophy },
@@ -93,9 +95,11 @@ export const MainNav = () => {
                   isActive(item.path)
                     ? "text-foreground font-medium bg-accent"
                     : "text-muted-foreground hover:text-foreground"
-                } px-2 xl:px-3`}
+                } px-2 xl:px-3 min-h-[44px]`}
+                aria-label={getNavItemLabel(item)}
+                aria-current={isActive(item.path) ? "page" : undefined}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-4 w-4" aria-hidden="true" />
                 <span className="ml-1.5 hidden xl:inline text-sm">{item.name}</span>
               </Button>
             ))}
@@ -103,8 +107,8 @@ export const MainNav = () => {
             {/* More dropdown for remaining items */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="px-2 xl:px-3">
-                  <Menu className="h-4 w-4" />
+                <Button variant="ghost" size="sm" className="px-2 xl:px-3 min-h-[44px]" aria-label="More navigation options">
+                  <Menu className="h-4 w-4" aria-hidden="true" />
                   <span className="ml-1.5 hidden xl:inline text-sm">More</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -175,10 +179,12 @@ export const MainNav = () => {
             <CartDrawer />
             <ThemeToggle />
             <button
-              className="text-foreground"
+              className="text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               onClick={() => setMenuOpen(!menuOpen)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
             >
-              {menuOpen ? <X /> : <Menu />}
+              {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
             </button>
           </div>
         </div>

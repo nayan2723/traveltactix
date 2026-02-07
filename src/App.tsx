@@ -11,6 +11,7 @@ import { useNotificationTriggers } from "@/hooks/useNotificationTriggers";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SuspenseFallback, ARFallback } from "@/components/SuspenseFallback";
+import { SkipLink } from "@/components/accessibility/AccessibilityHelpers";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -73,6 +74,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <ErrorBoundary>
+        <SkipLink />
         <BeamsBackground />
         <Toaster />
         <Sonner />
@@ -84,7 +86,7 @@ const App = () => (
         >
           <AuthProvider>
             <NotificationInitializer>
-              <div className="relative z-10">
+              <main id="main-content" className="relative z-10">
                 <QuickStatsWidget />
                 <OfflineIndicator />
                 <Routes>
@@ -265,7 +267,7 @@ const App = () => (
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-              </div>
+              </main>
             </NotificationInitializer>
           </AuthProvider>
         </BrowserRouter>

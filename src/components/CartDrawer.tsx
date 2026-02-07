@@ -50,10 +50,15 @@ export const CartDrawer = () => {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
-          <ShoppingCart className="h-5 w-5" />
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="relative min-h-[44px] min-w-[44px]"
+          aria-label={`Shopping cart${totalItems > 0 ? `, ${totalItems} items` : ', empty'}`}
+        >
+          <ShoppingCart className="h-5 w-5" aria-hidden="true" />
           {totalItems > 0 && (
-            <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground">
+            <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground" aria-hidden="true">
               {totalItems}
             </Badge>
           )}
@@ -106,29 +111,32 @@ export const CartDrawer = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6"
+                          className="h-8 w-8 min-h-[44px] min-w-[44px]"
                           onClick={() => removeItem(item.variantId)}
+                          aria-label={`Remove ${item.product.node.title} from cart`}
                         >
-                          <Trash2 className="h-3 w-3" />
+                          <Trash2 className="h-3 w-3" aria-hidden="true" />
                         </Button>
                         
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1" role="group" aria-label={`Quantity for ${item.product.node.title}`}>
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-8 w-8 min-h-[44px] min-w-[44px]"
                             onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                            aria-label="Decrease quantity"
                           >
-                            <Minus className="h-3 w-3" />
+                            <Minus className="h-3 w-3" aria-hidden="true" />
                           </Button>
-                          <span className="w-8 text-center text-sm">{item.quantity}</span>
+                          <span className="w-8 text-center text-sm" aria-live="polite">{item.quantity}</span>
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-8 w-8 min-h-[44px] min-w-[44px]"
                             onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                            aria-label="Increase quantity"
                           >
-                            <Plus className="h-3 w-3" />
+                            <Plus className="h-3 w-3" aria-hidden="true" />
                           </Button>
                         </div>
                       </div>

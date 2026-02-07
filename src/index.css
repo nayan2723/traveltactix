@@ -27,9 +27,9 @@
     --secondary-foreground: 0 0% 15%;
     --secondary-muted: 35 20% 92%;
 
-    /* Muted Earth Tones */
+    /* Muted Earth Tones - WCAG AA Compliant */
     --muted: 40 15% 93%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 0 0% 35%;
 
     /* Accent - Subtle Sage */
     --accent: 140 20% 75%;

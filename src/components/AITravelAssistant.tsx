@@ -69,8 +69,9 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
             <Button
               onClick={() => setIsOpen(true)}
               className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+              aria-label="Open AI travel assistant"
             >
-              <MessageCircle className="h-6 w-6" />
+              <MessageCircle className="h-6 w-6" aria-hidden="true" />
             </Button>
           </motion.div>
         )}
@@ -113,25 +114,28 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
                     variant="ghost"
                     size="icon"
                     onClick={clearConversation}
-                    className="h-8 w-8"
+                    className="h-8 w-8 min-h-[44px] min-w-[44px]"
+                    aria-label="Clear conversation"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsMinimized(!isMinimized)}
-                    className="h-8 w-8"
+                    className="h-8 w-8 min-h-[44px] min-w-[44px]"
+                    aria-label={isMinimized ? "Expand chat" : "Minimize chat"}
                   >
-                    {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+                    {isMinimized ? <Maximize2 className="h-4 w-4" aria-hidden="true" /> : <Minimize2 className="h-4 w-4" aria-hidden="true" />}
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsOpen(false)}
-                    className="h-8 w-8"
+                    className="h-8 w-8 min-h-[44px] min-w-[44px]"
+                    aria-label="Close chat"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </div>
               </div>
@@ -139,7 +143,7 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
               {/* Chat content */}
               {!isMinimized && (
                 <>
-                  <ScrollArea className="h-[350px] p-4" ref={scrollRef}>
+                  <ScrollArea className="h-[350px] p-4" ref={scrollRef} tabIndex={0} aria-label="Chat messages">
                     {messages.length === 0 ? (
                       <div className="space-y-4">
                         <div className="text-center py-4">
@@ -164,10 +168,11 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-4">
+                      <div className="space-y-4" role="log" aria-live="polite" aria-label="Conversation">
                         {messages.map((msg, i) => (
                           <div
                             key={i}
+                            tabIndex={0}
                             className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
                           >
                             <Avatar className="h-7 w-7 flex-shrink-0">
@@ -236,8 +241,14 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
                         disabled={isLoading}
                         className="flex-1"
                       />
-                      <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
-                        <Send className="h-4 w-4" />
+                      <Button 
+                        type="submit" 
+                        size="icon" 
+                        disabled={isLoading || !input.trim()}
+                        aria-label="Send message"
+                        className="min-h-[44px] min-w-[44px]"
+                      >
+                        <Send className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     </div>
                   </form>
