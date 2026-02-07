@@ -203,16 +203,22 @@ export const FriendsPanel = () => {
                         </div>
                       </div>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MessageCircle className="h-4 w-4" />
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 min-h-[44px] min-w-[44px]"
+                          aria-label={`Message ${friend.profile?.full_name}`}
+                        >
+                          <MessageCircle className="h-4 w-4" aria-hidden="true" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-destructive"
+                          className="h-8 w-8 min-h-[44px] min-w-[44px] text-destructive"
                           onClick={() => removeFriend(friend.id)}
+                          aria-label={`Remove ${friend.profile?.full_name} from friends`}
                         >
-                          <UserMinus className="h-4 w-4" />
+                          <UserMinus className="h-4 w-4" aria-hidden="true" />
                         </Button>
                       </div>
                     </div>
@@ -254,18 +260,20 @@ export const FriendsPanel = () => {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-8 w-8 min-h-[44px] min-w-[44px]"
                           onClick={() => acceptFriendRequest(request.id)}
+                          aria-label={`Accept friend request from ${request.profile?.full_name}`}
                         >
-                          <Check className="h-4 w-4 text-success" />
+                          <Check className="h-4 w-4 text-success" aria-hidden="true" />
                         </Button>
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-8 w-8 min-h-[44px] min-w-[44px]"
                           onClick={() => rejectFriendRequest(request.id)}
+                          aria-label={`Reject friend request from ${request.profile?.full_name}`}
                         >
-                          <X className="h-4 w-4 text-destructive" />
+                          <X className="h-4 w-4 text-destructive" aria-hidden="true" />
                         </Button>
                       </div>
                     </div>

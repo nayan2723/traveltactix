@@ -23,8 +23,14 @@ export const SocialFeed = ({ maxHeight = '600px' }: SocialFeedProps) => {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">Activity Feed</CardTitle>
-          <Button variant="ghost" size="icon" onClick={refetch}>
-            <RefreshCw className="h-4 w-4" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={refetch}
+            aria-label="Refresh activity feed"
+            className="min-h-[44px] min-w-[44px]"
+          >
+            <RefreshCw className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
         <Tabs value={feedType} onValueChange={(v) => setFeedType(v as any)} className="w-full">
