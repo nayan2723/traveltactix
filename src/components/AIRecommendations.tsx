@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,8 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, MapPin, Clock, Heart } from "lucide-react";
+import { Sparkles, MapPin, Clock } from "lucide-react";
 import { motion } from "motion/react";
+import { 
+  getAIRecommendationCache, 
+  setAIRecommendationCache,
+  cleanExpiredCache 
+} from "@/lib/aiRecommendationCache";
 
 interface Recommendation {
   id: string;
@@ -23,7 +28,7 @@ interface Recommendation {
 }
 
 interface AIRecommendationsProps {
-  preferences?: any;
+  preferences?: Record<string, unknown>;
 }
 
 export const AIRecommendations = ({ preferences }: AIRecommendationsProps) => {
@@ -32,6 +37,19 @@ export const AIRecommendations = ({ preferences }: AIRecommendationsProps) => {
   const { toast } = useToast();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Clean expired cache entries on mount
+  useEffect(() => {
+    cleanExpiredCache();
+  }, []);
+
+  // Check cache on mount
+  useEffect(() => {
+    const cachedData = getAIRecommendationCache('ai_recommendations', user?.id);
+    if (cachedData && Array.isArray(cachedData)) {
+      setRecommendations(cachedData as Recommendation[]);
+    }
+  }, [user?.id]);
 
   const generateRecommendations = async () => {
     if (!user) {
@@ -54,17 +72,22 @@ export const AIRecommendations = ({ preferences }: AIRecommendationsProps) => {
 
       if (error) throw error;
 
-      setRecommendations(data.recommendations || []);
+      const newRecommendations = data.recommendations || [];
+      setRecommendations(newRecommendations);
+      
+      // Cache the recommendations for 24 hours
+      setAIRecommendationCache('ai_recommendations', newRecommendations, user.id);
       
       toast({
         title: "Recommendations Generated!",
-        description: `Found ${data.recommendations?.length || 0} personalized destinations`,
+        description: `Found ${newRecommendations.length} personalized destinations`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to generate recommendations";
       console.error('Error generating recommendations:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to generate recommendations",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

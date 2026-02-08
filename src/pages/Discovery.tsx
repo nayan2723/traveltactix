@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { MainNav } from "@/components/MainNav";
@@ -14,21 +14,21 @@ import {
   Clock, 
   Heart, 
   Search, 
-  Filter,
   Gem,
   Star,
   Camera,
   Leaf,
   Coffee,
   Mountain,
-  Calendar
+  Calendar,
+  Loader2
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { AIRecommendations } from "@/components/AIRecommendations";
 import { ItineraryBuilder } from "@/components/ItineraryBuilder";
 import { SmartRecommendationQuestionnaire } from "@/components/SmartRecommendationQuestionnaire";
+import { LazyBackgroundImage } from "@/components/LazyImage";
 
 interface Place {
   id: string;
@@ -43,8 +43,10 @@ interface Place {
   mood_tags: string[];
   estimated_visit_time: number;
   image_urls: string[];
-  cultural_tips: any;
+  cultural_tips: unknown;
 }
+
+const PAGE_SIZE = 12;
 
 const moodFilters = [
   { name: 'Adventure', icon: Mountain, color: 'bg-orange-500' },
@@ -60,36 +62,59 @@ const Discovery = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [places, setPlaces] = useState<Place[]>([]);
-  const [filteredPlaces, setFilteredPlaces] = useState<Place[]>([]);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [showHiddenGems, setShowHiddenGems] = useState(true);
   const [selectedForItinerary, setSelectedForItinerary] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'grid' | 'crowd'>('grid');
   const [selectedCity, setSelectedCity] = useState<string>('');
+  const [totalCount, setTotalCount] = useState(0);
 
-  useEffect(() => {
-    fetchPlaces();
-    if (user) {
-      fetchFavorites();
+  // Build query with filters
+  const buildQuery = useCallback(() => {
+    let query = supabase.from('places').select('*', { count: 'exact' });
+    
+    if (showHiddenGems) {
+      query = query.eq('is_hidden_gem', true);
     }
-  }, [user]);
+    
+    if (searchTerm) {
+      query = query.or(`name.ilike.%${searchTerm}%,city.ilike.%${searchTerm}%,country.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+    }
+    
+    if (selectedMoods.length > 0) {
+      query = query.overlaps('mood_tags', selectedMoods);
+    }
+    
+    return query.order('created_at', { ascending: false });
+  }, [searchTerm, selectedMoods, showHiddenGems]);
 
-  useEffect(() => {
-    filterPlaces();
-  }, [places, searchTerm, selectedMoods, showHiddenGems]);
-
-  const fetchPlaces = async () => {
+  // Initial fetch
+  const fetchPlaces = useCallback(async (reset = true) => {
     try {
-      const { data, error } = await supabase
-        .from('places')
-        .select('*')
-        .order('created_at', { ascending: false });
+      if (reset) setLoading(true);
+      else setLoadingMore(true);
+      
+      const offset = reset ? 0 : places.length;
+      
+      const { data, error, count } = await buildQuery()
+        .range(offset, offset + PAGE_SIZE - 1);
 
       if (error) throw error;
-      setPlaces(data || []);
+      
+      const newData = data || [];
+      setTotalCount(count || 0);
+      setHasMore(offset + newData.length < (count || 0));
+      
+      if (reset) {
+        setPlaces(newData);
+      } else {
+        setPlaces(prev => [...prev, ...newData]);
+      }
     } catch (error) {
       console.error('Error fetching places:', error);
       toast({
@@ -99,8 +124,9 @@ const Discovery = () => {
       });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
-  };
+  }, [buildQuery, places.length, toast]);
 
   const fetchFavorites = async () => {
     if (!user) return;
@@ -118,33 +144,17 @@ const Discovery = () => {
     }
   };
 
-  const filterPlaces = () => {
-    let filtered = places;
+  // Effect to refetch when filters change
+  useEffect(() => {
+    fetchPlaces(true);
+  }, [searchTerm, selectedMoods, showHiddenGems]);
 
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(place =>
-        place.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        place.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        place.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        place.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  // Fetch favorites on user change
+  useEffect(() => {
+    if (user) {
+      fetchFavorites();
     }
-
-    // Filter by mood tags
-    if (selectedMoods.length > 0) {
-      filtered = filtered.filter(place =>
-        selectedMoods.some(mood => place.mood_tags?.includes(mood))
-      );
-    }
-
-    // Filter by hidden gems
-    if (showHiddenGems) {
-      filtered = filtered.filter(place => place.is_hidden_gem);
-    }
-
-    setFilteredPlaces(filtered);
-  };
+  }, [user]);
 
   const toggleMood = (mood: string) => {
     setSelectedMoods(prev =>
@@ -353,7 +363,7 @@ const Discovery = () => {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-muted-foreground">
-            Found {filteredPlaces.length} destination{filteredPlaces.length !== 1 ? 's' : ''}
+            Showing {places.length} of {totalCount} destination{totalCount !== 1 ? 's' : ''}
             {selectedMoods.length > 0 && (
               <span> matching: {selectedMoods.join(', ')}</span>
             )}
@@ -377,7 +387,7 @@ const Discovery = () => {
           <div className="space-y-8">
             <CrowdDashboard />
             <CrowdMap 
-              places={filteredPlaces.map(p => ({
+              places={places.map(p => ({
                 id: p.id,
                 name: p.name,
                 city: p.city,
@@ -396,7 +406,7 @@ const Discovery = () => {
           <>
             {/* Places Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPlaces.map((place, index) => (
+          {places.map((place, index) => (
             <motion.div
               key={place.id}
               initial={{ opacity: 0, y: 20 }}
@@ -511,11 +521,32 @@ const Discovery = () => {
             </motion.div>
           ))}
             </div>
+            
+            {/* Load More Button */}
+            {hasMore && !loading && (
+              <div className="flex justify-center mt-8">
+                <Button 
+                  variant="outline" 
+                  onClick={() => fetchPlaces(false)}
+                  disabled={loadingMore}
+                  className="min-w-[200px]"
+                >
+                  {loadingMore ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    `Load More (${places.length}/${totalCount})`
+                  )}
+                </Button>
+              </div>
+            )}
           </>
         )}
 
         {/* No Results */}
-        {filteredPlaces.length === 0 && (
+        {!loading && places.length === 0 && (
           <div className="text-center py-12">
             <Gem className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-xl font-semibold mb-2">No destinations found</h3>
