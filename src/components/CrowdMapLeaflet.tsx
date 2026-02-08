@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Users, Clock, Maximize2, Minimize2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-cluster";
 import type { LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -32,7 +33,7 @@ const FitBounds = ({ places }: { places: Place[] }) => {
       const validPlaces = places.filter(p => p.latitude && p.longitude);
       if (validPlaces.length > 0) {
         const bounds: LatLngExpression[] = validPlaces.map(p => [p.latitude, p.longitude] as LatLngExpression);
-        map.fitBounds(bounds as any, { padding: [50, 50], maxZoom: 12 });
+        map.fitBounds(bounds as [number, number][], { padding: [50, 50], maxZoom: 12 });
       }
     }
   }, [places, map]);
@@ -67,7 +68,13 @@ const CrowdMapLeaflet = ({ places, onPlaceClick }: CrowdMapLeafletProps) => {
     return Math.max(10, Math.min(30, percentage / 3));
   };
 
-  const validPlaces = places.filter(p => p.latitude && p.longitude);
+  const validPlaces = useMemo(() => 
+    places.filter(p => p.latitude && p.longitude),
+    [places]
+  );
+  
+  // Enable clustering for large datasets (50+ markers)
+  const useCluster = validPlaces.length > 50;
   
   const defaultCenter: LatLngExpression = validPlaces.length > 0 
     ? [validPlaces[0].latitude, validPlaces[0].longitude]
@@ -146,66 +153,137 @@ const CrowdMapLeaflet = ({ places, onPlaceClick }: CrowdMapLeafletProps) => {
               />
               <FitBounds places={validPlaces} />
               
-              {validPlaces.map((place) => {
-                const colors = getCrowdColor(place.crowd_status);
-                const radius = getRadius(place.crowd_percentage);
-                const position: LatLngExpression = [place.latitude, place.longitude];
-                
-                return (
-                  <CircleMarker
-                    key={place.id}
-                    {...{ 
-                      center: position,
-                      radius: radius,
-                      pathOptions: {
-                        fillColor: colors.fill,
-                        fillOpacity: 0.6,
-                        color: colors.stroke,
-                        weight: 2,
-                      }
-                    }}
-                    eventHandlers={{
-                      click: () => {
-                        setSelectedPlace(place);
-                        onPlaceClick?.(place);
-                      },
-                    }}
-                  >
-                    <Popup>
-                      <div className="p-2 min-w-[180px] sm:min-w-[200px]">
-                        <h4 className="font-semibold text-foreground mb-1 text-sm sm:text-base">{place.name}</h4>
-                        <p className="text-xs sm:text-sm text-muted-foreground mb-2">{place.city}</p>
-                        <div className="flex items-center justify-between">
-                          <Badge
-                            variant="outline"
-                            style={{ 
-                              backgroundColor: `${colors.fill}20`,
-                              borderColor: colors.fill,
-                              color: colors.fill
-                            }}
-                            className="text-xs"
-                          >
-                            {getCrowdLabel(place.crowd_status)}
-                          </Badge>
-                          <span className="text-xs sm:text-sm font-medium">{place.crowd_percentage}%</span>
-                        </div>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Users className="w-3 h-3 text-muted-foreground" />
-                          <div className="flex-1 bg-muted rounded-full h-1.5 sm:h-2 overflow-hidden">
-                            <div
-                              className="h-full transition-all duration-500"
-                              style={{
-                                width: `${place.crowd_percentage}%`,
-                                backgroundColor: colors.fill
+              {/* Conditionally wrap markers in cluster group */}
+              {useCluster ? (
+                <MarkerClusterGroup
+                  chunkedLoading
+                  maxClusterRadius={60}
+                  spiderfyOnMaxZoom
+                  showCoverageOnHover={false}
+                >
+                  {validPlaces.map((place) => {
+                    const colors = getCrowdColor(place.crowd_status);
+                    const radius = getRadius(place.crowd_percentage);
+                    const position: LatLngExpression = [place.latitude, place.longitude];
+                    
+                    return (
+                      <CircleMarker
+                        key={place.id}
+                        {...{ 
+                          center: position,
+                          radius: radius,
+                          pathOptions: {
+                            fillColor: colors.fill,
+                            fillOpacity: 0.6,
+                            color: colors.stroke,
+                            weight: 2,
+                          }
+                        }}
+                        eventHandlers={{
+                          click: () => {
+                            setSelectedPlace(place);
+                            onPlaceClick?.(place);
+                          },
+                        }}
+                      >
+                        <Popup>
+                          <div className="p-2 min-w-[180px] sm:min-w-[200px]">
+                            <h4 className="font-semibold text-foreground mb-1 text-sm sm:text-base">{place.name}</h4>
+                            <p className="text-xs sm:text-sm text-muted-foreground mb-2">{place.city}</p>
+                            <div className="flex items-center justify-between">
+                              <Badge
+                                variant="outline"
+                                style={{ 
+                                  backgroundColor: `${colors.fill}20`,
+                                  borderColor: colors.fill,
+                                  color: colors.fill
+                                }}
+                                className="text-xs"
+                              >
+                                {getCrowdLabel(place.crowd_status)}
+                              </Badge>
+                              <span className="text-xs sm:text-sm font-medium">{place.crowd_percentage}%</span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-2">
+                              <Users className="w-3 h-3 text-muted-foreground" />
+                              <div className="flex-1 bg-muted rounded-full h-1.5 sm:h-2 overflow-hidden">
+                                <div
+                                  className="h-full transition-all duration-500"
+                                  style={{
+                                    width: `${place.crowd_percentage}%`,
+                                    backgroundColor: colors.fill
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </Popup>
+                      </CircleMarker>
+                    );
+                  })}
+                </MarkerClusterGroup>
+              ) : (
+                validPlaces.map((place) => {
+                  const colors = getCrowdColor(place.crowd_status);
+                  const radius = getRadius(place.crowd_percentage);
+                  const position: LatLngExpression = [place.latitude, place.longitude];
+                  
+                  return (
+                    <CircleMarker
+                      key={place.id}
+                      {...{ 
+                        center: position,
+                        radius: radius,
+                        pathOptions: {
+                          fillColor: colors.fill,
+                          fillOpacity: 0.6,
+                          color: colors.stroke,
+                          weight: 2,
+                        }
+                      }}
+                      eventHandlers={{
+                        click: () => {
+                          setSelectedPlace(place);
+                          onPlaceClick?.(place);
+                        },
+                      }}
+                    >
+                      <Popup>
+                        <div className="p-2 min-w-[180px] sm:min-w-[200px]">
+                          <h4 className="font-semibold text-foreground mb-1 text-sm sm:text-base">{place.name}</h4>
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-2">{place.city}</p>
+                          <div className="flex items-center justify-between">
+                            <Badge
+                              variant="outline"
+                              style={{ 
+                                backgroundColor: `${colors.fill}20`,
+                                borderColor: colors.fill,
+                                color: colors.fill
                               }}
-                            />
+                              className="text-xs"
+                            >
+                              {getCrowdLabel(place.crowd_status)}
+                            </Badge>
+                            <span className="text-xs sm:text-sm font-medium">{place.crowd_percentage}%</span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Users className="w-3 h-3 text-muted-foreground" />
+                            <div className="flex-1 bg-muted rounded-full h-1.5 sm:h-2 overflow-hidden">
+                              <div
+                                className="h-full transition-all duration-500"
+                                style={{
+                                  width: `${place.crowd_percentage}%`,
+                                  backgroundColor: colors.fill
+                                }}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Popup>
-                  </CircleMarker>
-                );
-              })}
+                      </Popup>
+                    </CircleMarker>
+                  );
+                })
+              )}
             </MapContainer>
           ) : (
             <div className="h-full flex items-center justify-center bg-muted/50 rounded-xl">

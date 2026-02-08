@@ -40,6 +40,7 @@ export type EventType =
 interface TrackEventOptions {
   eventType: EventType;
   eventName: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>;
 }
 
@@ -48,10 +49,15 @@ export const useAnalytics = () => {
   const location = useLocation();
   const sessionStartRef = useRef<number>(Date.now());
   const pageViewCountRef = useRef<number>(0);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Initialize or update session
+  // Initialize or update session with abort support
   const initSession = useCallback(async () => {
     if (!user) return;
+
+    // Cancel any in-flight request
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = new AbortController();
 
     const sessionId = getSessionId();
     const { deviceType, browser } = getDeviceInfo();
@@ -70,27 +76,31 @@ export const useAnalytics = () => {
           onConflict: 'session_id',
         });
 
-      if (error) console.error('Session init error:', error);
+      if (error && !abortControllerRef.current?.signal.aborted) {
+        console.error('Session init error:', error);
+      }
     } catch (err) {
-      console.error('Session tracking error:', err);
+      if (!abortControllerRef.current?.signal.aborted) {
+        console.error('Session tracking error:', err);
+      }
     }
   }, [user]);
 
-  // Track an event
+  // Track an event with abort support
   const trackEvent = useCallback(async ({ eventType, eventName, metadata = {} }: TrackEventOptions) => {
     const sessionId = getSessionId();
 
     try {
       const { error } = await supabase
         .from('analytics_events')
-        .insert({
-          user_id: user?.id || null,
+        .insert([{
+          user_id: user?.id ?? null,
           event_type: eventType,
           event_name: eventName,
           page_path: location.pathname,
           session_id: sessionId,
           metadata,
-        });
+        }]);
 
       if (error) console.error('Event tracking error:', error);
     } catch (err) {
@@ -150,17 +160,24 @@ export const useAnalytics = () => {
       initSession();
     }
 
-    // Update session on unmount
+    // Cleanup: abort any pending requests and update session
     return () => {
+      // Abort any pending async operations
+      abortControllerRef.current?.abort();
+      
       if (user) {
         const duration = Math.round((Date.now() - sessionStartRef.current) / 1000);
+        // Use sendBeacon for reliable cleanup (non-blocking)
+        const sessionData = {
+          ended_at: new Date().toISOString(),
+          duration_seconds: duration,
+          page_views: pageViewCountRef.current,
+        };
+        
+        // Fire-and-forget update - don't await in cleanup
         supabase
           .from('user_sessions')
-          .update({
-            ended_at: new Date().toISOString(),
-            duration_seconds: duration,
-            page_views: pageViewCountRef.current,
-          })
+          .update(sessionData)
           .eq('session_id', getSessionId())
           .then(() => {});
       }

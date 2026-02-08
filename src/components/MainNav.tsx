@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProfile } from "@/hooks/useProfile";
 import { CartDrawer } from "@/components/CartDrawer";
+import { useRoutePrefetch } from "@/hooks/useRoutePrefetch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +29,6 @@ import {
   ChevronDown,
   ShoppingBag,
   Image,
-  FileText,
   BarChart3
 } from "lucide-react";
 import { NotificationCenter } from "@/components/NotificationCenter";
@@ -39,6 +39,7 @@ export const MainNav = () => {
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
+  const { onHoverPrefetch } = useRoutePrefetch();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -98,6 +99,7 @@ export const MainNav = () => {
                 } px-2 xl:px-3 min-h-[44px]`}
                 aria-label={getNavItemLabel(item)}
                 aria-current={isActive(item.path) ? "page" : undefined}
+                {...onHoverPrefetch(item.path)}
               >
                 <item.icon className="h-4 w-4" aria-hidden="true" />
                 <span className="ml-1.5 hidden xl:inline text-sm">{item.name}</span>
