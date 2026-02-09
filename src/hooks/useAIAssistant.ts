@@ -1,16 +1,65 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  feedback?: 'positive' | 'negative';
 }
 
 export const useAIAssistant = () => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Load most recent conversation on mount
+  useEffect(() => {
+    if (!user) return;
+    const loadConversation = async () => {
+      const { data } = await supabase
+        .from('ai_conversations')
+        .select('id, messages')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (data) {
+        setConversationId(data.id);
+        const parsed = Array.isArray(data.messages) ? data.messages : [];
+        setMessages(parsed as unknown as Message[]);
+      }
+    };
+    loadConversation();
+  }, [user]);
+
+  // Debounced save to DB
+  const saveConversation = useCallback(async (msgs: Message[]) => {
+    if (!user || msgs.length === 0) return;
+    
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(async () => {
+      const title = msgs[0]?.content?.slice(0, 50) || 'New Conversation';
+      if (conversationId) {
+        await supabase
+          .from('ai_conversations')
+          .update({ messages: msgs as any, title, updated_at: new Date().toISOString() })
+          .eq('id', conversationId);
+      } else {
+        const { data } = await supabase
+          .from('ai_conversations')
+          .insert({ user_id: user.id, messages: msgs as any, title })
+          .select('id')
+          .maybeSingle();
+        if (data) setConversationId(data.id);
+      }
+    }, 1000);
+  }, [user, conversationId]);
 
   const sendMessage = useCallback(async (content: string, context?: any) => {
     if (!user) {
@@ -19,22 +68,24 @@ export const useAIAssistant = () => {
     }
 
     const userMessage: Message = { role: 'user', content };
-    setMessages(prev => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setIsLoading(true);
+    setIsStreaming(false);
 
     let assistantContent = '';
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-travel-assistant`,
+        `https://buoablhkbfctwmjzeisk.supabase.co/functions/v1/ai-travel-assistant`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
           },
           body: JSON.stringify({
-            messages: [...messages, userMessage],
+            messages: newMessages.map(m => ({ role: m.role, content: m.content })),
             context
           }),
         }
@@ -43,6 +94,7 @@ export const useAIAssistant = () => {
       if (!response.ok) {
         if (response.status === 429) {
           toast.error('Rate limit exceeded. Please try again later.');
+          setMessages(messages);
           return;
         }
         throw new Error('Failed to get response');
@@ -51,6 +103,7 @@ export const useAIAssistant = () => {
       const reader = response.body?.getReader();
       if (!reader) throw new Error('No reader available');
 
+      setIsStreaming(true);
       const decoder = new TextDecoder();
       let textBuffer = '';
 
@@ -60,7 +113,6 @@ export const useAIAssistant = () => {
 
         textBuffer += decoder.decode(value, { stream: true });
 
-        // Process SSE lines
         let newlineIndex: number;
         while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
           let line = textBuffer.slice(0, newlineIndex);
@@ -89,26 +141,39 @@ export const useAIAssistant = () => {
               });
             }
           } catch {
-            // Incomplete JSON, put it back
             textBuffer = line + '\n' + textBuffer;
             break;
           }
         }
       }
 
+      // Save after streaming complete
+      const finalMessages = [...newMessages, { role: 'assistant' as const, content: assistantContent }];
+      saveConversation(finalMessages);
+
     } catch (error) {
       console.error('AI Assistant error:', error);
       toast.error('Failed to get response from AI');
-      // Remove the user message if we failed
-      setMessages(prev => prev.slice(0, -1));
+      setMessages(messages);
     } finally {
       setIsLoading(false);
+      setIsStreaming(false);
     }
-  }, [user, messages]);
+  }, [user, messages, saveConversation]);
 
-  const clearConversation = () => {
+  const rateFeedback = useCallback(async (messageIndex: number, feedback: 'positive' | 'negative') => {
+    setMessages(prev => {
+      const updated = prev.map((m, i) => i === messageIndex ? { ...m, feedback } : m);
+      saveConversation(updated);
+      return updated;
+    });
+    toast.success(feedback === 'positive' ? 'Thanks for the feedback!' : 'We\'ll improve our suggestions');
+  }, [saveConversation]);
+
+  const clearConversation = useCallback(() => {
     setMessages([]);
-  };
+    setConversationId(null);
+  }, []);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -120,8 +185,10 @@ export const useAIAssistant = () => {
   return {
     messages,
     isLoading,
+    isStreaming,
     sendMessage,
     clearConversation,
-    getGreeting
+    getGreeting,
+    rateFeedback
   };
 };
