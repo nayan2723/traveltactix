@@ -161,30 +161,22 @@ CREATE POLICY "No direct client writes" ON places
 
 ---
 
-## Phase 4: AI Features Enhancement (5 Credits)
+## Phase 4: AI Features Enhancement (5 Credits) ✅ COMPLETED
 
-### 4.1 Fix AI Assistant Context Persistence (High)
-**Issue**: Conversation context not saved between sessions
-**File**: `src/hooks/useAIAssistant.ts`
-**Solution**: Save/restore conversations from `ai_conversations` table
+### 4.1 Fix AI Assistant Context Persistence (High) ✅
+**Solution**: Conversations auto-save to `ai_conversations` table with debounced writes. Most recent conversation restored on mount.
 
-### 4.2 Add Fallback for AI Failures (Medium)
-**Issue**: If Perplexity fails, smart recommendations show generic fallback
-**Solution**: 
-- Implement tiered fallback: Perplexity → Local trends → Static recommendations
-- Add retry logic with exponential backoff
+### 4.2 Add Fallback for AI Failures (Medium) ✅
+**Solution**: Perplexity calls retry with exponential backoff (up to 2 retries). Falls back to local DB trends, then static recommendations.
 
-### 4.3 Improve AI Recommendation Accuracy (Medium)
-**Issue**: AI sometimes recommends places user has already visited
-**Solution**: Strengthen visited-place filtering in edge function
+### 4.3 Improve AI Recommendation Accuracy (Medium) ✅
+**Solution**: Excludes both visited AND favorited places. Increased visit history limit from 10 to 100 for comprehensive filtering.
 
-### 4.4 Add AI Response Streaming Indicator (Low)
-**Issue**: No visual indicator while AI response is streaming
-**Solution**: Add typing animation with blinking cursor
+### 4.4 Add AI Response Streaming Indicator (Low) ✅
+**Solution**: Blinking cursor animation shown inline at end of streaming assistant messages.
 
-### 4.5 Implement AI Feedback Loop (Low)
-**Issue**: No way for users to rate AI recommendations
-**Solution**: Add thumbs up/down buttons that feed into preference learning
+### 4.5 Implement AI Feedback Loop (Low) ✅
+**Solution**: Thumbs up/down buttons on each assistant message. Feedback persisted to conversation record for future preference learning.
 
 ---
 

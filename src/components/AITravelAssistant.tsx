@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
-import { MessageCircle, Send, X, Minimize2, Maximize2, Sparkles, Trash2 } from 'lucide-react';
+import { MessageCircle, Send, X, Minimize2, Maximize2, Sparkles, Trash2, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 
@@ -15,24 +15,26 @@ interface AITravelAssistantProps {
   initialContext?: any;
 }
 
+const StreamingCursor = () => (
+  <span className="inline-block w-2 h-4 ml-0.5 bg-foreground/70 animate-pulse" aria-hidden="true" />
+);
+
 export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) => {
   const { user } = useAuth();
   const { profile } = useProfile();
-  const { messages, isLoading, sendMessage, clearConversation, getGreeting } = useAIAssistant();
+  const { messages, isLoading, isStreaming, sendMessage, clearConversation, getGreeting, rateFeedback } = useAIAssistant();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [input, setInput] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // Focus input when opening
   useEffect(() => {
     if (isOpen && !isMinimized && inputRef.current) {
       inputRef.current.focus();
@@ -57,7 +59,6 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
 
   return (
     <>
-      {/* Floating trigger button */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
@@ -77,17 +78,11 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
         )}
       </AnimatePresence>
 
-      {/* Chat window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ 
-              opacity: 1, 
-              y: 0, 
-              scale: 1,
-              height: isMinimized ? 'auto' : 'auto'
-            }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)]"
           >
@@ -110,37 +105,18 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={clearConversation}
-                    className="h-8 w-8 min-h-[44px] min-w-[44px]"
-                    aria-label="Clear conversation"
-                  >
+                  <Button variant="ghost" size="icon" onClick={clearConversation} className="h-8 w-8 min-h-[44px] min-w-[44px]" aria-label="Clear conversation">
                     <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsMinimized(!isMinimized)}
-                    className="h-8 w-8 min-h-[44px] min-w-[44px]"
-                    aria-label={isMinimized ? "Expand chat" : "Minimize chat"}
-                  >
+                  <Button variant="ghost" size="icon" onClick={() => setIsMinimized(!isMinimized)} className="h-8 w-8 min-h-[44px] min-w-[44px]" aria-label={isMinimized ? "Expand chat" : "Minimize chat"}>
                     {isMinimized ? <Maximize2 className="h-4 w-4" aria-hidden="true" /> : <Minimize2 className="h-4 w-4" aria-hidden="true" />}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsOpen(false)}
-                    className="h-8 w-8 min-h-[44px] min-w-[44px]"
-                    aria-label="Close chat"
-                  >
+                  <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-8 w-8 min-h-[44px] min-w-[44px]" aria-label="Close chat">
                     <X className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </div>
               </div>
 
-              {/* Chat content */}
               {!isMinimized && (
                 <>
                   <ScrollArea className="h-[350px] p-4" ref={scrollRef} tabIndex={0} aria-label="Chat messages">
@@ -155,13 +131,7 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
                         </div>
                         <div className="grid gap-2">
                           {suggestedPrompts.map((prompt, i) => (
-                            <Button
-                              key={i}
-                              variant="outline"
-                              size="sm"
-                              className="justify-start text-left h-auto py-2 px-3"
-                              onClick={() => sendMessage(prompt, initialContext)}
-                            >
+                            <Button key={i} variant="outline" size="sm" className="justify-start text-left h-auto py-2 px-3" onClick={() => sendMessage(prompt, initialContext)}>
                               <span className="text-xs">{prompt}</span>
                             </Button>
                           ))}
@@ -170,41 +140,56 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
                     ) : (
                       <div className="space-y-4" role="log" aria-live="polite" aria-label="Conversation">
                         {messages.map((msg, i) => (
-                          <div
-                            key={i}
-                            tabIndex={0}
-                            className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
-                          >
+                          <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                             <Avatar className="h-7 w-7 flex-shrink-0">
                               {msg.role === 'assistant' ? (
                                 <>
                                   <AvatarImage src="/logo.png" />
-                                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                                    T
-                                  </AvatarFallback>
+                                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">T</AvatarFallback>
                                 </>
                               ) : (
                                 <>
                                   <AvatarImage src={profile?.avatar_url || undefined} />
-                                  <AvatarFallback className="text-xs">
-                                    {profile?.full_name?.charAt(0) || 'U'}
-                                  </AvatarFallback>
+                                  <AvatarFallback className="text-xs">{profile?.full_name?.charAt(0) || 'U'}</AvatarFallback>
                                 </>
                               )}
                             </Avatar>
-                            <div
-                              className={`rounded-2xl px-3 py-2 max-w-[80%] ${
-                                msg.role === 'user'
-                                  ? 'bg-primary text-primary-foreground'
-                                  : 'bg-muted'
-                              }`}
-                            >
-                              {msg.role === 'assistant' ? (
-                                <div className="prose prose-sm dark:prose-invert max-w-none text-sm">
-                                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                            <div className="max-w-[80%]">
+                              <div
+                                tabIndex={0}
+                                className={`rounded-2xl px-3 py-2 ${
+                                  msg.role === 'user'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted'
+                                }`}
+                              >
+                                {msg.role === 'assistant' ? (
+                                  <div className="prose prose-sm dark:prose-invert max-w-none text-sm">
+                                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                    {isStreaming && i === messages.length - 1 && <StreamingCursor />}
+                                  </div>
+                                ) : (
+                                  <p className="text-sm">{msg.content}</p>
+                                )}
+                              </div>
+                              {/* Feedback buttons for assistant messages */}
+                              {msg.role === 'assistant' && !isStreaming && (
+                                <div className="flex gap-1 mt-1 ml-1">
+                                  <button
+                                    onClick={() => rateFeedback(i, 'positive')}
+                                    className={`p-1 rounded hover:bg-muted transition-colors ${msg.feedback === 'positive' ? 'text-primary' : 'text-muted-foreground/50'}`}
+                                    aria-label="Good response"
+                                  >
+                                    <ThumbsUp className="h-3 w-3" />
+                                  </button>
+                                  <button
+                                    onClick={() => rateFeedback(i, 'negative')}
+                                    className={`p-1 rounded hover:bg-muted transition-colors ${msg.feedback === 'negative' ? 'text-destructive' : 'text-muted-foreground/50'}`}
+                                    aria-label="Bad response"
+                                  >
+                                    <ThumbsDown className="h-3 w-3" />
+                                  </button>
                                 </div>
-                              ) : (
-                                <p className="text-sm">{msg.content}</p>
                               )}
                             </div>
                           </div>
@@ -213,9 +198,7 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
                           <div className="flex gap-2">
                             <Avatar className="h-7 w-7">
                               <AvatarImage src="/logo.png" />
-                              <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                                T
-                              </AvatarFallback>
+                              <AvatarFallback className="bg-primary text-primary-foreground text-xs">T</AvatarFallback>
                             </Avatar>
                             <div className="bg-muted rounded-2xl px-4 py-3">
                               <div className="flex gap-1">
@@ -230,24 +213,10 @@ export const AITravelAssistant = ({ initialContext }: AITravelAssistantProps) =>
                     )}
                   </ScrollArea>
 
-                  {/* Input */}
                   <form onSubmit={handleSubmit} className="p-3 border-t">
                     <div className="flex gap-2">
-                      <Input
-                        ref={inputRef}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ask me anything..."
-                        disabled={isLoading}
-                        className="flex-1"
-                      />
-                      <Button 
-                        type="submit" 
-                        size="icon" 
-                        disabled={isLoading || !input.trim()}
-                        aria-label="Send message"
-                        className="min-h-[44px] min-w-[44px]"
-                      >
+                      <Input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask me anything..." disabled={isLoading} className="flex-1" />
+                      <Button type="submit" size="icon" disabled={isLoading || !input.trim()} aria-label="Send message" className="min-h-[44px] min-w-[44px]">
                         <Send className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     </div>

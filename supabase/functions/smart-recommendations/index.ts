@@ -212,36 +212,54 @@ Make questions engaging, specific, and helpful for understanding travel preferen
       const validated = RecommendationsSchema.parse(body);
       const { answers } = validated;
 
-      // Step 1: Get real-time travel trends
-      const perplexityResponse = await fetch("https://api.perplexity.ai/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${PERPLEXITY_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "llama-3.1-sonar-small-128k-online",
-          messages: [
-            {
-              role: "system",
-              content: "You are a travel trend analyst. Provide current travel trends and emerging destinations."
-            },
-            {
-              role: "user",
-              content: `Based on these travel preferences: ${JSON.stringify(answers)}, what are the current travel trends and emerging destinations that would match? Focus on offbeat and authentic experiences.`
-            }
-          ],
-          temperature: 0.3,
-          max_tokens: 500,
-        }),
-      });
-
+      // Step 1: Get real-time travel trends with retry + fallback
       let travelTrends = "";
-      if (perplexityResponse.ok) {
-        const perplexityData = await perplexityResponse.json();
-        travelTrends = perplexityData.choices[0].message.content;
-      } else {
-        travelTrends = "Focus on authentic, less crowded destinations with unique cultural experiences.";
+      const fetchPerplexity = async (retries = 2, delay = 1000): Promise<string> => {
+        for (let attempt = 0; attempt <= retries; attempt++) {
+          try {
+            const resp = await fetch("https://api.perplexity.ai/chat/completions", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${PERPLEXITY_API_KEY}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                model: "sonar",
+                messages: [
+                  { role: "system", content: "You are a travel trend analyst. Provide current travel trends and emerging destinations." },
+                  { role: "user", content: `Based on these travel preferences: ${JSON.stringify(answers)}, what are the current travel trends and emerging destinations that would match? Focus on offbeat and authentic experiences.` }
+                ],
+                temperature: 0.3,
+                max_tokens: 500,
+              }),
+            });
+            if (resp.ok) {
+              const data = await resp.json();
+              return data.choices[0].message.content;
+            }
+            if (attempt < retries) await new Promise(r => setTimeout(r, delay * Math.pow(2, attempt)));
+          } catch {
+            if (attempt < retries) await new Promise(r => setTimeout(r, delay * Math.pow(2, attempt)));
+          }
+        }
+        return "";
+      };
+
+      travelTrends = await fetchPerplexity();
+      
+      // Fallback: if Perplexity failed, use local trends from DB
+      if (!travelTrends) {
+        const { data: trendingPlaces } = await supabase
+          .from('places')
+          .select('name, city, country, category, mood_tags')
+          .order('last_crowd_update', { ascending: false })
+          .limit(10);
+        
+        if (trendingPlaces?.length) {
+          travelTrends = `Trending destinations: ${trendingPlaces.map(p => `${p.name} in ${p.city}, ${p.country} (${p.category})`).join('; ')}. Focus on authentic, less crowded destinations with unique cultural experiences.`;
+        } else {
+          travelTrends = "Focus on authentic, less crowded destinations with unique cultural experiences. Prioritize hidden gems, local food scenes, and immersive cultural activities.";
+        }
       }
 
       // Step 2: Get user's travel history and available places (RLS enforced)
@@ -249,13 +267,13 @@ Make questions engaging, specific, and helpful for understanding travel preferen
         .from('user_place_visits')
         .select('place_id, places(name, category, mood_tags)')
         .eq('user_id', user.id)
-        .limit(10);
+        .limit(100);
 
       const { data: favorites } = await supabase
         .from('user_favorites')
         .select('place_id, places(name, category, mood_tags)')
         .eq('user_id', user.id)
-        .limit(10);
+        .limit(50);
 
       const { data: allPlaces } = await supabase
         .from('places')
@@ -263,8 +281,12 @@ Make questions engaging, specific, and helpful for understanding travel preferen
         .eq('is_hidden_gem', true)
         .limit(50);
 
-      const visitedPlaceIds = new Set(visits?.map(v => v.place_id) || []);
-      const availablePlaces = allPlaces?.filter(p => !visitedPlaceIds.has(p.id)) || [];
+      // Exclude both visited AND favorited places for fresh recommendations
+      const excludedIds = new Set([
+        ...(visits?.map(v => v.place_id) || []),
+        ...(favorites?.map(f => f.place_id) || [])
+      ]);
+      const availablePlaces = allPlaces?.filter(p => !excludedIds.has(p.id)) || [];
 
       // Extract place names with proper typing
       const visitedNames = visits?.map(v => {
