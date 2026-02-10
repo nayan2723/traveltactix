@@ -59,10 +59,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         title: "Signed out successfully",
         description: "Come back soon for more adventures!",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to sign out";
       toast({
         title: "Error",
-        description: error.message || "Failed to sign out",
+        description: message,
         variant: "destructive",
       });
     }
