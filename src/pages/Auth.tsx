@@ -62,7 +62,7 @@ const Auth = () => {
         title: "Success!",
         description: "Check your email to confirm your account.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
         toast({
           title: "Validation Error",
@@ -70,9 +70,10 @@ const Auth = () => {
           variant: "destructive",
         });
       } else {
+        const message = error instanceof Error ? error.message : "Sign up failed";
         toast({
           title: "Error",
-          description: error.message,
+          description: message,
           variant: "destructive",
         });
       }
@@ -102,7 +103,7 @@ const Auth = () => {
       });
       
       navigate("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
         toast({
           title: "Validation Error",
@@ -110,9 +111,10 @@ const Auth = () => {
           variant: "destructive",
         });
       } else {
+        const message = error instanceof Error ? error.message : "Sign in failed";
         toast({
           title: "Error",
-          description: error.message,
+          description: message,
           variant: "destructive",
         });
       }

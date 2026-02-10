@@ -12,6 +12,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SuspenseFallback, ARFallback } from "@/components/SuspenseFallback";
 import { SkipLink } from "@/components/accessibility/AccessibilityHelpers";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -89,6 +90,7 @@ const App = () => (
               <main id="main-content" className="relative z-10">
                 <QuickStatsWidget />
                 <OfflineIndicator />
+                <PWAInstallPrompt />
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
